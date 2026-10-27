@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SocialOS v2.4.2 — Realtime Content & Follower Analytics</title>
+  <title>SocialOS v2.4.2 — All-In-One Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -34,7 +34,7 @@
           S
         </div>
         <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
-        <p class="text-xs text-slate-400">v2.4.2 — Follower & Account Diagnostics</p>
+        <p class="text-xs text-slate-400">Pusat Manajemen Brand & Konten Terpadu</p>
       </div>
 
       <div class="space-y-3 pt-2">
@@ -47,7 +47,7 @@
           <input type="password" id="auth-password" placeholder="Minimal 6 karakter" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
         </div>
 
-        <div id="auth-error-msg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg"></div>
+        <div id="auth-error-msg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg leading-relaxed"></div>
 
         <div class="grid grid-cols-2 gap-2 pt-1">
           <button onclick="handleEmailLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow-md shadow-indigo-600/30">
@@ -70,10 +70,10 @@
         </div>
         <div>
           <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
-          <p class="text-[9px] text-indigo-400 font-mono">v2.4.2-DIAGNOSTIC</p>
+          <p class="text-[9px] text-indigo-400 font-mono">v2.4.2-ULTIMATE</p>
         </div>
       </div>
-      <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
+      <button onclick="toggleMobileSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
@@ -89,7 +89,7 @@
       </select>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation Menu (Lengkap 100%) -->
     <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
       <button onclick="switchTab('diagnostic'); toggleMobileSidebar(false);" id="nav-diagnostic" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
         <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
@@ -113,7 +113,7 @@
 
       <button onclick="switchTab('calendar'); toggleMobileSidebar(false);" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="calendar" class="w-4 h-4"></i>
-        <span>Editorial Calendar</span>
+        <span>Editorial Calendar Kanban</span>
       </button>
 
       <button onclick="switchTab('analytics'); toggleMobileSidebar(false);" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
@@ -158,7 +158,7 @@
           Kalkulator & Analisis Akun (IG & TikTok)
         </h1>
         <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-          v2.4.2 Engine
+          v2.4.2 Ready
         </span>
       </div>
 
@@ -178,7 +178,7 @@
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
       <!-- ============================================== -->
-      <!-- TAB KHUSUS: KALKULATOR & ANALISIS AKUN          -->
+      <!-- TAB 1: KALKULATOR & ANALISIS AKUN (MODUL BARU) -->
       <!-- ============================================== -->
       <section id="tab-diagnostic" class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -188,7 +188,7 @@
             <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
               <div>
                 <h3 class="font-semibold text-sm text-white">Input Metrik Performa Konten</h3>
-                <p class="text-xs text-slate-400">Kalkulasi akurat & realtime rasio pertumbuhan akun.</p>
+                <p class="text-xs text-slate-400">Kalkulasi akurat rasio interaksi dan pertumbuhan followers.</p>
               </div>
               <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
                 Realtime Calculator
@@ -252,9 +252,10 @@
               </div>
             </div>
 
+            <!-- Validation Alert -->
             <div id="validation-warning" class="hidden p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-[11px] flex items-center space-x-1.5">
               <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
-              <span>Peringatan: Jumlah interaksi tidak boleh melebihi jumlah total views.</span>
+              <span>Peringatan: Jumlah interaksi tidak boleh melebihi total views.</span>
             </div>
 
             <button onclick="saveCalculatedDataToFirestore()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
@@ -334,50 +335,309 @@
         </div>
       </section>
 
-      <!-- TAB LAIN TETAP TERSEDIA SECARA LENGKAP -->
+      <!-- ============================================== -->
+      <!-- TAB 2: EXECUTIVE OVERVIEW                      -->
+      <!-- ============================================== -->
       <section id="tab-overview" class="hidden space-y-6">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
-          <h2 class="text-base font-semibold text-white mb-2">Executive Dashboard</h2>
-          <p class="text-xs text-slate-400">Pantau performa agregat konten yang tersimpan di cloud.</p>
-          <div class="h-64 mt-4 relative flex items-center justify-center">
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl">
+          <div class="flex items-center space-x-2 text-indigo-400 mb-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span class="text-[10px] font-bold tracking-wider uppercase">Strategic Summary</span>
+          </div>
+          <h2 class="text-sm md:text-base font-semibold text-white mb-1" id="briefing-title">Status Kinerja Konten</h2>
+          <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
+            Belum ada data konten tersimpan. Tambahkan konten melalui Studio atau gunakan tab Kalkulator untuk evaluasi instan.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Konten</span>
+            <div class="text-xl md:text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
+            <span class="text-[10px] md:text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Tayang</span>
+          </div>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Views</span>
+            <div class="text-xl md:text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-views">0</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Akumulasi tayangan</span>
+          </div>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Interaksi</span>
+            <div class="text-xl md:text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Likes, Saves, Shares</span>
+          </div>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Engagement Rate</span>
+            <div class="text-xl md:text-2xl font-bold text-emerald-400 mt-1" id="kpi-er">0.00%</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">(Interaksi / Reach) × 100</span>
+          </div>
+        </div>
+
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xs">
+          <h3 class="font-semibold text-xs text-white uppercase tracking-wider mb-4">Grafik Distribusi Konten</h3>
+          <div class="h-56 md:h-64 relative flex items-center justify-center">
             <canvas id="overviewChart"></canvas>
           </div>
         </div>
       </section>
 
-      <section id="tab-studio" class="hidden space-y-4">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
-          <h2 class="text-base font-semibold text-white mb-1">AI Content Studio</h2>
-          <p class="text-xs text-slate-400 mb-4">Gunakan AI untuk merumuskan naskah konten berdasarkan data analitik.</p>
-          <input type="text" id="studio-topic" placeholder="Topik konten..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white mb-3">
-          <button onclick="executeAIGeneration()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">Generate Naskah</button>
+      <!-- ============================================== -->
+      <!-- TAB 3: AI CONTENT STUDIO (100% LENGKAP)        -->
+      <!-- ============================================== -->
+      <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
+            <p class="text-xs text-slate-400">Generator naskah terstruktur per platform.</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-slate-300 block mb-1">Topik Utama atau Masalah Audiens</label>
+            <input type="text" id="studio-topic" placeholder="Misal: Cara memilih outfit kuliah vintage" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Platform</label>
+              <select id="studio-platform" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="INSTAGRAM">Instagram</option>
+                <option value="TIKTOK">TikTok</option>
+                <option value="FACEBOOK">Facebook</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Format Konten</label>
+              <select id="studio-format" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="Reels/Shorts">Video Pendek (Shorts/Reels)</option>
+                <option value="Carousel">Carousel Multi-Slide</option>
+                <option value="Single Post">Single Post / Feed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Pilar Konten</label>
+              <select id="studio-pillar" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="Edukasi">Edukasi & Tips</option>
+                <option value="Inspirasi">Inspirasi & Story</option>
+                <option value="Promosi">Promosi Katalog</option>
+                <option value="Tutorial">Tutorial Praktis</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Target Persona</label>
+              <input type="text" id="studio-persona" value="Wanita Muda / Profesional" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+            </div>
+          </div>
+
+          <button onclick="executeAIGeneration()" id="btn-generate" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Generate Naskah Lengkap</span>
+          </button>
+        </div>
+
+        <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-semibold text-sm text-white">Naskah Hasil Analisis AI</h3>
+              <div class="flex items-center space-x-2">
+                <button onclick="copyGeneratedText()" id="btn-copy" class="text-xs bg-[#080c14] hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-lg flex items-center space-x-1">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  <span>Salin Naskah</span>
+                </button>
+                <span id="output-badge" class="hidden text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                  Siap Disimpan
+                </span>
+              </div>
+            </div>
+
+            <div id="studio-empty-state" class="py-12 md:py-16 text-center text-slate-500">
+              <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 stroke-1 text-slate-600"></i>
+              <p class="text-xs">Isi parameter di panel kiri lalu klik Generate.</p>
+            </div>
+
+            <div id="studio-result-state" class="hidden space-y-3.5 text-xs">
+              <div>
+                <label class="font-semibold text-slate-300 block mb-1">🎯 3-Second Hook:</label>
+                <input type="text" id="out-hook" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-medium text-white outline-none">
+              </div>
+
+              <div>
+                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah / Slide Breakdown / Caption:</label>
+                <textarea id="out-body" rows="6" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="font-semibold text-slate-300 block mb-1">⚡ Call to Action (CTA):</label>
+                  <input type="text" id="out-cta" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+                </div>
+                <div>
+                  <label class="font-semibold text-slate-300 block mb-1">🏷️ Hashtags:</label>
+                  <input type="text" id="out-tags" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-indigo-400 outline-none">
+                </div>
+              </div>
+
+              <div>
+                <label class="font-semibold text-slate-300 block mb-1">📅 Jadwal Tayang</label>
+                <input type="date" id="out-date" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+              </div>
+            </div>
+          </div>
+
+          <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end space-x-2">
+            <button onclick="saveToEditorialCalendar()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span>Simpan ke Kalender Firestore</span>
+            </button>
+          </div>
         </div>
       </section>
 
-      <section id="tab-research" class="hidden space-y-4">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
-          <h2 class="text-base font-semibold text-white mb-1">Riset Tren & Intelligence</h2>
-          <p class="text-xs text-slate-400 mb-4">Riset topik pasar menggunakan Google Gemini AI.</p>
-          <input type="text" id="research-query" placeholder="Kata kunci riset..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white mb-3">
-          <button onclick="executeWebResearch()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">Jalankan Riset</button>
+      <!-- ============================================== -->
+      <!-- TAB 4: RISET TREN & INTELLIGENCE (100% LENGKAP)-->
+      <!-- ============================================== -->
+      <section id="tab-research" class="hidden space-y-6">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="font-semibold text-sm text-white">Riset Niche & Tren Pasar Riil</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Analisis pola konsumsi audiens menggunakan Google Gemini.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Kata Kunci / Topik Riset</label>
+              <input type="text" id="research-query" placeholder="Misal: Tren Fashion Vintage 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Lokasi Target</label>
+              <input type="text" id="research-location" value="Indonesia" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+            </div>
+          </div>
+
+          <button onclick="executeWebResearch()" id="btn-research" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span>Jalankan Riset Tren</span>
+          </button>
+        </div>
+
+        <div id="research-result-container" class="hidden space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
+              <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>Fakta Sumber & Pola Audiens</span>
+              </span>
+              <ul id="res-facts-list" class="text-xs space-y-1.5 text-slate-300"></ul>
+            </div>
+
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
+              <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                <i data-lucide="brain" class="w-4 h-4 text-indigo-400"></i>
+                <span>Interpretasi & Celah Pasar</span>
+              </span>
+              <p id="res-interpretation-text" class="text-xs text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                  <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+                  <span>Hipotesis & Rekomendasi Format</span>
+                </span>
+                <p id="res-hypothesis-text" class="text-xs text-slate-300 leading-relaxed mb-3"></p>
+              </div>
+              <button onclick="transferResearchToStudio()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center space-x-1.5 transition">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Gunakan Topik di Studio</span>
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
+      <!-- ============================================== -->
+      <!-- TAB 5: EDITORIAL CALENDAR KANBAN (LENGKAP)     -->
+      <!-- ============================================== -->
       <section id="tab-calendar" class="hidden space-y-4">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
-          <h2 class="text-base font-semibold text-white mb-1">Editorial Calendar</h2>
-          <p class="text-xs text-slate-400 mb-4">Pipa workflow publikasi konten.</p>
-          <div id="col-IDEA" class="space-y-2"></div>
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-slate-400">Pipa produksi konten tersimpan persisten di Firestore:</p>
+          <span class="text-xs font-medium text-slate-300" id="total-kanban-items">0 Konten</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <span class="text-xs font-bold text-slate-200">💡 Ide Konten</span>
+              <span id="badge-count-IDEA" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="col-IDEA" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
+          </div>
+
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <span class="text-xs font-bold text-slate-200">✍️ Naskah & Produksi</span>
+              <span id="badge-count-WRITING" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="col-WRITING" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
+          </div>
+
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <span class="text-xs font-bold text-slate-200">🕒 Terjadwal</span>
+              <span id="badge-count-SCHEDULED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="col-SCHEDULED" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
+          </div>
+
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <span class="text-xs font-bold text-slate-200">✅ Sudah Tayang</span>
+              <span id="badge-count-PUBLISHED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="col-PUBLISHED" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
+          </div>
         </div>
       </section>
 
-      <section id="tab-analytics" class="hidden space-y-4">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
-          <h2 class="text-base font-semibold text-white mb-1">Analytics Table</h2>
-          <div class="overflow-x-auto mt-4">
-            <table class="w-full text-left text-xs whitespace-nowrap">
-              <thead><tr class="text-slate-400 border-b border-slate-800"><th class="p-2">Judul</th><th class="p-2">Platform</th><th class="p-2">Views</th><th class="p-2">Likes</th><th class="p-2">ER</th></tr></thead>
-              <tbody id="analytics-table-body"></tbody>
+      <!-- ============================================== -->
+      <!-- TAB 6: ANALYTICS & CSV DATA IMPORT (LENGKAP)   -->
+      <!-- ============================================== -->
+      <section id="tab-analytics" class="hidden space-y-6">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV)</h3>
+            <p class="text-[11px] text-slate-400">Header: title, platform, views, reach, likes, comments, shares, saves.</p>
+          </div>
+          <div>
+            <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleStandardCSVUpload(event)">
+            <button onclick="document.getElementById('csv-file-input').click()" class="w-full sm:w-auto bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+              <span>Pilih File CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-4 md:px-5 py-3 border-b border-slate-800">
+            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Tabel Metrik Konten</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+              <thead>
+                <tr class="bg-[#080c14] text-slate-400 border-b border-slate-800">
+                  <th class="py-2.5 px-4 font-semibold">Judul Konten</th>
+                  <th class="py-2.5 px-4 font-semibold">Platform</th>
+                  <th class="py-2.5 px-4 font-semibold">Views</th>
+                  <th class="py-2.5 px-4 font-semibold">Reach</th>
+                  <th class="py-2.5 px-4 font-semibold">Likes</th>
+                  <th class="py-2.5 px-4 font-semibold">Saves</th>
+                  <th class="py-2.5 px-4 font-semibold">Total Interaksi</th>
+                  <th class="py-2.5 px-4 font-semibold">ER (Reach)</th>
+                </tr>
+              </thead>
+              <tbody id="analytics-table-body" class="divide-y divide-slate-800/60"></tbody>
             </table>
           </div>
         </div>
@@ -386,7 +646,7 @@
     </div>
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
   <nav class="md:hidden fixed bottom-0 inset-x-0 bg-[#0b0f19] border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around z-30 pb-safe">
     <button onclick="switchTab('diagnostic')" id="mob-diagnostic" class="flex flex-col items-center justify-center p-1 text-emerald-400">
       <i data-lucide="calculator" class="w-4 h-4"></i>
@@ -420,7 +680,7 @@
       </div>
 
       <p class="text-xs text-slate-400 leading-relaxed">
-        Masukkan Google Gemini API Key Anda. Kunci ini disimpan lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
+        Masukkan Google Gemini API Key Anda. Kunci ini disimpan secara lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
       </p>
 
       <div>
@@ -428,14 +688,21 @@
         <input type="password" id="input-api-key" placeholder="AIzaSy..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
       </div>
 
-      <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
-        <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
-        <button onclick="saveApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Simpan Kunci</button>
+      <div id="modal-test-status" class="hidden p-2 rounded-lg text-xs"></div>
+
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+        <button onclick="testGeminiConnection()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition">
+          Uji Koneksi
+        </button>
+        <div class="space-x-2">
+          <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
+          <button onclick="saveApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Simpan Kunci</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.2 -->
+  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.2 LENGKAP -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
@@ -451,30 +718,38 @@
     let activeBrandId = "default";
     let contentItems = [];
     let brandsList = [{ id: "default", name: "Brand Utama (Default)" }];
+    let chartInstance = null;
     let calcActivePlatform = 'INSTAGRAM';
+    let latestGeneratedObj = null;
 
     function initApp() {
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-      auth = firebase.auth();
-      db = firebase.firestore();
-
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          currentUser = user;
-          document.getElementById('auth-modal').classList.add('hidden');
-          document.getElementById('current-user-email').innerText = user.email;
-          loadUserBrands();
-          bindFirestoreListeners();
-          updateApiStatusUI();
-          setCalcPlatform('INSTAGRAM');
-        } else {
-          currentUser = null;
-          document.getElementById('auth-modal').classList.remove('hidden');
-          document.getElementById('current-user-email').innerText = '-';
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
         }
-      });
+        auth = firebase.auth();
+        db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            currentUser = user;
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('current-user-email').innerText = user.email;
+            loadUserBrands();
+            bindFirestoreListeners();
+            updateApiStatusUI();
+            setCalcPlatform('INSTAGRAM');
+          } else {
+            currentUser = null;
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('current-user-email').innerText = '-';
+            contentItems = [];
+            renderAll();
+          }
+        });
+      } catch (e) {
+        console.error("Firebase init error:", e);
+      }
     }
 
     function toggleMobileSidebar(show) {
@@ -489,7 +764,54 @@
       }
     }
 
-    // --- REFINED ALGORITHM & DIAGNOSTIC ENGINE V2.4.2 ---
+    // --- AUTHENTICATION HANDLERS ---
+    async function handleEmailLogin() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+
+      if (!email || !pass) {
+        errBox.textContent = 'Harap isi email dan kata sandi terlebih dahulu.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (err) {
+        errBox.textContent = 'Gagal masuk: ' + err.message;
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    async function handleEmailRegister() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+
+      if (!email || !pass) {
+        errBox.textContent = 'Harap isi email dan kata sandi terlebih dahulu.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+      } catch (err) {
+        errBox.textContent = 'Gagal mendaftar: ' + err.message;
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      if (confirm('Keluar dari sesi akun saat ini?')) {
+        auth.signOut();
+      }
+    }
+
+    // --- KALKULATOR & ANALISIS METRIK REALTIME ---
     function setCalcPlatform(plat) {
       calcActivePlatform = plat;
       const btnIG = document.getElementById('btn-calc-ig');
@@ -498,14 +820,12 @@
       if (plat === 'INSTAGRAM') {
         btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
         btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
-        
         document.getElementById('res-special-ratio-label').innerText = 'Save-to-Views Ratio';
         document.getElementById('res-special-ratio-desc').innerText = 'Saves / Views (Sinyal Explore)';
         document.getElementById('res-formula-text').innerText = 'Instagram ER = ((Likes + Comments + Saves + Shares) / Views) × 100. Follower Conv = (Gained / Views) × 100.';
       } else {
         btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-cyan-500 bg-cyan-600/20 text-cyan-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
         btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
-        
         document.getElementById('res-special-ratio-label').innerText = 'Share / Virality Ratio';
         document.getElementById('res-special-ratio-desc').innerText = 'Shares / Views (Pemicu FYP)';
         document.getElementById('res-formula-text').innerText = 'TikTok ER = ((Likes + Comments + Shares) / Views) × 100. Follower Conv = (Gained / Views) × 100.';
@@ -526,20 +846,16 @@
       const totalInteractions = likes + comments + shares + saves;
       const warningBox = document.getElementById('validation-warning');
 
-      // Validasi logika: Jumlah interaksi tidak mungkin lebih besar dari total tayangan
       if (views > 0 && totalInteractions > views) {
         warningBox.classList.remove('hidden');
       } else {
         warningBox.classList.add('hidden');
       }
 
-      // 1. ER by Views
       const erViews = views > 0 ? ((totalInteractions / views) * 100).toFixed(2) : "0.00";
-      // 2. ER by Followers
       const erFollowers = followers > 0 ? ((totalInteractions / followers) * 100).toFixed(2) : "0.00";
-      // 3. Follower Conversion Rate
       const followerConv = views > 0 ? ((gained / views) * 100).toFixed(2) : "0.00";
-      // 4. Special Ratio (Saves di IG, Shares di TikTok)
+      
       let specialRatio = "0.00";
       if (calcActivePlatform === 'INSTAGRAM') {
         specialRatio = views > 0 ? ((saves / views) * 100).toFixed(2) : "0.00";
@@ -552,7 +868,6 @@
       document.getElementById('res-follower-conv').innerText = `${followerConv}%`;
       document.getElementById('res-special-ratio-val').innerText = `${specialRatio}%`;
 
-      // 5. Evaluasi Diagnostik Otomatis Berdasarkan Metrik Nyata
       const badge = document.getElementById('diagnostic-status-badge');
       const expEl = document.getElementById('res-diagnostic-explanation');
       const recEl = document.getElementById('res-diagnostic-recommendation');
@@ -583,11 +898,10 @@
         } else {
           badge.innerText = '🔴 Di Bawah Standar (Underperforming)';
           badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
-          expEl.innerText = `ER konten hanya ${numER}%. Jumlah penonton tinggi tetapi interaksi sangat rendah, menandakan audiens melewati (scroll past) postingan tanpa membaca naskah.`;
+          expEl.innerText = `ER konten hanya ${numER}%. Jumlah penonton tinggi tetapi interaksi sangat rendah, menandakan audiens melewati postingan tanpa membaca naskah.`;
           recEl.innerText = 'Rombak total 3 detik pertama (Hook). Gunakan pertanyaan masalah (problem-oriented) atau judul yang kontras.';
         }
       } else {
-        // TIKTOK
         if (numER >= 7.0 && numSpecial >= 1.5) {
           badge.innerText = '🔥 FYP Booster (High Virality)';
           badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300';
@@ -636,27 +950,7 @@
       alert('Data performa konten dan pertumbuhan followers berhasil disimpan ke Firestore!');
     }
 
-    // --- SUPPORTING CORE HANDLERS ---
-    async function handleEmailLogin() {
-      const email = document.getElementById('auth-email').value.trim();
-      const pass = document.getElementById('auth-password').value;
-      const errBox = document.getElementById('auth-error-msg');
-      errBox.classList.add('hidden');
-      if (!email || !pass) { errBox.textContent = 'Harap isi email dan kata sandi.'; errBox.classList.remove('hidden'); return; }
-      try { await auth.signInWithEmailAndPassword(email, pass); } catch (err) { errBox.textContent = 'Gagal masuk: ' + err.message; errBox.classList.remove('hidden'); }
-    }
-
-    async function handleEmailRegister() {
-      const email = document.getElementById('auth-email').value.trim();
-      const pass = document.getElementById('auth-password').value;
-      const errBox = document.getElementById('auth-error-msg');
-      errBox.classList.add('hidden');
-      if (!email || !pass) { errBox.textContent = 'Harap isi email dan kata sandi.'; errBox.classList.remove('hidden'); return; }
-      try { await auth.createUserWithEmailAndPassword(email, pass); } catch (err) { errBox.textContent = 'Gagal mendaftar: ' + err.message; errBox.classList.remove('hidden'); }
-    }
-
-    function handleLogout() { if (confirm('Keluar dari sesi akun saat ini?')) auth.signOut(); }
-
+    // --- BRAND WORKSPACE MANAGEMENT ---
     function loadUserBrands() {
       if (!currentUser) return;
       db.collection('users').doc(currentUser.uid).collection('brands').onSnapshot((snap) => {
@@ -681,11 +975,13 @@
         const brandDoc = { name: name.trim(), createdAt: new Date().toISOString() };
         const ref = await db.collection('users').doc(currentUser.uid).collection('brands').add(brandDoc);
         activeBrandId = ref.id;
+        renderAll();
       }
     }
 
     function changeActiveBrand() {
       activeBrandId = document.getElementById('brand-select').value;
+      renderAll();
     }
 
     function bindFirestoreListeners() {
@@ -694,15 +990,373 @@
         const loaded = [];
         snapshot.forEach(doc => loaded.push({ id: doc.id, ...doc.data() }));
         contentItems = loaded;
+        renderAll();
+      }, (err) => console.error(err));
+    }
+
+    // --- AI CONTENT STUDIO ENGINE ---
+    async function executeAIGeneration() {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
+      const topic = document.getElementById('studio-topic').value.trim();
+      if (!topic) return alert('Topik tidak boleh kosong.');
+
+      const key = localStorage.getItem('socialos_gemini_key');
+      if (!key) {
+        openApiModal();
+        return;
+      }
+
+      const platform = document.getElementById('studio-platform').value;
+      const format = document.getElementById('studio-format').value;
+      const pillar = document.getElementById('studio-pillar').value;
+      const persona = document.getElementById('studio-persona').value;
+      const btn = document.getElementById('btn-generate');
+
+      btn.disabled = true;
+      btn.textContent = 'Meminta respons AI...';
+
+      const promptText = `Anda adalah Social Media Strategist & Copywriter profesional untuk brand "${brandsList.find(b => b.id === activeBrandId)?.name || 'Brand'}".
+Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Persona: ${persona}.
+Topik: "${topic}".
+Kembalikan format JSON murni TANPA tanda kutip markdown persis:
+{
+  "title": "Judul Konsep Konten",
+  "hook": "Kalimat pembuka 3 detik pertama",
+  "body": "Naskah lengkap adegan/slide atau caption terstruktur",
+  "cta": "Kalimat Call to Action yang jelas",
+  "tags": "#Tagar1 #Tagar2 #Tagar3"
+}`;
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (!res.ok) throw new Error('API Key tidak valid atau kuota habis.');
+        const raw = await res.json();
+        latestGeneratedObj = JSON.parse(raw.candidates?.[0]?.content?.parts?.[0]?.text);
+
+        document.getElementById('out-hook').value = latestGeneratedObj.hook || '';
+        document.getElementById('out-body').value = latestGeneratedObj.body || '';
+        document.getElementById('out-cta').value = latestGeneratedObj.cta || '';
+        document.getElementById('out-tags').value = latestGeneratedObj.tags || '';
+        document.getElementById('out-date').value = new Date().toISOString().split('T')[0];
+
+        document.getElementById('studio-empty-state').classList.add('hidden');
+        document.getElementById('studio-result-state').classList.remove('hidden');
+        document.getElementById('studio-action-footer').classList.remove('hidden');
+        document.getElementById('output-badge').classList.remove('hidden');
+      } catch (err) {
+        alert(err.message);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 mr-2"></i><span>Generate Naskah Lengkap</span>`;
+      lucide.createIcons();
+    }
+
+    async function copyGeneratedText() {
+      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[NASKAH]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
+      await navigator.clipboard.writeText(full);
+      alert('Naskah tersalin aman ke clipboard.');
+    }
+
+    async function saveToEditorialCalendar() {
+      if (!currentUser || !latestGeneratedObj) return;
+      const plannedDate = document.getElementById('out-date').value || new Date().toISOString().split('T')[0];
+      const newItem = {
+        brandId: activeBrandId,
+        title: latestGeneratedObj.title || document.getElementById('studio-topic').value,
+        platform: document.getElementById('studio-platform').value,
+        format: document.getElementById('studio-format').value,
+        pillar: document.getElementById('studio-pillar').value,
+        status: 'IDEA',
+        hook: document.getElementById('out-hook').value,
+        bodyCopy: document.getElementById('out-body').value,
+        cta: document.getElementById('out-cta').value,
+        tags: document.getElementById('out-tags').value,
+        scheduledDate: plannedDate,
+        views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0,
+        createdAt: new Date().toISOString()
+      };
+      await db.collection('users').doc(currentUser.uid).collection('contents').add(newItem);
+      switchTab('calendar');
+    }
+
+    // --- RISET TREN ENGINE ---
+    async function executeWebResearch() {
+      const q = document.getElementById('research-query').value.trim();
+      const loc = document.getElementById('research-location').value.trim();
+      const btn = document.getElementById('btn-research');
+      const key = localStorage.getItem('socialos_gemini_key');
+
+      if (!q) return alert('Topik riset tidak boleh kosong.');
+      if (!key) {
+        openApiModal();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Menganalisis tren pasar...';
+
+      const researchPrompt = `Sebagai Digital Marketing Analyst, lakukan riset tren mendalam untuk topik: "${q}" di wilayah ${loc}.
+Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
+{
+  "facts": ["Fakta teramati 1 tentang audiens", "Fakta teramati 2 tentang pola konsumsi konten"],
+  "interpretation": "Interpretasi analitis terkait celah pasar yang belum dipenuhi kompetitor.",
+  "hypothesis": "Hipotesis konten: Rekomendasi format (Reels/Carousel) dan hook yang berpeluang viral."
+}`;
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: researchPrompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (!res.ok) throw new Error('API Key tidak valid atau batas kuota habis.');
+        const raw = await res.json();
+        const data = JSON.parse(raw.candidates?.[0]?.content?.parts?.[0]?.text);
+
+        const factsList = document.getElementById('res-facts-list');
+        factsList.innerHTML = '';
+        (data.facts || []).forEach(f => {
+          const li = createSafeElement('li', 'text-slate-300', `• ${f}`);
+          factsList.appendChild(li);
+        });
+
+        document.getElementById('res-interpretation-text').textContent = data.interpretation || '-';
+        document.getElementById('res-hypothesis-text').textContent = data.hypothesis || '-';
+        document.getElementById('research-result-container').classList.remove('hidden');
+      } catch (err) {
+        alert('Riset gagal dijalankan: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Tren</span>`;
+      lucide.createIcons();
+    }
+
+    function transferResearchToStudio() {
+      document.getElementById('studio-topic').value = document.getElementById('research-query').value;
+      switchTab('studio');
+    }
+
+    // --- KANBAN & DOM SAFE RENDERING ---
+    function createSafeElement(tag, className, textContent = '') {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (textContent) el.textContent = textContent;
+      return el;
+    }
+
+    async function updateItemStatus(docId, newStatus) {
+      if (!currentUser) return;
+      await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).update({ status: newStatus });
+    }
+
+    async function deleteItem(docId) {
+      if (!currentUser) return;
+      if (confirm('Hapus konten ini secara permanen dari database?')) {
+        await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).delete();
+      }
+    }
+
+    function renderKanban() {
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+      ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(st => {
+        const col = document.getElementById(`col-${st}`);
+        col.innerHTML = '';
+        const list = filtered.filter(i => i.status === st);
+        document.getElementById(`badge-count-${st}`).textContent = list.length;
+
+        list.forEach(item => {
+          const card = createSafeElement('div', 'bg-[#080c14] p-3 rounded-xl border border-slate-800 shadow-xs space-y-2');
+          const topRow = createSafeElement('div', 'flex items-center justify-between');
+          const badge = createSafeElement('span', 'text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20', item.platform);
+          const fmt = createSafeElement('span', 'text-[10px] text-slate-500', item.format);
+          topRow.appendChild(badge);
+          topRow.appendChild(fmt);
+
+          const title = createSafeElement('h4', 'font-medium text-xs text-white leading-snug', item.title);
+          const bottomRow = createSafeElement('div', 'flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-400');
+          const dateSpan = createSafeElement('span', '', item.scheduledDate || '-');
+
+          const actionDiv = createSafeElement('div', 'flex items-center space-x-1');
+          const select = createSafeElement('select', 'border border-slate-700 rounded text-[10px] bg-slate-950 text-slate-200 px-1 py-0.5');
+          ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(sOpt => {
+            const opt = document.createElement('option');
+            opt.value = sOpt;
+            opt.textContent = sOpt;
+            if (item.status === sOpt) opt.selected = true;
+            select.appendChild(opt);
+          });
+          select.onchange = (e) => updateItemStatus(item.id, e.target.value);
+
+          const delBtn = createSafeElement('button', 'text-rose-400 hover:text-rose-300 p-0.5', '✕');
+          delBtn.onclick = () => deleteItem(item.id);
+
+          actionDiv.appendChild(select);
+          actionDiv.appendChild(delBtn);
+
+          bottomRow.appendChild(dateSpan);
+          bottomRow.appendChild(actionDiv);
+
+          card.appendChild(topRow);
+          card.appendChild(title);
+          card.appendChild(bottomRow);
+          col.appendChild(card);
+        });
+      });
+      document.getElementById('total-kanban-items').textContent = `${filtered.length} Konten`;
+    }
+
+    // --- OVERVIEW & ANALYTICS CALCULATION ---
+    function renderOverviewAndAnalytics() {
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+      let totalViews = 0, totalReach = 0, totalEng = 0, publishedCount = 0;
+      const tbody = document.getElementById('analytics-table-body');
+      tbody.innerHTML = '';
+
+      filtered.forEach(item => {
+        const eng = (Number(item.likes) || 0) + (Number(item.comments) || 0) + (Number(item.shares) || 0) + (Number(item.saves) || 0);
+        totalViews += (Number(item.views) || 0);
+        totalReach += (Number(item.reach) || 0);
+        totalEng += eng;
+        if (item.status === 'PUBLISHED') publishedCount++;
+
+        const er = item.reach > 0 ? ((eng / item.reach) * 100).toFixed(2) + '%' : '-';
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-900/50';
+
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-medium text-white', item.title));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', item.platform));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.views) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.reach) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.likes) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.saves) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-semibold text-white', eng.toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-bold text-emerald-400', er));
+
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('kpi-total-posts').textContent = filtered.length;
+      document.getElementById('kpi-published-posts').textContent = `${publishedCount} Sudah Tayang`;
+      document.getElementById('kpi-total-views').textContent = totalViews.toLocaleString('id-ID');
+      document.getElementById('kpi-total-eng').textContent = totalEng.toLocaleString('id-ID');
+
+      const erOverall = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
+      document.getElementById('kpi-er').textContent = `${erOverall}%`;
+
+      updateChart(filtered);
+    }
+
+    function updateChart(filtered) {
+      const ctx = document.getElementById('overviewChart').getContext('2d');
+      const labels = filtered.map(i => i.title.substring(0, 16) + '...');
+      const reachData = filtered.map(i => Number(i.reach) || 0);
+      const engData = filtered.map(i => (Number(i.likes) || 0) + (Number(i.comments) || 0) + (Number(i.shares) || 0) + (Number(i.saves) || 0));
+
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Jangkauan (Reach)', data: reachData, backgroundColor: '#6366f1', borderRadius: 4 },
+            { label: 'Total Interaksi', data: engData, backgroundColor: '#10b981', borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+          scales: {
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+          }
+        }
       });
     }
 
+    // --- CSV IMPORT & EXPORT ---
+    function handleStandardCSVUpload(e) {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const lines = event.target.result.split(/\r?\n/).filter(l => l.trim() !== '');
+        if (lines.length < 2) return alert('File CSV kosong.');
+
+        const batch = db.batch();
+        let count = 0;
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',');
+          if (cols.length >= 4) {
+            const docRef = db.collection('users').doc(currentUser.uid).collection('contents').doc();
+            batch.set(docRef, {
+              brandId: activeBrandId,
+              title: cols[0] || 'Untitled',
+              platform: (cols[1] || 'TIKTOK').toUpperCase(),
+              format: 'Single Post',
+              pillar: 'Edukasi',
+              status: 'PUBLISHED',
+              hook: '', bodyCopy: '', cta: '', tags: '',
+              scheduledDate: new Date().toISOString().split('T')[0],
+              views: parseInt(cols[2]) || 0,
+              reach: parseInt(cols[3]) || 0,
+              likes: parseInt(cols[4]) || 0,
+              comments: parseInt(cols[5]) || 0,
+              shares: parseInt(cols[6]) || 0,
+              saves: parseInt(cols[7]) || 0,
+              createdAt: new Date().toISOString()
+            });
+            count++;
+          }
+        }
+        await batch.commit();
+        alert(`Berhasil mengimpor ${count} data konten.`);
+      };
+      reader.readAsText(file);
+    }
+
+    function exportToCSV() {
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+      const headers = ['title', 'platform', 'format', 'status', 'views', 'reach', 'likes', 'comments', 'shares', 'saves'];
+      const rows = filtered.map(i => [
+        `"${(i.title || '').replace(/"/g, '""')}"`,
+        i.platform, i.format, i.status,
+        i.views || 0, i.reach || 0, i.likes || 0, i.comments || 0, i.shares || 0, i.saves || 0
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `SocialOS_v2.4.2_${activeBrandId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // --- NAVIGATION TAB SWITCHER ---
     function switchTab(tabId) {
       const tabs = ['diagnostic', 'overview', 'studio', 'research', 'calendar', 'analytics'];
       tabs.forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
         const mobBtn = document.getElementById(`mob-${t}`);
+
         if (t === tabId) {
           if (el) el.classList.remove('hidden');
           if (btn) { btn.classList.add('bg-indigo-600', 'text-white'); btn.classList.remove('text-slate-400', 'hover:bg-slate-900'); }
@@ -713,6 +1367,18 @@
           if (mobBtn) { mobBtn.classList.remove('text-emerald-400'); mobBtn.classList.add('text-slate-400'); }
         }
       });
+
+      const titleMap = {
+        diagnostic: 'Kalkulator & Analisis Akun (IG & TikTok)',
+        overview: 'Executive Dashboard',
+        studio: 'AI Content Studio & Generator',
+        research: 'Riset Tren & Intelligence',
+        calendar: 'Editorial Calendar Kanban',
+        analytics: 'Analytics & Data Import'
+      };
+      if (document.getElementById('page-title')) {
+        document.getElementById('page-title').innerText = titleMap[tabId] || 'Command Center';
+      }
       lucide.createIcons();
     }
 
@@ -725,6 +1391,36 @@
       updateApiStatusUI();
     }
 
+    async function testGeminiConnection() {
+      const key = document.getElementById('input-api-key').value.trim();
+      const statusDiv = document.getElementById('modal-test-status');
+      if (!key) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = 'Harap isi API Key terlebih dahulu.';
+        return;
+      }
+      statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
+      statusDiv.innerText = 'Menguji koneksi ke Google Gemini API...';
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "Tes." }] }] })
+        });
+        if (res.ok) {
+          statusDiv.className = 'p-2 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 block';
+          statusDiv.innerText = 'Koneksi Berhasil! Kunci API aktif.';
+        } else {
+          statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+          statusDiv.innerText = 'Koneksi Gagal. Periksa kembali kunci API Anda.';
+        }
+      } catch (e) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = 'Gagal menghubungi server API.';
+      }
+    }
+
     function updateApiStatusUI() {
       const k = localStorage.getItem('socialos_gemini_key');
       const side = document.getElementById('sidebar-api-status');
@@ -732,16 +1428,10 @@
       else { side.innerText = 'Belum Ada'; side.className = 'font-medium text-amber-400'; }
     }
 
-    function exportToCSV() {
-      const headers = ['title', 'platform', 'views', 'likes', 'comments', 'shares', 'saves'];
-      const rows = contentItems.map(i => [i.title, i.platform, i.views, i.likes, i.comments, i.shares, i.saves]);
-      const csv = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const link = document.createElement('a');
-      link.setAttribute('href', encodeURI(csv));
-      link.setAttribute('download', 'SocialOS_Analytics.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    function renderAll() {
+      renderKanban();
+      renderOverviewAndAnalytics();
+      lucide.createIcons();
     }
 
     window.addEventListener('DOMContentLoaded', () => { initApp(); });
