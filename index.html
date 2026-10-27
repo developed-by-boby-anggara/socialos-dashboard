@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SocialOS — Real Social Media Command Center</title>
+  <title>SocialOS v2.4.0 — Analytics & Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -21,7 +21,6 @@
     ::-webkit-scrollbar-track { background: #080c14; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
-    /* Proteksi safe-area untuk HP */
     .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
   </style>
 </head>
@@ -35,7 +34,7 @@
           S
         </div>
         <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
-        <p class="text-xs text-slate-400">Pusat Manajemen Akun & Konten Terisolasi</p>
+        <p class="text-xs text-slate-400">v2.4.0 — Analytics Engine</p>
       </div>
 
       <div class="space-y-3 pt-2">
@@ -71,7 +70,7 @@
         </div>
         <div>
           <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
-          <p class="text-[9px] text-slate-400 font-mono">ENTERPRISE HUB</p>
+          <p class="text-[9px] text-indigo-400 font-mono">v2.4.0-ALPHA</p>
         </div>
       </div>
       <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
@@ -92,14 +91,14 @@
 
     <!-- Navigation -->
     <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
-      <button onclick="switchTab('overview'); toggleMobileSidebar(false);" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
-        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-        <span>Executive Dashboard</span>
+      <button onclick="switchTab('diagnostic'); toggleMobileSidebar(false);" id="nav-diagnostic" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
+        <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
+        <span>Kalkulator & Analisis Akun</span>
       </button>
 
-      <button onclick="switchTab('accounts'); toggleMobileSidebar(false);" id="nav-accounts" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="link" class="w-4 h-4 text-emerald-400"></i>
-        <span>Koneksi Akun Sosial</span>
+      <button onclick="switchTab('overview'); toggleMobileSidebar(false);" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Executive Dashboard</span>
       </button>
 
       <button onclick="switchTab('studio'); toggleMobileSidebar(false);" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
@@ -155,11 +154,11 @@
         <button onclick="toggleMobileSidebar(true)" class="md:hidden text-slate-300 p-1">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-        <h1 id="page-title" class="font-semibold text-xs md:text-sm text-white truncate max-w-[150px] md:max-w-none">
-          Executive Dashboard
+        <h1 id="page-title" class="font-semibold text-xs md:text-sm text-white truncate max-w-[170px] md:max-w-none">
+          Kalkulator & Analisis Akun (IG & TikTok)
         </h1>
-        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-          <i data-lucide="clock" class="w-3 h-3 mr-1"></i> Asia/Jakarta
+        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+          Realtime Calculator
         </span>
       </div>
 
@@ -172,20 +171,157 @@
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">Ekspor CSV</span>
         </button>
-        <button onclick="clearCurrentBrandData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-2 py-1.5 rounded-lg font-medium transition">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5 sm:hidden"></i>
-          <span class="hidden sm:inline">Bersihkan Data</span>
-        </button>
       </div>
     </header>
 
-    <!-- Workspace Content Body -->
+    <!-- Content Workspace -->
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+
+      <!-- ============================================== -->
+      <!-- TAB KHUSUS: KALKULATOR & ANALISIS AKUN (BARU)   -->
+      <!-- ============================================== -->
+      <section id="tab-diagnostic" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Input Form Performa Konten -->
+          <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl space-y-4">
+            <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-sm text-white">Input Metrik Performa</h3>
+                <p class="text-xs text-slate-400">Hitung rasio interaksi konten secara mandiri & akurat.</p>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                Realtime Evaluator
+              </span>
+            </div>
+
+            <!-- Pilih Platform -->
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Platform Media Sosial</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="setCalcPlatform('INSTAGRAM')" id="btn-calc-ig" class="calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                  <i data-lucide="instagram" class="w-4 h-4"></i>
+                  <span>Instagram</span>
+                </button>
+                <button type="button" onclick="setCalcPlatform('TIKTOK')" id="btn-calc-tt" class="calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                  <i data-lucide="video" class="w-4 h-4"></i>
+                  <span>TikTok</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Detail Postingan -->
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Judul / Topik Postingan</label>
+              <input type="text" id="calc-title" placeholder="Misal: Video tutorial outfit kuliah" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs font-medium text-slate-300 block mb-1">Total Followers Akun</label>
+                <input type="number" id="calc-followers" oninput="calculateRealtimeMetrics()" placeholder="Contoh: 10000" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-slate-300 block mb-1">Tayangan (Views / Reach)</label>
+                <input type="number" id="calc-views" oninput="calculateRealtimeMetrics()" placeholder="Contoh: 5000" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+            </div>
+
+            <!-- Angka Interaksi -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Likes ❤️</label>
+                <input type="number" id="calc-likes" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Comments 💬</label>
+                <input type="number" id="calc-comments" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Shares ↗️</label>
+                <input type="number" id="calc-shares" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Saves 🔖</label>
+                <input type="number" id="calc-saves" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+            </div>
+
+            <button onclick="saveCalculatedDataToFirestore()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span>Simpan Evaluasi ke Database</span>
+            </button>
+          </div>
+
+          <!-- Hasil Diagnostik & Analisis -->
+          <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <h3 class="font-semibold text-sm text-white">Hasil Analisis & Status Kinerja</h3>
+                <span id="diagnostic-status-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+                  Menunggu Input Angka
+                </span>
+              </div>
+
+              <!-- Skor dan Rasio -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-semibold uppercase block">Engagement Rate (Views)</span>
+                  <div id="res-er-views" class="text-2xl font-black text-indigo-400 mt-1">0.00%</div>
+                  <span class="text-[10px] text-slate-500 mt-0.5 block">Interaksi / Views</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-semibold uppercase block">ER by Followers</span>
+                  <div id="res-er-followers" class="text-2xl font-black text-violet-400 mt-1">0.00%</div>
+                  <span class="text-[10px] text-slate-500 mt-0.5 block">Interaksi / Followers</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span id="res-special-ratio-label" class="text-[10px] text-slate-400 font-semibold uppercase block">Save Ratio</span>
+                  <div id="res-special-ratio-val" class="text-2xl font-black text-emerald-400 mt-1">0.00%</div>
+                  <span id="res-special-ratio-desc" class="text-[10px] text-slate-500 mt-0.5 block">Saves / Views</span>
+                </div>
+              </div>
+
+              <!-- Narasi Diagnostik Algoritma -->
+              <div class="bg-[#080c14] p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+                <div>
+                  <span class="font-bold text-white flex items-center space-x-1.5 mb-1">
+                    <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Diagnostik Algoritma:</span>
+                  </span>
+                  <p id="res-diagnostic-explanation" class="text-slate-300 leading-relaxed">
+                    Masukkan jumlah views dan data likes, komentar, share, atau save di sebelah kiri untuk melihat evaluasi konten secara otomatis.
+                  </p>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800/80">
+                  <span class="font-bold text-white flex items-center space-x-1.5 mb-1">
+                    <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+                    <span>Rekomendasi Tindakan:</span>
+                  </span>
+                  <p id="res-diagnostic-recommendation" class="text-slate-400 leading-relaxed">
+                    -
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rumus Transparan -->
+            <div class="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl text-[11px] text-slate-500 font-mono">
+              <span class="text-slate-400 font-semibold block mb-0.5">Rumus yang digunakan:</span>
+              <p id="res-formula-text">Pilih platform untuk melihat rincian formula algoritma.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
 
       <!-- ============================================== -->
       <!-- TAB 1: EXECUTIVE OVERVIEW                      -->
       <!-- ============================================== -->
-      <section id="tab-overview" class="space-y-6">
+      <section id="tab-overview" class="hidden space-y-6">
         <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl">
           <div class="flex items-center space-x-2 text-indigo-400 mb-1.5">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -193,30 +329,26 @@
           </div>
           <h2 class="text-sm md:text-base font-semibold text-white mb-1" id="briefing-title">Status Kinerja Konten</h2>
           <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
-            Belum ada data konten tersimpan. Tambahkan konten melalui Studio atau impor data CSV untuk melihat analitik.
+            Belum ada data konten tersimpan. Tambahkan konten melalui Studio atau gunakan tab Kalkulator untuk evaluasi instan.
           </p>
         </div>
 
-        <!-- Real KPIs -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
             <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Konten</span>
             <div class="text-xl md:text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
             <span class="text-[10px] md:text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Tayang</span>
           </div>
-
           <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
             <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Views</span>
             <div class="text-xl md:text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-views">0</div>
             <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Akumulasi tayangan</span>
           </div>
-
           <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
             <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Interaksi</span>
             <div class="text-xl md:text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
             <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Likes, Saves, Shares</span>
           </div>
-
           <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
             <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Engagement Rate</span>
             <div class="text-xl md:text-2xl font-bold text-emerald-400 mt-1" id="kpi-er">0.00%</div>
@@ -224,103 +356,16 @@
           </div>
         </div>
 
-        <!-- Chart Section -->
         <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xs">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten</h3>
-            <span class="text-[10px] md:text-[11px] text-slate-500 font-mono">Firestore Live</span>
-          </div>
+          <h3 class="font-semibold text-xs text-white uppercase tracking-wider mb-4">Grafik Distribusi Konten</h3>
           <div class="h-56 md:h-64 relative flex items-center justify-center">
-            <div id="chart-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 text-center px-4">
-              <i data-lucide="bar-chart-2" class="w-8 h-8 mb-2 stroke-1"></i>
-              <p class="text-xs">Belum ada data numerik untuk digambarkan.</p>
-            </div>
             <canvas id="overviewChart"></canvas>
           </div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: KONEKSI AKUN SOSIAL                     -->
-      <!-- ============================================== -->
-      <section id="tab-accounts" class="hidden space-y-6">
-        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
-          <div class="border-b border-slate-800 pb-3">
-            <h3 class="font-semibold text-sm text-white">Integrasi Akun Media Sosial Resmi</h3>
-            <p class="text-xs text-slate-400 mt-0.5">
-              Hubungkan akun resmi untuk penarikan data performa riil melalui OAuth API resmi platform.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            <!-- Instagram Connection Box -->
-            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
-                    <span>Instagram Business</span>
-                  </span>
-                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
-                    Belum Terhubung
-                  </span>
-                </div>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Memerlukan akun Instagram Business/Creator yang ditautkan ke Facebook Page.
-                </p>
-              </div>
-              <button onclick="promptConnectAccount('Instagram')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-                Hubungkan via Meta OAuth
-              </button>
-            </div>
-
-            <!-- TikTok Connection Box -->
-            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
-                    <span>TikTok for Business</span>
-                  </span>
-                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
-                    Belum Terhubung
-                  </span>
-                </div>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Memerlukan akses TikTok Login Kit & akun creator/bisnis terdaftar.
-                </p>
-              </div>
-              <button onclick="promptConnectAccount('TikTok')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-                Hubungkan via TikTok OAuth
-              </button>
-            </div>
-
-            <!-- Facebook Connection Box -->
-            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
-                    <i data-lucide="facebook" class="w-4 h-4 text-blue-400"></i>
-                    <span>Facebook Page</span>
-                  </span>
-                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
-                    Belum Terhubung
-                  </span>
-                </div>
-                <p class="text-[11px] text-slate-400 leading-relaxed">
-                  Mengakses metrik jangkauan dan reaksi halaman Facebook publik.
-                </p>
-              </div>
-              <button onclick="promptConnectAccount('Facebook')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-                Hubungkan via Meta OAuth
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 3: AI CONTENT STUDIO                       -->
+      <!-- TAB 2: AI CONTENT STUDIO                       -->
       <!-- ============================================== -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
@@ -331,7 +376,7 @@
 
           <div>
             <label class="text-xs font-medium text-slate-300 block mb-1">Topik Utama atau Masalah Audiens</label>
-            <input type="text" id="studio-topic" placeholder="Misal: Konten kucing lucu & tips rawat bulu" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <input type="text" id="studio-topic" placeholder="Misal: Cara padu padan warna baju hangat" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -365,7 +410,7 @@
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Target Persona</label>
-              <input type="text" id="studio-persona" value="Pecinta Hewan / Umum" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <input type="text" id="studio-persona" value="Wanita Muda / Profesional" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
             </div>
           </div>
 
@@ -375,7 +420,6 @@
           </button>
         </div>
 
-        <!-- Output Editor -->
         <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -385,9 +429,6 @@
                   <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                   <span>Salin Naskah</span>
                 </button>
-                <span id="output-badge" class="hidden text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  Siap Disimpan
-                </span>
               </div>
             </div>
 
@@ -403,7 +444,7 @@
               </div>
 
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah Lengkap / Slide Breakdown / Caption:</label>
+                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah / Slide Breakdown / Caption:</label>
                 <textarea id="out-body" rows="6" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
               </div>
 
@@ -419,13 +460,13 @@
               </div>
 
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">📅 Jadwal Tayang yang Diinginkan</label>
+                <label class="font-semibold text-slate-300 block mb-1">📅 Jadwal Tayang</label>
                 <input type="date" id="out-date" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
               </div>
             </div>
           </div>
 
-          <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end space-x-2">
+          <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end">
             <button onclick="saveToEditorialCalendar()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
               <span>Simpan ke Kalender Firestore</span>
@@ -435,13 +476,13 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 4: RISET TREN & INTELLIGENCE               -->
+      <!-- TAB 3: RISET TREN & INTELLIGENCE               -->
       <!-- ============================================== -->
       <section id="tab-research" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
             <h3 class="font-semibold text-sm text-white">Riset Niche & Tren Pasar Riil</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Analisis pola konsumsi audiens dan perumusan angle konten menggunakan Google Gemini.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Analisis pola konsumsi audiens menggunakan Google Gemini.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -457,7 +498,7 @@
 
           <button onclick="executeWebResearch()" id="btn-research" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="search" class="w-4 h-4"></i>
-            <span>Jalankan Riset Tren Terverifikasi</span>
+            <span>Jalankan Riset Tren</span>
           </button>
         </div>
 
@@ -497,7 +538,7 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 5: EDITORIAL CALENDAR KANBAN               -->
+      <!-- TAB 4: EDITORIAL CALENDAR KANBAN               -->
       <!-- ============================================== -->
       <section id="tab-calendar" class="hidden space-y-4">
         <div class="flex items-center justify-between">
@@ -541,7 +582,7 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 6: ANALYTICS & CSV DATA IMPORT             -->
+      <!-- TAB 5: ANALYTICS & CSV DATA IMPORT             -->
       <!-- ============================================== -->
       <section id="tab-analytics" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -587,7 +628,11 @@
 
   <!-- MOBILE BOTTOM NAVIGATION BAR -->
   <nav class="md:hidden fixed bottom-0 inset-x-0 bg-[#0b0f19] border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around z-30 pb-safe">
-    <button onclick="switchTab('overview')" id="mob-overview" class="flex flex-col items-center justify-center p-1 text-indigo-400">
+    <button onclick="switchTab('diagnostic')" id="mob-diagnostic" class="flex flex-col items-center justify-center p-1 text-emerald-400">
+      <i data-lucide="calculator" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Analisis</span>
+    </button>
+    <button onclick="switchTab('overview')" id="mob-overview" class="flex flex-col items-center justify-center p-1 text-slate-400">
       <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
       <span class="text-[9px] mt-0.5">Overview</span>
     </button>
@@ -595,17 +640,9 @@
       <i data-lucide="sparkles" class="w-4 h-4"></i>
       <span class="text-[9px] mt-0.5">Studio</span>
     </button>
-    <button onclick="switchTab('research')" id="mob-research" class="flex flex-col items-center justify-center p-1 text-slate-400">
-      <i data-lucide="search" class="w-4 h-4"></i>
-      <span class="text-[9px] mt-0.5">Riset</span>
-    </button>
     <button onclick="switchTab('calendar')" id="mob-calendar" class="flex flex-col items-center justify-center p-1 text-slate-400">
       <i data-lucide="calendar" class="w-4 h-4"></i>
       <span class="text-[9px] mt-0.5">Kalender</span>
-    </button>
-    <button onclick="switchTab('analytics')" id="mob-analytics" class="flex flex-col items-center justify-center p-1 text-slate-400">
-      <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-      <span class="text-[9px] mt-0.5">Analitik</span>
     </button>
   </nav>
 
@@ -645,7 +682,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC CLIENT DIRECT ENGINE (RESPONSIVE) -->
+  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.0 -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
@@ -657,13 +694,12 @@
       appId: "1:409499788186:web:63500185b22d83a9ded023"
     };
 
-    let auth = null;
-    let db = null;
-    let currentUser = null;
+    let auth = null, db = null, currentUser = null;
     let activeBrandId = "default";
     let contentItems = [];
     let brandsList = [{ id: "default", name: "Brand Utama (Default)" }];
     let chartInstance = null;
+    let calcActivePlatform = 'INSTAGRAM';
 
     function initApp() {
       if (!firebase.apps.length) {
@@ -677,10 +713,10 @@
           currentUser = user;
           document.getElementById('auth-modal').classList.add('hidden');
           document.getElementById('current-user-email').innerText = user.email;
-          
           loadUserBrands();
           bindFirestoreListeners();
           updateApiStatusUI();
+          setCalcPlatform('INSTAGRAM');
         } else {
           currentUser = null;
           document.getElementById('auth-modal').classList.remove('hidden');
@@ -703,18 +739,153 @@
       }
     }
 
+    // --- ENGINE ANALISIS & KALKULATOR AKUN (REALTIME) ---
+    function setCalcPlatform(plat) {
+      calcActivePlatform = plat;
+      const btnIG = document.getElementById('btn-calc-ig');
+      const btnTT = document.getElementById('btn-calc-tt');
+
+      if (plat === 'INSTAGRAM') {
+        btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        
+        document.getElementById('res-special-ratio-label').innerText = 'Save-to-Reach Ratio';
+        document.getElementById('res-special-ratio-desc').innerText = 'Saves / Views (Sinyal Explore)';
+        document.getElementById('res-formula-text').innerText = 'Instagram ER = ((Likes + Comments + Saves + Shares) / Views) × 100. Save Ratio = (Saves / Views) × 100.';
+      } else {
+        btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-cyan-500 bg-cyan-600/20 text-cyan-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        
+        document.getElementById('res-special-ratio-label').innerText = 'Share / Virality Ratio';
+        document.getElementById('res-special-ratio-desc').innerText = 'Shares / Views (Pemicu FYP)';
+        document.getElementById('res-formula-text').innerText = 'TikTok ER = ((Likes + Comments + Shares) / Views) × 100. Virality Index = (Shares / Views) × 100.';
+      }
+
+      calculateRealtimeMetrics();
+    }
+
+    function calculateRealtimeMetrics() {
+      const followers = parseInt(document.getElementById('calc-followers').value) || 0;
+      const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const likes = parseInt(document.getElementById('calc-likes').value) || 0;
+      const comments = parseInt(document.getElementById('calc-comments').value) || 0;
+      const shares = parseInt(document.getElementById('calc-shares').value) || 0;
+      const saves = parseInt(document.getElementById('calc-saves').value) || 0;
+
+      const totalInteractions = likes + comments + shares + saves;
+
+      // 1. ER by Views
+      const erViews = views > 0 ? ((totalInteractions / views) * 100).toFixed(2) : "0.00";
+      // 2. ER by Followers
+      const erFollowers = followers > 0 ? ((totalInteractions / followers) * 100).toFixed(2) : "0.00";
+      // 3. Rasio Khusus
+      let specialRatio = "0.00";
+      if (calcActivePlatform === 'INSTAGRAM') {
+        specialRatio = views > 0 ? ((saves / views) * 100).toFixed(2) : "0.00";
+      } else {
+        specialRatio = views > 0 ? ((shares / views) * 100).toFixed(2) : "0.00";
+      }
+
+      document.getElementById('res-er-views').innerText = `${erViews}%`;
+      document.getElementById('res-er-followers').innerText = `${erFollowers}%`;
+      document.getElementById('res-special-ratio-val').innerText = `${specialRatio}%`;
+
+      // 4. Evaluasi Diagnostik Otomatis
+      const badge = document.getElementById('diagnostic-status-badge');
+      const expEl = document.getElementById('res-diagnostic-explanation');
+      const recEl = document.getElementById('res-diagnostic-recommendation');
+
+      if (views === 0) {
+        badge.innerText = 'Menunggu Input Angka';
+        badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400';
+        expEl.innerText = 'Masukkan angka tayangan (views) dan interaksi untuk mendapatkan diagnosa algoritma.';
+        recEl.innerText = '-';
+        return;
+      }
+
+      const numER = parseFloat(erViews);
+      const numSpecial = parseFloat(specialRatio);
+
+      if (calcActivePlatform === 'INSTAGRAM') {
+        if (numER >= 6.0 && numSpecial >= 1.5) {
+          badge.innerText = '🔥 Viral Tier (Performa Sangat Tinggi)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+          expEl.innerText = `Konten ini memiliki ER ${numER}% dengan rasio save ${numSpecial}%. Angka ini jauh di atas rata-rata industri Instagram (1.5% - 3.5%). Algoritma Instagram sangat menyukai rasio simpan tinggi untuk didorong ke halaman Explore.`;
+          recEl.innerText = 'Gunakan kembali format dan struktur hook dari konten ini sebagai template konten utama minggu depan!';
+        } else if (numER >= 2.5) {
+          badge.innerText = '🟢 Performa Sehat (Good Engagement)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+          expEl.innerText = `Engagement konten berada di rentang normal yang solid (${numER}%). Interaksi likes dan komentar berjalan baik, namun rasio save masih bisa ditingkatkan.`;
+          recEl.innerText = 'Tambahkan CTA visual di akhir slide atau detik akhir video, contoh: "Simpan postingan ini biar ga lupa!".';
+        } else {
+          badge.innerText = '🔴 Di Bawah Standar (Underperforming)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
+          expEl.innerText = `ER konten (${numER}%) berada di bawah rata-rata. Penonton melihat postingan namun enggan merespons atau meninggalkan jejak interaksi.`;
+          recEl.innerText = 'Evaluasi 3 detik pertama (Hook). Buat judul yang lebih memicu rasa penasaran atau angkat masalah spesifik audiens.';
+        }
+      } else {
+        // TIKTOK
+        if (numER >= 8.0 && numSpecial >= 2.0) {
+          badge.innerText = '🔥 FYP Multiplier (Viral Potential)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300';
+          expEl.innerText = `Rasio interaksi ${numER}% dengan share ratio ${numSpecial}%. Metrik ini adalah sinyal paling kuat bagi algoritma TikTok untuk memperluas distribusi video ke audience pool yang lebih besar di FYP.`;
+          recEl.innerText = 'Segera balas komentar audiens dengan video balasan (reply with video) untuk mempertahankan momentum algoritma.';
+        } else if (numER >= 3.5) {
+          badge.innerText = '🟢 Distribusi Stabil (Steady Performer)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+          expEl.innerText = `Konten ditonton dengan retensi standar (${numER}% interaksi). Rasio share cukup baik namun belum cukup agresif untuk memicu lonjakan viral.`;
+          recEl.innerText = 'Gunakan audio trending yang relevan dan pancing perdebatan santai di kolom caption.';
+        } else {
+          badge.innerText = '🔴 Retensi Rendah (Low Retention)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
+          expEl.innerText = `Hanya ${numER}% penonton yang berinteraksi. Kemungkinan besar penonton melakukan skip video sebelum detik ke-5.`;
+          recEl.innerText = 'Potong intro video. Langsung mulai dari poin inti atau gunakan hook visual bergerak dalam 2 detik pertama.';
+        }
+      }
+    }
+
+    async function saveCalculatedDataToFirestore() {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
+      const title = document.getElementById('calc-title').value.trim() || 'Evaluasi Performa Konten';
+      const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const likes = parseInt(document.getElementById('calc-likes').value) || 0;
+      const comments = parseInt(document.getElementById('calc-comments').value) || 0;
+      const shares = parseInt(document.getElementById('calc-shares').value) || 0;
+      const saves = parseInt(document.getElementById('calc-saves').value) || 0;
+
+      if (views === 0) return alert('Masukkan jumlah views terlebih dahulu sebelum menyimpan.');
+
+      const item = {
+        brandId: activeBrandId,
+        title: title,
+        platform: calcActivePlatform,
+        format: calcActivePlatform === 'TIKTOK' ? 'Reels/Shorts' : 'Carousel',
+        pillar: 'Evaluasi',
+        status: 'PUBLISHED',
+        hook: '',
+        bodyCopy: '',
+        cta: '',
+        tags: '',
+        scheduledDate: new Date().toISOString().split('T')[0],
+        views, reach: views, likes, comments, shares, saves,
+        createdAt: new Date().toISOString()
+      };
+
+      await db.collection('users').doc(currentUser.uid).collection('contents').add(item);
+      alert('Data performa konten berhasil disimpan ke database Firestore!');
+    }
+
+    // --- AUTH & DATABASE CORE ---
     async function handleEmailLogin() {
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value;
       const errBox = document.getElementById('auth-error-msg');
       errBox.classList.add('hidden');
-
       if (!email || !pass) {
         errBox.textContent = 'Harap isi email dan kata sandi.';
         errBox.classList.remove('hidden');
         return;
       }
-
       try {
         await auth.signInWithEmailAndPassword(email, pass);
       } catch (err) {
@@ -728,13 +899,11 @@
       const pass = document.getElementById('auth-password').value;
       const errBox = document.getElementById('auth-error-msg');
       errBox.classList.add('hidden');
-
       if (!email || !pass) {
         errBox.textContent = 'Harap isi email dan kata sandi.';
         errBox.classList.remove('hidden');
         return;
       }
-
       try {
         await auth.createUserWithEmailAndPassword(email, pass);
       } catch (err) {
@@ -744,9 +913,7 @@
     }
 
     function handleLogout() {
-      if (confirm('Keluar dari sesi akun saat ini?')) {
-        auth.signOut();
-      }
+      if (confirm('Keluar dari sesi akun saat ini?')) auth.signOut();
     }
 
     function loadUserBrands() {
@@ -772,10 +939,7 @@
       if (!currentUser) return;
       const name = prompt('Masukkan nama Brand baru:');
       if (name && name.trim()) {
-        const brandDoc = {
-          name: name.trim(),
-          createdAt: new Date().toISOString()
-        };
+        const brandDoc = { name: name.trim(), createdAt: new Date().toISOString() };
         const ref = await db.collection('users').doc(currentUser.uid).collection('brands').add(brandDoc);
         activeBrandId = ref.id;
         renderAll();
@@ -808,7 +972,7 @@
     }
 
     function switchTab(tabId) {
-      const tabs = ['overview', 'accounts', 'studio', 'research', 'calendar', 'analytics'];
+      const tabs = ['diagnostic', 'overview', 'accounts', 'studio', 'research', 'calendar', 'analytics'];
       tabs.forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
@@ -821,7 +985,7 @@
             btn.classList.remove('text-slate-400', 'hover:bg-slate-900');
           }
           if (mobBtn) {
-            mobBtn.classList.add('text-indigo-400');
+            mobBtn.classList.add('text-emerald-400');
             mobBtn.classList.remove('text-slate-400');
           }
         } else {
@@ -831,18 +995,27 @@
             btn.classList.add('text-slate-400', 'hover:bg-slate-900');
           }
           if (mobBtn) {
-            mobBtn.classList.remove('text-indigo-400');
+            mobBtn.classList.remove('text-emerald-400');
             mobBtn.classList.add('text-slate-400');
           }
         }
       });
+
+      const titleMap = {
+        diagnostic: 'Kalkulator & Analisis Akun (IG & TikTok)',
+        overview: 'Executive Dashboard',
+        studio: 'AI Content Studio & Generator',
+        research: 'Riset Tren & Intelligence',
+        calendar: 'Editorial Calendar Kanban',
+        analytics: 'Analytics & Data Import'
+      };
+      if (document.getElementById('page-title')) {
+        document.getElementById('page-title').innerText = titleMap[tabId] || 'Command Center';
+      }
       lucide.createIcons();
     }
 
-    function promptConnectAccount(platform) {
-      alert(`Untuk menghubungkan ${platform} secara resmi:\n1. Buka Meta Developer Dashboard / TikTok Developer.\n2. Buat App ID resmi dengan izin (scope) Insights.\n3. Masukkan Access Token akun Anda.`);
-    }
-
+    // --- GEMINI API ENGINE ---
     function openApiModal() {
       document.getElementById('input-api-key').value = localStorage.getItem('socialos_gemini_key') || '';
       document.getElementById('modal-test-status').className = 'hidden';
@@ -856,13 +1029,11 @@
     async function testGeminiConnection() {
       const key = document.getElementById('input-api-key').value.trim();
       const statusDiv = document.getElementById('modal-test-status');
-
       if (!key) {
         statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
         statusDiv.innerText = 'Harap isi API Key terlebih dahulu.';
         return;
       }
-
       statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
       statusDiv.innerText = 'Menguji koneksi ke Google Gemini API...';
 
@@ -979,7 +1150,6 @@ Kembalikan format JSON murni TANPA tanda kutip markdown persis:
 
     async function saveToEditorialCalendar() {
       if (!currentUser || !latestGeneratedObj) return;
-
       const plannedDate = document.getElementById('out-date').value || new Date().toISOString().split('T')[0];
       const newItem = {
         brandId: activeBrandId,
@@ -996,7 +1166,6 @@ Kembalikan format JSON murni TANPA tanda kutip markdown persis:
         views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0,
         createdAt: new Date().toISOString()
       };
-
       await db.collection('users').doc(currentUser.uid).collection('contents').add(newItem);
       switchTab('calendar');
     }
@@ -1053,7 +1222,7 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Tren Terverifikasi</span>`;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Tren</span>`;
       lucide.createIcons();
     }
 
@@ -1064,9 +1233,7 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
 
     async function updateItemStatus(docId, newStatus) {
       if (!currentUser) return;
-      await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).update({
-        status: newStatus
-      });
+      await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).update({ status: newStatus });
     }
 
     async function deleteItem(docId) {
@@ -1086,7 +1253,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
 
         list.forEach(item => {
           const card = createSafeElement('div', 'bg-[#080c14] p-3 rounded-xl border border-slate-800 shadow-xs space-y-2');
-          
           const topRow = createSafeElement('div', 'flex items-center justify-between');
           const badge = createSafeElement('span', 'text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20', item.platform);
           const fmt = createSafeElement('span', 'text-[10px] text-slate-500', item.format);
@@ -1094,7 +1260,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
           topRow.appendChild(fmt);
 
           const title = createSafeElement('h4', 'font-medium text-xs text-white leading-snug', item.title);
-
           const bottomRow = createSafeElement('div', 'flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-400');
           const dateSpan = createSafeElement('span', '', item.scheduledDate || '-');
 
@@ -1141,7 +1306,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
         if (item.status === 'PUBLISHED') publishedCount++;
 
         const er = item.reach > 0 ? ((eng / item.reach) * 100).toFixed(2) + '%' : '-';
-
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-900/50';
 
@@ -1170,15 +1334,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
 
     function updateChart(filtered) {
       const ctx = document.getElementById('overviewChart').getContext('2d');
-      const emptyBox = document.getElementById('chart-empty-state');
-
-      if (!filtered || filtered.length === 0) {
-        emptyBox.classList.remove('hidden');
-        if (chartInstance) chartInstance.destroy();
-        return;
-      }
-
-      emptyBox.classList.add('hidden');
       const labels = filtered.map(i => i.title.substring(0, 16) + '...');
       const reachData = filtered.map(i => Number(i.reach) || 0);
       const engData = filtered.map(i => (Number(i.likes) || 0) + (Number(i.comments) || 0) + (Number(i.shares) || 0) + (Number(i.saves) || 0));
@@ -1205,43 +1360,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
       });
     }
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let entry = '';
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        const next = text[i + 1];
-
-        if (c === '"') {
-          if (inQuotes && next === '"') {
-            entry += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (c === ',' && !inQuotes) {
-          row.push(entry.trim());
-          entry = '';
-        } else if ((c === '\r' || c === '\n') && !inQuotes) {
-          if (c === '\r' && next === '\n') i++;
-          row.push(entry.trim());
-          if (row.some(cell => cell !== '')) rows.push(row);
-          row = [];
-          entry = '';
-        } else {
-          entry += c;
-        }
-      }
-      if (entry !== '' || row.length > 0) {
-        row.push(entry.trim());
-        if (row.some(cell => cell !== '')) rows.push(row);
-      }
-      return rows;
-    }
-
     function handleStandardCSVUpload(e) {
       if (!currentUser) return alert('Silakan login terlebih dahulu.');
       const file = e.target.files[0];
@@ -1249,19 +1367,18 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
 
       const reader = new FileReader();
       reader.onload = async (event) => {
-        const parsed = parseCSV(event.target.result);
-        if (parsed.length < 2) return alert('File CSV kosong atau format header tidak sesuai.');
+        const lines = event.target.result.split(/\r?\n/).filter(l => l.trim() !== '');
+        if (lines.length < 2) return alert('File CSV kosong.');
 
         const batch = db.batch();
         let count = 0;
-
-        for (let i = 1; i < parsed.length; i++) {
-          const cols = parsed[i];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',');
           if (cols.length >= 4) {
             const docRef = db.collection('users').doc(currentUser.uid).collection('contents').doc();
             batch.set(docRef, {
               brandId: activeBrandId,
-              title: cols[0] || 'Untitled Content',
+              title: cols[0] || 'Untitled',
               platform: (cols[1] || 'TIKTOK').toUpperCase(),
               format: 'Single Post',
               pillar: 'Edukasi',
@@ -1279,7 +1396,6 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
             count++;
           }
         }
-
         await batch.commit();
         alert(`Berhasil mengimpor ${count} data konten.`);
       };
@@ -1298,23 +1414,10 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
       const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
       const link = document.createElement('a');
       link.setAttribute('href', encodeURI(csvContent));
-      link.setAttribute('download', `SocialOS_Brand_${activeBrandId}_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `SocialOS_v2.4.0_${activeBrandId}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }
-
-    async function clearCurrentBrandData() {
-      if (!currentUser) return;
-      if (confirm('Hapus seluruh konten untuk brand aktif saat ini?')) {
-        const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
-        const batch = db.batch();
-        filtered.forEach(it => {
-          const ref = db.collection('users').doc(currentUser.uid).collection('contents').doc(it.id);
-          batch.delete(ref);
-        });
-        await batch.commit();
-      }
     }
 
     function renderAll() {
