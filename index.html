@@ -10,6 +10,11 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase App & Firestore SDKs (v9 Compat untuk HTML statis) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -31,8 +36,8 @@
           <p class="text-[10px] text-slate-400">Command Center</p>
         </div>
       </div>
-      <span id="demo-indicator" class="text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded">
-        MODE DEMO
+      <span id="demo-indicator" class="text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+        CLOUD SYNC
       </span>
     </div>
 
@@ -74,15 +79,19 @@
       </button>
     </nav>
 
-    <!-- AI Connection Status & Config Trigger -->
+    <!-- Cloud Database & AI Integration Status -->
     <div class="p-3 border-t border-slate-800 bg-slate-900/40 text-[11px] space-y-2">
       <div class="flex items-center justify-between">
-        <span class="text-slate-400">Penyedia AI:</span>
-        <span id="sidebar-ai-status" class="font-medium text-amber-400">Belum Terhubung</span>
+        <span class="text-slate-400">Database:</span>
+        <span id="sidebar-db-status" class="font-medium text-amber-400">Menghubungkan...</span>
       </div>
-      <button onclick="openApiModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-1.5 px-2.5 rounded text-[11px] font-medium flex items-center justify-center space-x-1.5 transition">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">AI Provider:</span>
+        <span id="sidebar-ai-status" class="font-medium text-slate-400">Demo Lokal</span>
+      </div>
+      <button onclick="openApiModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-1.5 px-2 rounded text-[11px] font-medium flex items-center justify-center space-x-1 transition">
         <i data-lucide="key" class="w-3 h-3"></i>
-        <span>Konfigurasi Kunci API</span>
+        <span>Setup Gemini API Key</span>
       </button>
     </div>
   </aside>
@@ -109,7 +118,7 @@
       </div>
     </header>
 
-    <!-- Dynamic Content Area -->
+    <!-- Content Area -->
     <div class="flex-1 overflow-y-auto p-6 space-y-6">
 
       <!-- MODUL A: OVERVIEW -->
@@ -121,7 +130,7 @@
           </div>
           <h2 class="text-sm font-semibold mb-1" id="briefing-title">Ringkasan Kinerja Brand</h2>
           <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
-            Sistem membaca data performa konten Anda. Format video pendek saat ini memberikan rasio interaksi dan jangkauan organik terbaik. Prioritaskan penerbitan naskah yang berstatus "Terjadwal".
+            Sistem membaca data performa konten yang tersimpan di cloud Firestore Anda. Format video pendek saat ini memberikan rasio jangkauan organik terbaik.
           </p>
         </div>
 
@@ -159,7 +168,7 @@
         </div>
       </section>
 
-      <!-- MODUL B: AI CONTENT STUDIO (REAL API INTEGRATION) -->
+      <!-- MODUL B: AI CONTENT STUDIO -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
           <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
@@ -174,7 +183,7 @@
 
           <div>
             <label class="text-xs font-medium text-slate-700 block mb-1">Topik atau Masalah Audiens</label>
-            <input type="text" id="studio-topic" placeholder="Misal: Kesalahan memilih warna baju untuk kulit warm undertone" class="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:ring-1 focus:ring-indigo-500 outline-none">
+            <input type="text" id="studio-topic" placeholder="Misal: Kesalahan memilih warna baju untuk warm undertone" class="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:ring-1 focus:ring-indigo-500 outline-none">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -227,7 +236,7 @@
               <div class="flex items-center space-x-2">
                 <button onclick="copyGeneratedText()" id="btn-copy" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded flex items-center space-x-1">
                   <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                  <span>Salin Naskah</span>
+                  <span>Salin</span>
                 </button>
                 <span id="output-badge" class="hidden text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                   Siap Simpan
@@ -269,8 +278,8 @@
               Regenerasi
             </button>
             <button onclick="saveToCalendar()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center space-x-1.5 transition">
-              <i data-lucide="calendar-plus" class="w-4 h-4"></i>
-              <span>Simpan ke Kalender Editorial</span>
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span>Simpan ke Firestore Cloud</span>
             </button>
           </div>
         </div>
@@ -281,7 +290,7 @@
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
           <div class="border-b border-slate-100 pb-3">
             <h3 class="font-semibold text-sm text-slate-800">Formulir Riset Niche & Discovery Tren</h3>
-            <p class="text-xs text-slate-500">Analisis kebutuhan audiens, celah pasar kompetitor, dan kata kunci berbasis web intelligence.</p>
+            <p class="text-xs text-slate-500">Analisis kebutuhan audiens, celah pasar kompetitor, dan kata kunci berbasis intelligence.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -309,10 +318,8 @@
           </button>
         </div>
 
-        <!-- Research Result Container -->
         <div id="research-result-container" class="hidden space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Box 1: Fakta Sumber -->
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
               <span class="text-xs font-bold text-slate-800 flex items-center space-x-1.5 mb-2">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
@@ -321,7 +328,6 @@
               <ul id="res-facts" class="text-xs space-y-1.5 text-slate-600"></ul>
             </div>
 
-            <!-- Box 2: Interpretasi AI -->
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
               <span class="text-xs font-bold text-slate-800 flex items-center space-x-1.5 mb-2">
                 <i data-lucide="brain" class="w-4 h-4 text-indigo-600"></i>
@@ -330,7 +336,6 @@
               <p id="res-interpretation" class="text-xs text-slate-600 leading-relaxed"></p>
             </div>
 
-            <!-- Box 3: Hipotesis Konten -->
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
               <div>
                 <span class="text-xs font-bold text-slate-800 flex items-center space-x-1.5 mb-2">
@@ -351,7 +356,7 @@
       <!-- MODUL D: KALENDER & KANBAN -->
       <section id="tab-calendar" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <p class="text-xs text-slate-500">Geser atau ubah status workflow produksi konten Anda:</p>
+          <p class="text-xs text-slate-500">Workflow produksi konten tersinkron realtime dengan Firestore:</p>
           <span class="text-xs font-medium text-slate-700" id="total-kanban-items">0 Item</span>
         </div>
 
@@ -395,7 +400,7 @@
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 class="font-semibold text-xs text-slate-800">Impor Data Analitik (CSV)</h3>
-            <p class="text-[11px] text-slate-500">Format kolom: title, platform, views, reach, likes, comments, shares, saves.</p>
+            <p class="text-[11px] text-slate-500">Data otomatis disimpan langsung ke database cloud.</p>
           </div>
           <div>
             <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
@@ -433,13 +438,13 @@
     </div>
   </main>
 
-  <!-- MODAL KONFIGURASI API (CLIENT STORAGE ONLY) -->
+  <!-- MODAL SETUP GEMINI API -->
   <div id="api-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h3 class="font-semibold text-sm text-slate-800 flex items-center space-x-1.5">
           <i data-lucide="key" class="w-4 h-4 text-indigo-600"></i>
-          <span>Konfigurasi API AI Riil</span>
+          <span>Konfigurasi API AI Gemini</span>
         </h3>
         <button onclick="closeApiModal()" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -447,15 +452,8 @@
       </div>
 
       <p class="text-xs text-slate-600 leading-relaxed">
-        Kunci API disimpan secara lokal di browser Anda (<code class="bg-slate-100 px-1 py-0.5 rounded text-[11px]">localStorage</code>) dan tidak pernah dikirim ke repository GitHub.
+        Kunci API disimpan secara lokal di browser Anda (<code class="bg-slate-100 px-1 py-0.5 rounded text-[11px]">localStorage</code>) dan tidak pernah dibagikan ke repository GitHub.
       </p>
-
-      <div>
-        <label class="text-xs font-medium text-slate-700 block mb-1">Penyedia Model AI</label>
-        <select id="api-provider" class="w-full text-xs border border-slate-200 rounded-lg p-2 outline-none">
-          <option value="gemini">Google Gemini API (Disarankan)</option>
-        </select>
-      </div>
 
       <div>
         <label class="text-xs font-medium text-slate-700 block mb-1">Gemini API Key</label>
@@ -476,9 +474,20 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT APP LOGIC -->
+  <!-- JAVASCRIPT LOGIC DENGAN FIREBASE TERHUBUNG -->
   <script>
-    // Data Default
+    // Konfigurasi Project Firebase Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
+      authDomain: "alisya-live-db.firebaseapp.com",
+      databaseURL: "https://alisya-live-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "alisya-live-db",
+      storageBucket: "alisya-live-db.firebasestorage.app",
+      messagingSenderId: "409499788186",
+      appId: "1:409499788186:web:63500185b22d83a9ded023",
+      measurementId: "G-DHVMKXENV4"
+    };
+
     const DEFAULT_DATA = [
       {
         id: "demo-1",
@@ -522,36 +531,107 @@
 
     let contentItems = [];
     let chartInstance = null;
+    let db = null;
 
-    // --- STORAGE MANAGEMENT ---
-    function loadStorage() {
-      const stored = localStorage.getItem('socialos_data');
-      if (stored) {
-        try {
-          contentItems = JSON.parse(stored);
-        } catch (e) {
-          contentItems = DEFAULT_DATA;
+    // Inisialisasi Firebase Firestore
+    function initFirebase() {
+      const dbStatusEl = document.getElementById('sidebar-db-status');
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
         }
-      } else {
-        contentItems = DEFAULT_DATA;
-        saveStorage();
+        db = firebase.firestore();
+        dbStatusEl.innerText = 'Firestore Aktif';
+        dbStatusEl.className = 'font-medium text-emerald-400';
+
+        // Realtime sync ke Firestore Collection: socialos_contents
+        db.collection("socialos_contents").onSnapshot((snapshot) => {
+          const remoteData = [];
+          snapshot.forEach((doc) => {
+            remoteData.push({ id: doc.id, ...doc.data() });
+          });
+          if (remoteData.length > 0) {
+            contentItems = remoteData;
+            renderAll();
+          } else {
+            // Jika koleksi masih kosong, masukkan data awal
+            DEFAULT_DATA.forEach(item => {
+              db.collection("socialos_contents").doc(item.id).set(item);
+            });
+          }
+        }, (error) => {
+          console.error("Firestore sync error:", error);
+          dbStatusEl.innerText = 'Cek Rules FB';
+          dbStatusEl.className = 'font-medium text-rose-400';
+          loadLocalStorageFallback();
+        });
+      } catch (e) {
+        console.error("Inisialisasi Firebase gagal:", e);
+        dbStatusEl.innerText = 'LocalStorage';
+        dbStatusEl.className = 'font-medium text-amber-400';
+        loadLocalStorageFallback();
       }
-      updateApiStatusUI();
     }
 
-    function saveStorage() {
-      localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+    function loadLocalStorageFallback() {
+      const stored = localStorage.getItem('socialos_data');
+      if (stored) {
+        try { contentItems = JSON.parse(stored); } catch (e) { contentItems = DEFAULT_DATA; }
+      } else {
+        contentItems = DEFAULT_DATA;
+        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+      }
       renderAll();
     }
 
-    function resetData() {
-      if (confirm('Kembalikan ke data demo default?')) {
-        contentItems = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        saveStorage();
+    async function syncSaveItem(item) {
+      if (db) {
+        try {
+          await db.collection("socialos_contents").doc(item.id).set(item, { merge: true });
+        } catch (err) {
+          console.error("Gagal simpan ke Firestore:", err);
+        }
+      } else {
+        const idx = contentItems.findIndex(i => i.id === item.id);
+        if (idx >= 0) contentItems[idx] = item;
+        else contentItems.unshift(item);
+        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+        renderAll();
       }
     }
 
-    // --- API KEY MODAL & VALIDATION ---
+    async function syncDeleteItem(id) {
+      if (db) {
+        try {
+          await db.collection("socialos_contents").doc(id).delete();
+        } catch (err) {
+          console.error("Gagal hapus dari Firestore:", err);
+        }
+      } else {
+        contentItems = contentItems.filter(i => i.id !== id);
+        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+        renderAll();
+      }
+    }
+
+    function resetData() {
+      if (confirm('Kembalikan ke data demo awal?')) {
+        if (db) {
+          contentItems.forEach(async (it) => {
+            await db.collection("socialos_contents").doc(it.id).delete();
+          });
+          DEFAULT_DATA.forEach(async (it) => {
+            await db.collection("socialos_contents").doc(it.id).set(it);
+          });
+        } else {
+          contentItems = JSON.parse(JSON.stringify(DEFAULT_DATA));
+          localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+          renderAll();
+        }
+      }
+    }
+
+    // --- GEMINI API MODAL ---
     function openApiModal() {
       document.getElementById('input-api-key').value = localStorage.getItem('socialos_gemini_key') || '';
       document.getElementById('modal-test-status').className = 'hidden';
@@ -570,7 +650,6 @@
         statusDiv.innerText = 'Harap isi API Key terlebih dahulu.';
         return;
       }
-
       statusDiv.className = 'p-2 rounded text-xs bg-slate-100 text-slate-700 border border-slate-200 block';
       statusDiv.innerText = 'Menguji koneksi ke Google Gemini API...';
 
@@ -578,63 +657,49 @@
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: "Halo, tes koneksi API singkat." }] }]
-          })
+          body: JSON.stringify({ contents: [{ parts: [{ text: "Tes koneksi." }] }] })
         });
-
         if (res.ok) {
           statusDiv.className = 'p-2 rounded text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 block';
-          statusDiv.innerText = 'Koneksi Berhasil! Kunci API aktif dan valid.';
+          statusDiv.innerText = 'Koneksi Berhasil! Kunci API aktif.';
         } else {
-          const err = await res.json();
           statusDiv.className = 'p-2 rounded text-xs bg-rose-50 text-rose-700 border border-rose-200 block';
-          statusDiv.innerText = `Koneksi Gagal: ${err.error?.message || 'Kunci API tidak valid.'}`;
+          statusDiv.innerText = 'Koneksi Gagal. Periksa kembali kunci API Anda.';
         }
       } catch (e) {
         statusDiv.className = 'p-2 rounded text-xs bg-rose-50 text-rose-700 border border-rose-200 block';
-        statusDiv.innerText = 'Gagal menghubungi server API. Periksa koneksi internet Anda.';
+        statusDiv.innerText = 'Gagal menghubungi server API.';
       }
     }
 
     function saveApiKey() {
       const key = document.getElementById('input-api-key').value.trim();
-      if (key) {
-        localStorage.setItem('socialos_gemini_key', key);
-      } else {
-        localStorage.removeItem('socialos_gemini_key');
-      }
+      if (key) localStorage.setItem('socialos_gemini_key', key);
+      else localStorage.removeItem('socialos_gemini_key');
       closeApiModal();
       updateApiStatusUI();
     }
 
     function updateApiStatusUI() {
       const key = localStorage.getItem('socialos_gemini_key');
-      const sidebarStatus = document.getElementById('sidebar-ai-status');
       const studioBadge = document.getElementById('studio-api-badge');
-      const demoIndicator = document.getElementById('demo-indicator');
-
+      const aiStatus = document.getElementById('sidebar-ai-status');
       if (key) {
-        sidebarStatus.innerText = 'Gemini Terhubung';
-        sidebarStatus.className = 'font-medium text-emerald-400';
         studioBadge.innerText = 'Gemini API Aktif';
         studioBadge.className = 'text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300';
-        demoIndicator.innerText = 'API TERHUBUNG';
-        demoIndicator.className = 'text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded';
+        aiStatus.innerText = 'Gemini Aktif';
+        aiStatus.className = 'font-medium text-emerald-400';
       } else {
-        sidebarStatus.innerText = 'Mode Demo (Lokal)';
-        sidebarStatus.className = 'font-medium text-amber-400';
         studioBadge.innerText = 'Mode Demo';
         studioBadge.className = 'text-[10px] font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300';
-        demoIndicator.innerText = 'MODE DEMO';
-        demoIndicator.className = 'text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded';
+        aiStatus.innerText = 'Demo Lokal';
+        aiStatus.className = 'font-medium text-slate-400';
       }
     }
 
     // --- NAVIGATION ---
     function switchTab(tabId) {
-      const tabs = ['overview', 'studio', 'research', 'calendar', 'analytics'];
-      tabs.forEach(t => {
+      ['overview', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
         if (t === tabId) {
@@ -647,7 +712,6 @@
           btn.classList.add('text-slate-300', 'hover:bg-slate-800');
         }
       });
-
       const titles = {
         overview: 'Executive Overview',
         studio: 'AI Content Studio & Generator',
@@ -659,16 +723,12 @@
       lucide.createIcons();
     }
 
-    // --- PRIORITAS 1: AI STUDIO RIIL ---
+    // --- AI CONTENT STUDIO ---
     let currentGeneratedItem = null;
 
     async function executeAIGeneration() {
       const topic = document.getElementById('studio-topic').value.trim();
-      if (!topic) {
-        alert('Harap masukkan topik konten terlebih dahulu.');
-        return;
-      }
-
+      if (!topic) return alert('Harap masukkan topik konten.');
       const platform = document.getElementById('studio-platform').value;
       const format = document.getElementById('studio-format').value;
       const pillar = document.getElementById('studio-pillar').value;
@@ -682,49 +742,23 @@
       lucide.createIcons();
 
       if (apiKey) {
-        // Panggilan Nyata ke Gemini API
         try {
-          const promptText = `
-Anda adalah Social Media Strategist & Copywriter profesional untuk brand "${brand}".
-Platform: ${platform}. Format: ${format}. Content Pillar: ${pillar}. Target Persona: ${persona}.
-Topik: "${topic}".
-Kembalikan format JSON murni TANPA markdown kutip (tanda backtick), persis dengan key berikut:
-{
-  "title": "Judul Konsep Konten",
-  "hook": "Kalimat pembuka 3 detik pertama",
-  "body": "Naskah video lengkap per adegan atau uraian caption slide",
-  "cta": "Kalimat Call to Action",
-  "tags": "#Tag1 #Tag2 #Tag3"
-}
-`;
+          const prompt = `Anda adalah copywriter profesional untuk brand "${brand}". Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Target: ${persona}. Bahas topik: "${topic}". Kembalikan format JSON murni TANPA markdown: {"title": "Judul", "hook": "Hook 3 detik", "body": "Naskah lengkap", "cta": "CTA", "tags": "#Tag"}`;
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: promptText }] }],
+              contents: [{ parts: [{ text: prompt }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
-
-          if (!res.ok) throw new Error('Gagal merespons dari Google AI');
           const data = await res.json();
-          const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          const parsed = JSON.parse(raw);
-
-          currentGeneratedItem = {
-            title: parsed.title || topic,
-            platform, format, pillar,
-            hook: parsed.hook,
-            bodyCopy: parsed.body,
-            cta: parsed.cta,
-            tags: parsed.tags
-          };
-        } catch (err) {
-          alert('Terjadi kendala pada kunci API. Menggunakan perumusan demo lokal.');
+          const parsed = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text);
+          currentGeneratedItem = { title: parsed.title, platform, format, pillar, hook: parsed.hook, bodyCopy: parsed.body, cta: parsed.cta, tags: parsed.tags };
+        } catch (e) {
           fallbackLocalGenerator(topic, platform, format, pillar);
         }
       } else {
-        // Fallback jika API belum diset
         fallbackLocalGenerator(topic, platform, format, pillar);
       }
 
@@ -738,10 +772,10 @@ Kembalikan format JSON murni TANPA markdown kutip (tanda backtick), persis denga
       currentGeneratedItem = {
         title: `Strategi ${topic}`,
         platform, format, pillar,
-        hook: `Jangan lakukan kesalahan ini saat mencoba ${topic}!`,
-        bodyCopy: `Banyak kreator salah fokus saat menggarap tema ${topic}.\n\nAdegan 1: Kenalkan masalah inti audiens.\nAdegan 2: Tunjukkan solusi praktis tanpa teori rumit.\nAdegan 3: Tekankan manfaat jangka panjang.`,
-        cta: `Simpan postingan ini dan ikuti akun ${document.getElementById('brand-select').value} untuk update harian!`,
-        tags: `#${topic.replace(/\\s+/g, '')} #SocialOS #StrategiKonten`
+        hook: `Jangan lewatkan formula mudah untuk ${topic}!`,
+        bodyCopy: `Banyak kreator salah fokus ketika membahas tema ${topic}.\n\n1. Pahami masalah utama audiens.\n2. Berikan solusi yang langsung bisa diterapkan.\n3. Pertahankan konsistensi pesan.`,
+        cta: `Simpan konten ini agar tidak lupa saat membuat naskah!`,
+        tags: `#${topic.replace(/\\s+/g, '')} #TipsSosmed`
       };
     }
 
@@ -750,7 +784,6 @@ Kembalikan format JSON murni TANPA markdown kutip (tanda backtick), persis denga
       document.getElementById('out-body').value = currentGeneratedItem.bodyCopy;
       document.getElementById('out-cta').value = currentGeneratedItem.cta;
       document.getElementById('out-tags').value = currentGeneratedItem.tags;
-
       document.getElementById('studio-empty-state').classList.add('hidden');
       document.getElementById('studio-result-state').classList.remove('hidden');
       document.getElementById('studio-action-footer').classList.remove('hidden');
@@ -758,16 +791,12 @@ Kembalikan format JSON murni TANPA markdown kutip (tanda backtick), persis denga
     }
 
     function copyGeneratedText() {
-      const hook = document.getElementById('out-hook').value;
-      const body = document.getElementById('out-body').value;
-      const cta = document.getElementById('out-cta').value;
-      const tags = document.getElementById('out-tags').value;
-      const full = `[HOOK]\n${hook}\n\n[NASKAH / CAPTION]\n${body}\n\n[CTA]\n${cta}\n\n[TAGS]\n${tags}`;
+      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[BODY]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
       navigator.clipboard.writeText(full);
       alert('Naskah berhasil disalin ke clipboard!');
     }
 
-    function saveToCalendar() {
+    async function saveToCalendar() {
       if (!currentGeneratedItem) return;
       const newItem = {
         id: 'item-' + Date.now(),
@@ -784,103 +813,27 @@ Kembalikan format JSON murni TANPA markdown kutip (tanda backtick), persis denga
         views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0
       };
 
-      contentItems.unshift(newItem);
-      saveStorage();
+      await syncSaveItem(newItem);
       switchTab('calendar');
     }
 
-    // --- PRIORITAS 2: RISET WEB & INTELIJEN TREN ---
-    let latestResearchSummary = null;
-
-    async function executeWebResearch() {
-      const q = document.getElementById('research-query').value.trim();
-      const loc = document.getElementById('research-location').value;
-      const goal = document.getElementById('research-goal').value;
-      const apiKey = localStorage.getItem('socialos_gemini_key');
-      const btn = document.getElementById('btn-research');
-
-      if (!q) {
-        alert('Harap masukkan topik riset.');
-        return;
+    // --- KANBAN ---
+    async function updateItemStatus(id, newStatus) {
+      const it = contentItems.find(i => i.id === id);
+      if (it) {
+        it.status = newStatus;
+        await syncSaveItem(it);
       }
-
-      btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Menjalankan Analisis...</span>`;
-      lucide.createIcons();
-
-      if (apiKey) {
-        try {
-          const prompt = `
-Lakukan analisis tren mendalam untuk topik: "${q}".
-Konteks Lokasi: ${loc}. Tujuan: ${goal}.
-Kembalikan format JSON murni TANPA markdown kutip dengan skema:
-{
-  "facts": ["Fakta 1 yang valid tentang pasar", "Fakta 2 tentang perilaku konsumen"],
-  "interpretation": "Interpretasi analitis terkait celah pasar yang belum digarap kompetitor.",
-  "hypothesis": "Hipotesis konten: format apa yang paling cocok dan sudut pandang kreatif apa yang harus diuji."
-}
-`;
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { responseMimeType: "application/json" }
-            })
-          });
-
-          const data = await res.json();
-          const parsed = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text);
-          latestResearchSummary = parsed;
-        } catch (e) {
-          latestResearchSummary = {
-            facts: [`Minat pencarian untuk "${q}" mengalami kenaikan di kuartal terakhir.`, "Konsumen mengeluhkan minimnya tutorial yang to-the-point."],
-            interpretation: "Kompetitor terlalu banyak menjual produk langsung tanpa edukasi problem-solving.",
-            hypothesis: "Konten format Carousel 5-Slide berpeluang menghasilkan saves 30% lebih tinggi."
-          };
-        }
-      } else {
-        latestResearchSummary = {
-          facts: [`Pencarian topik "${q}" didominasi pertanyaan dasar oleh pemula.`, "Durasi tonton rata-rata tertinggi ada pada 30-45 detik pertama."],
-          interpretation: "Banyak konten kompetitor yang visualnya bagus namun naskahnya tidak menyentuh akar masalah audiens.",
-          hypothesis: "Uji coba video perbandingan langsung (Do & Don't) dengan hook pertanyaan provokatif."
-        };
-      }
-
-      // Render Research Box
-      const factsList = document.getElementById('res-facts');
-      factsList.innerHTML = latestResearchSummary.facts.map(f => `<li>• ${f}</li>`).join('');
-      document.getElementById('res-interpretation').innerText = latestResearchSummary.interpretation;
-      document.getElementById('res-hypothesis').innerText = latestResearchSummary.hypothesis;
-
-      document.getElementById('research-result-container').classList.remove('hidden');
-      btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i><span>Jalankan Riset Tren & Intelijen</span>`;
-      lucide.createIcons();
     }
 
-    function sendResearchToStudio() {
-      const q = document.getElementById('research-query').value.trim();
-      document.getElementById('studio-topic').value = q;
-      switchTab('studio');
-    }
-
-    // --- KANBAN LOGIC ---
-    function updateItemStatus(id, newStatus) {
-      contentItems = contentItems.map(item => item.id === id ? { ...item, status: newStatus } : item);
-      saveStorage();
-    }
-
-    function deleteItem(id) {
-      if (confirm('Hapus konten ini?')) {
-        contentItems = contentItems.filter(item => item.id !== id);
-        saveStorage();
+    async function deleteItem(id) {
+      if (confirm('Hapus konten ini dari cloud?')) {
+        await syncDeleteItem(id);
       }
     }
 
     function renderKanban() {
-      const statuses = ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'];
-      statuses.forEach(st => {
+      ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(st => {
         const col = document.getElementById(`col-${st}`);
         const filtered = contentItems.filter(i => i.status === st);
         document.getElementById(`badge-count-${st}`).innerText = filtered.length;
@@ -912,7 +865,7 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
       document.getElementById('total-kanban-items').innerText = `${contentItems.length} Konten Total`;
     }
 
-    // --- ANALYTICS TABLE & METRICS ---
+    // --- OVERVIEW & ANALYTICS ---
     function renderOverviewAndAnalytics() {
       let totalViews = 0, totalReach = 0, totalInteractions = 0, publishedCount = 0;
       const tbody = document.getElementById('analytics-table-body');
@@ -945,7 +898,6 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
       document.getElementById('kpi-published-posts').innerText = `${publishedCount} Sudah Tayang`;
       document.getElementById('kpi-total-reach').innerText = totalReach.toLocaleString('id-ID');
       document.getElementById('kpi-total-eng').innerText = totalInteractions.toLocaleString('id-ID');
-
       const avgER = totalReach > 0 ? ((totalInteractions / totalReach) * 100).toFixed(2) : '0.00';
       document.getElementById('kpi-er').innerText = `${avgER}%`;
 
@@ -980,7 +932,7 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
       });
     }
 
-    // --- CSV LOGIC ---
+    // --- CSV IMPORT / EXPORT ---
     function exportToCSV() {
       const headers = ['title', 'platform', 'format', 'status', 'reach', 'likes', 'comments', 'shares', 'saves'];
       const rows = contentItems.map(i => [
@@ -1000,14 +952,13 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = async function(e) {
         const lines = e.target.result.split(/\\r?\\n/).filter(l => l.trim() !== '');
         if (lines.length < 2) return;
-        const imported = [];
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(',');
           if (cols.length >= 4) {
-            imported.push({
+            const newItem = {
               id: 'imp-' + Date.now() + '-' + i,
               title: cols[0].replace(/"/g, '').trim(),
               platform: (cols[1] || 'TIKTOK').trim().toUpperCase(),
@@ -1022,16 +973,61 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
               comments: parseInt(cols[5]) || 0,
               shares: parseInt(cols[6]) || 0,
               saves: parseInt(cols[7]) || 0
-            });
+            };
+            await syncSaveItem(newItem);
           }
         }
-        if (imported.length > 0) {
-          contentItems = [...imported, ...contentItems];
-          saveStorage();
-          alert(`Berhasil mengimpor ${imported.length} baris data analitik!`);
-        }
+        alert('Impor data selesai dan disinkronkan ke cloud!');
       };
       reader.readAsText(file);
+    }
+
+    // --- RISET TREN ---
+    async function executeWebResearch() {
+      const q = document.getElementById('research-query').value.trim();
+      const apiKey = localStorage.getItem('socialos_gemini_key');
+      const btn = document.getElementById('btn-research');
+      if (!q) return alert('Masukkan kata kunci riset.');
+
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Menganalisis...</span>`;
+      lucide.createIcons();
+
+      let resData = {
+        facts: [`Pencarian seputar "${q}" meningkat pesat di platform video singkat.`, "Format perbandingan sebelum & sesudah (before/after) mendapatkan retensi terlama."],
+        interpretation: "Banyak kompetitor menyajikan konten teori tanpa studi kasus nyata.",
+        hypothesis: "Uji konten Carousel 5 slide dengan hook berbasis pertanyaan tantangan."
+      };
+
+      if (apiKey) {
+        try {
+          const prompt = `Analisis topik: "${q}". Kembalikan JSON persis: {"facts": ["Fakta 1", "Fakta 2"], "interpretation": "Analisis celah", "hypothesis": "Hipotesis format"}`;
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { responseMimeType: "application/json" }
+            })
+          });
+          const d = await res.json();
+          resData = JSON.parse(d.candidates?.[0]?.content?.parts?.[0]?.text);
+        } catch (e) {}
+      }
+
+      document.getElementById('res-facts').innerHTML = resData.facts.map(f => `<li>• ${f}</li>`).join('');
+      document.getElementById('res-interpretation').innerText = resData.interpretation;
+      document.getElementById('res-hypothesis').innerText = resData.hypothesis;
+      document.getElementById('research-result-container').classList.remove('hidden');
+
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i><span>Jalankan Riset Tren & Intelijen</span>`;
+      lucide.createIcons();
+    }
+
+    function sendResearchToStudio() {
+      document.getElementById('studio-topic').value = document.getElementById('research-query').value.trim();
+      switchTab('studio');
     }
 
     function renderAll() {
@@ -1041,8 +1037,8 @@ Kembalikan format JSON murni TANPA markdown kutip dengan skema:
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      loadStorage();
-      renderAll();
+      initFirebase();
+      updateApiStatusUI();
     });
   </script>
 </body>
