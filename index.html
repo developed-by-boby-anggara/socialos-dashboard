@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SocialOS — AI Social Media Command Center</title>
+  <title>SocialOS — Real Social Media Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -11,7 +11,7 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Firebase SDKs (Compat) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -25,7 +25,7 @@
 </head>
 <body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
 
-  <!-- AUTHENTICATION OVERLAY MODAL -->
+  <!-- AUTHENTICATION MODAL -->
   <div id="auth-modal" class="fixed inset-0 bg-[#080c14]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
     <div class="bg-[#0f172a] border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
       <div class="text-center space-y-1">
@@ -33,7 +33,7 @@
           S
         </div>
         <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
-        <p class="text-xs text-slate-400">Pusat Manajemen Brand & Konten Terisolasi</p>
+        <p class="text-xs text-slate-400">Pusat Manajemen Akun & Konten Terisolasi</p>
       </div>
 
       <div class="space-y-3 pt-2">
@@ -69,7 +69,7 @@
         </div>
         <div>
           <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
-          <p class="text-[9px] text-slate-400 font-mono">ENTERPRISE</p>
+          <p class="text-[9px] text-slate-400 font-mono">ENTERPRISE HUB</p>
         </div>
       </div>
       <span id="user-status-badge" class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">
@@ -95,14 +95,19 @@
         <span>Executive Dashboard</span>
       </button>
 
+      <button onclick="switchTab('accounts')" id="nav-accounts" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="link" class="w-4 h-4 text-emerald-400"></i>
+        <span>Koneksi Akun Sosial</span>
+      </button>
+
       <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
         <span>AI Content Studio</span>
       </button>
 
       <button onclick="switchTab('research')" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
-        <span>Riset Web Terverifikasi</span>
+        <i data-lucide="search" class="w-4 h-4 text-violet-400"></i>
+        <span>Riset Tren & Intelligence</span>
       </button>
 
       <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
@@ -111,7 +116,7 @@
       </button>
 
       <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="bar-chart-3" class="w-4 h-4 text-violet-400"></i>
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-sky-400"></i>
         <span>Analytics & CSV Import</span>
       </button>
     </nav>
@@ -123,9 +128,13 @@
         <span id="current-user-email" class="font-medium text-slate-200 truncate max-w-[120px]">-</span>
       </div>
       <div class="flex items-center justify-between text-slate-400">
-        <span>Backend API:</span>
-        <span id="sidebar-api-status" class="font-medium text-emerald-400">Terkonfigurasi</span>
+        <span>Kunci Gemini AI:</span>
+        <span id="sidebar-api-status" class="font-medium text-amber-400">Belum Ada</span>
       </div>
+      <button onclick="openApiModal()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700/80 text-slate-200 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
+        <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span>Setup Gemini API Key</span>
+      </button>
       <button onclick="handleLogout()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-rose-400 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         <span>Keluar Akun</span>
@@ -217,19 +226,92 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: AI CONTENT STUDIO                       -->
+      <!-- TAB 2: KONEKSI AKUN SOSIAL MEDIA (OFFICIAL HUB)-->
+      <!-- ============================================== -->
+      <section id="tab-accounts" class="hidden space-y-6">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="font-semibold text-sm text-white">Integrasi Akun Media Sosial Resmi</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Hubungkan akun resmi untuk penarikan data performa riil melalui OAuth API resmi platform.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <!-- Instagram Connection Box -->
+            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
+                    <span>Instagram Business</span>
+                  </span>
+                  <span id="status-ig" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                    Belum Terhubung
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Memerlukan akun Instagram Business/Creator yang ditautkan ke Facebook Page.
+                </p>
+              </div>
+              <button onclick="promptConnectAccount('Instagram')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
+                Hubungkan via Meta OAuth
+              </button>
+            </div>
+
+            <!-- TikTok Connection Box -->
+            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
+                    <span>TikTok for Business</span>
+                  </span>
+                  <span id="status-tt" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                    Belum Terhubung
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Memerlukan akses TikTok Login Kit & akun creator/bisnis terdaftar.
+                </p>
+              </div>
+              <button onclick="promptConnectAccount('TikTok')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
+                Hubungkan via TikTok OAuth
+              </button>
+            </div>
+
+            <!-- Facebook Connection Box -->
+            <div class="bg-[#080c14] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold text-xs text-white flex items-center space-x-1.5">
+                    <i data-lucide="facebook" class="w-4 h-4 text-blue-400"></i>
+                    <span>Facebook Page</span>
+                  </span>
+                  <span id="status-fb" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                    Belum Terhubung
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Mengakses metrik jangkauan dan reaksi halaman Facebook publik.
+                </p>
+              </div>
+              <button onclick="promptConnectAccount('Facebook')" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
+                Hubungkan via Meta OAuth
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: AI CONTENT STUDIO                       -->
       <!-- ============================================== -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
-          <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
-            <div>
-              <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
-              <p class="text-xs text-slate-400">Generator naskah terstruktur via Backend Proxy.</p>
-            </div>
-            <select id="studio-provider-select" class="text-[10px] font-semibold bg-[#080c14] border border-slate-800 text-slate-300 rounded px-2 py-1 outline-none">
-              <option value="gemini">Gemini 1.5 Flash</option>
-              <option value="openai">OpenAI GPT-4o-mini</option>
-            </select>
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
+            <p class="text-xs text-slate-400">Generator naskah terstruktur per platform.</p>
           </div>
 
           <div>
@@ -338,19 +420,19 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 3: RISET WEB TERVERIFIKASI                 -->
+      <!-- TAB 4: RISET TREN & WEB INTELLIGENCE           -->
       <!-- ============================================== -->
       <section id="tab-research" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
-            <h3 class="font-semibold text-sm text-white">Riset Niche & Web Intelligence Riil</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Menganalisis pencarian web nyata dengan pemisahan fakta terverifikasi dan hipotesis.</p>
+            <h3 class="font-semibold text-sm text-white">Riset Niche & Tren Pasar Riil</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Analisis pola konsumsi audiens dan perumusan angle konten menggunakan Google Gemini.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Kata Kunci / Topik Riset</label>
-              <input type="text" id="research-query" placeholder="Misal: Tren Korean Fashion 2026 Indonesia" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+              <input type="text" id="research-query" placeholder="Misal: Ide Jualan Makanan Kekinian 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Lokasi Target</label>
@@ -360,7 +442,7 @@
 
           <button onclick="executeWebResearch()" id="btn-research" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="search" class="w-4 h-4"></i>
-            <span>Jalankan Riset Web Terverifikasi</span>
+            <span>Jalankan Riset Tren Terverifikasi</span>
           </button>
         </div>
 
@@ -369,7 +451,7 @@
             <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
               <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-                <span>Fakta Sumber Terverifikasi</span>
+                <span>Fakta Sumber & Pola Audiens</span>
               </span>
               <ul id="res-facts-list" class="text-xs space-y-1.5 text-slate-300"></ul>
             </div>
@@ -400,7 +482,7 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 4: EDITORIAL CALENDAR KANBAN               -->
+      <!-- TAB 5: EDITORIAL CALENDAR KANBAN               -->
       <!-- ============================================== -->
       <section id="tab-calendar" class="hidden space-y-4">
         <div class="flex items-center justify-between">
@@ -444,12 +526,12 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 5: ANALYTICS & CSV DATA IMPORT             -->
+      <!-- TAB 6: ANALYTICS & CSV DATA IMPORT             -->
       <!-- ============================================== -->
       <section id="tab-analytics" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV RFC 4180)</h3>
+            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV)</h3>
             <p class="text-[11px] text-slate-400">Header: title, platform, views, reach, likes, comments, shares, saves.</p>
           </div>
           <div>
@@ -488,9 +570,44 @@
     </div>
   </main>
 
-  <!-- JAVASCRIPT LOGIC DENGAN KEAMANAN PRODUKSI -->
+  <!-- GEMINI API SETUP MODAL -->
+  <div id="api-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+    <div class="bg-[#0b0f19] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-semibold text-sm text-white flex items-center space-x-1.5">
+          <i data-lucide="key" class="w-4 h-4 text-indigo-400"></i>
+          <span>Setup Gemini API Key</span>
+        </h3>
+        <button onclick="closeApiModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Masukkan Google Gemini API Key Anda. Kunci disimpan lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
+      </p>
+
+      <div>
+        <label class="text-xs font-medium text-slate-300 block mb-1">Gemini API Key</label>
+        <input type="password" id="input-api-key" placeholder="AIzaSy..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+      </div>
+
+      <div id="modal-test-status" class="hidden p-2 rounded-lg text-xs"></div>
+
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+        <button onclick="testGeminiConnection()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition">
+          Uji Koneksi
+        </button>
+        <div class="space-x-2">
+          <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
+          <button onclick="saveApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Simpan Kunci</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC CLIENT DIRECT ENGINE -->
   <script>
-    // Konfigurasi Client Firebase (Gunakan konfigurasi proyek Anda)
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -501,11 +618,6 @@
       appId: "1:409499788186:web:63500185b22d83a9ded023"
     };
 
-    // Alamat Serverless Backend Gateway (Ganti dengan URL deployment backend Vercel/Render Anda)
-    const BACKEND_BASE_URL = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000/api' 
-      : 'https://socialos-api.vercel.app/api';
-
     let auth = null;
     let db = null;
     let currentUser = null;
@@ -514,7 +626,6 @@
     let brandsList = [{ id: "default", name: "Brand Utama (Default)" }];
     let chartInstance = null;
 
-    // --- INISIALISASI FIREBASE & AUTHENTICATION ---
     function initApp() {
       if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -532,6 +643,7 @@
           
           loadUserBrands();
           bindFirestoreListeners();
+          updateApiStatusUI();
         } else {
           currentUser = null;
           document.getElementById('auth-modal').classList.remove('hidden');
@@ -550,6 +662,12 @@
       const errBox = document.getElementById('auth-error-msg');
       errBox.classList.add('hidden');
 
+      if (!email || !pass) {
+        errBox.textContent = 'Harap isi email dan kata sandi.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
       try {
         await auth.signInWithEmailAndPassword(email, pass);
       } catch (err) {
@@ -563,6 +681,12 @@
       const pass = document.getElementById('auth-password').value;
       const errBox = document.getElementById('auth-error-msg');
       errBox.classList.add('hidden');
+
+      if (!email || !pass) {
+        errBox.textContent = 'Harap isi email dan kata sandi.';
+        errBox.classList.remove('hidden');
+        return;
+      }
 
       try {
         await auth.createUserWithEmailAndPassword(email, pass);
@@ -578,7 +702,6 @@
       }
     }
 
-    // --- BRAND WORKSPACE SUBCOLLECTION ---
     function loadUserBrands() {
       if (!currentUser) return;
       db.collection('users').doc(currentUser.uid).collection('brands').onSnapshot((snap) => {
@@ -617,10 +740,8 @@
       renderAll();
     }
 
-    // --- REALTIME FIRESTORE LISTENER (ISOLATED PATH) ---
     function bindFirestoreListeners() {
       if (!currentUser) return;
-
       db.collection('users').doc(currentUser.uid).collection('contents')
         .onSnapshot((snapshot) => {
           const loaded = [];
@@ -632,7 +753,6 @@
         });
     }
 
-    // --- DOM SAFE RENDERING & SANITIZATION ---
     function createSafeElement(tag, className, textContent = '') {
       const el = document.createElement(tag);
       if (className) el.className = className;
@@ -641,7 +761,7 @@
     }
 
     function switchTab(tabId) {
-      ['overview', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
+      ['overview', 'accounts', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
         if (t === tabId) {
@@ -657,7 +777,72 @@
       lucide.createIcons();
     }
 
-    // --- AI CONTENT STUDIO (BACKEND ROUTED) ---
+    function promptConnectAccount(platform) {
+      alert(`Untuk menghubungkan ${platform} secara resmi:\n1. Buka Meta Developer Dashboard / TikTok Developer.\n2. Buat App ID resmi dengan izin (scope) Insights.\n3. Masukkan Access Token akun Anda.`);
+    }
+
+    function openApiModal() {
+      document.getElementById('input-api-key').value = localStorage.getItem('socialos_gemini_key') || '';
+      document.getElementById('modal-test-status').className = 'hidden';
+      document.getElementById('api-modal').classList.remove('hidden');
+    }
+
+    function closeApiModal() {
+      document.getElementById('api-modal').classList.add('hidden');
+    }
+
+    async function testGeminiConnection() {
+      const key = document.getElementById('input-api-key').value.trim();
+      const statusDiv = document.getElementById('modal-test-status');
+
+      if (!key) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = 'Harap isi API Key terlebih dahulu.';
+        return;
+      }
+
+      statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
+      statusDiv.innerText = 'Menguji koneksi ke Google Gemini API...';
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "Tes koneksi." }] }] })
+        });
+        if (res.ok) {
+          statusDiv.className = 'p-2 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 block';
+          statusDiv.innerText = 'Koneksi Berhasil! Kunci API aktif dan siap digunakan.';
+        } else {
+          statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+          statusDiv.innerText = 'Koneksi Gagal. Periksa kembali kunci API Anda.';
+        }
+      } catch (e) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = 'Gagal menghubungi server API.';
+      }
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('input-api-key').value.trim();
+      if (key) localStorage.setItem('socialos_gemini_key', key);
+      else localStorage.removeItem('socialos_gemini_key');
+      closeApiModal();
+      updateApiStatusUI();
+    }
+
+    function updateApiStatusUI() {
+      const key = localStorage.getItem('socialos_gemini_key');
+      const sideStatus = document.getElementById('sidebar-api-status');
+      if (key) {
+        sideStatus.innerText = 'Gemini Aktif';
+        sideStatus.className = 'font-medium text-emerald-400';
+      } else {
+        sideStatus.innerText = 'Belum Ada';
+        sideStatus.className = 'font-medium text-amber-400';
+      }
+    }
+
     let latestGeneratedObj = null;
 
     async function executeAIGeneration() {
@@ -665,37 +850,46 @@
       const topic = document.getElementById('studio-topic').value.trim();
       if (!topic) return alert('Topik tidak boleh kosong.');
 
+      const key = localStorage.getItem('socialos_gemini_key');
+      if (!key) {
+        alert('Kunci Gemini API belum diatur. Silakan klik tombol "Setup Gemini API Key" di sidebar kiri bawah.');
+        return openApiModal();
+      }
+
       const platform = document.getElementById('studio-platform').value;
       const format = document.getElementById('studio-format').value;
       const pillar = document.getElementById('studio-pillar').value;
       const persona = document.getElementById('studio-persona').value;
-      const provider = document.getElementById('studio-provider-select').value;
       const btn = document.getElementById('btn-generate');
 
       btn.disabled = true;
       btn.textContent = 'Meminta respons AI...';
 
+      const promptText = `Anda adalah Social Media Strategist & Copywriter profesional untuk brand "${brandsList.find(b => b.id === activeBrandId)?.name || 'Brand'}".
+Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Persona: ${persona}.
+Topik: "${topic}".
+Kembalikan format JSON murni TANPA tanda kutip markdown persis:
+{
+  "title": "Judul Konsep Konten",
+  "hook": "Kalimat pembuka 3 detik pertama",
+  "body": "Naskah lengkap adegan/slide atau caption terstruktur",
+  "cta": "Kalimat Call to Action yang jelas",
+  "tags": "#Tagar1 #Tagar2 #Tagar3"
+}`;
+
       try {
-        const idToken = await currentUser.getIdToken();
-        const res = await fetch(`${BACKEND_BASE_URL}/generate`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            provider,
-            brandName: brandsList.find(b => b.id === activeBrandId)?.name || 'Brand',
-            topic, platform, format, pillar, targetAudience: persona
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: { responseMimeType: "application/json" }
           })
         });
 
-        if (!res.ok) {
-          throw new Error('Gagal menghubungi backend proxy AI.');
-        }
-
-        const payload = await res.json();
-        latestGeneratedObj = payload.data;
+        if (!res.ok) throw new Error('API Key tidak valid atau batas kuota habis.');
+        const raw = await res.json();
+        latestGeneratedObj = JSON.parse(raw.candidates?.[0]?.content?.parts?.[0]?.text);
 
         document.getElementById('out-hook').value = latestGeneratedObj.hook || '';
         document.getElementById('out-body').value = latestGeneratedObj.body || '';
@@ -707,7 +901,7 @@
         document.getElementById('studio-result-state').classList.remove('hidden');
         document.getElementById('studio-action-footer').classList.remove('hidden');
       } catch (err) {
-        alert(err.message + '\nPastikan backend proxy serverless Anda sudah berjalan.');
+        alert(err.message);
       }
 
       btn.disabled = false;
@@ -745,25 +939,42 @@
       switchTab('calendar');
     }
 
-    // --- WEB RESEARCH RIIL ---
     async function executeWebResearch() {
       const q = document.getElementById('research-query').value.trim();
       const loc = document.getElementById('research-location').value.trim();
       const btn = document.getElementById('btn-research');
+      const key = localStorage.getItem('socialos_gemini_key');
+
       if (!q) return alert('Topik riset tidak boleh kosong.');
+      if (!key) {
+        alert('Kunci Gemini API belum diatur. Klik "Setup Gemini API Key" di sidebar kiri bawah.');
+        return openApiModal();
+      }
 
       btn.disabled = true;
-      btn.textContent = 'Menjalankan riset web...';
+      btn.textContent = 'Menganalisis tren pasar...';
+
+      const researchPrompt = `Sebagai Digital Marketing Analyst, lakukan riset tren mendalam untuk topik: "${q}" di wilayah ${loc}.
+Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
+{
+  "facts": ["Fakta teramati 1 tentang audiens", "Fakta teramati 2 tentang pola konsumsi konten"],
+  "interpretation": "Interpretasi analitis terkait celah pasar yang belum dipenuhi kompetitor.",
+  "hypothesis": "Hipotesis konten: Rekomendasi format (Reels/Carousel) dan hook yang berpeluang viral."
+}`;
 
       try {
-        const res = await fetch(`${BACKEND_BASE_URL}/research`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: q, location: loc })
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: researchPrompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
         });
 
-        const json = await res.json();
-        const data = json.data;
+        if (!res.ok) throw new Error('API Key tidak valid atau batas kuota habis.');
+        const raw = await res.json();
+        const data = JSON.parse(raw.candidates?.[0]?.content?.parts?.[0]?.text);
 
         const factsList = document.getElementById('res-facts-list');
         factsList.innerHTML = '';
@@ -780,7 +991,7 @@
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Web Terverifikasi</span>`;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Tren Terverifikasi</span>`;
       lucide.createIcons();
     }
 
@@ -789,7 +1000,6 @@
       switchTab('studio');
     }
 
-    // --- KANBAN LOGIC & DOM SAFE RENDERING ---
     async function updateItemStatus(docId, newStatus) {
       if (!currentUser) return;
       await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).update({
@@ -855,7 +1065,6 @@
       document.getElementById('total-kanban-items').textContent = `${filtered.length} Konten`;
     }
 
-    // --- OVERVIEW & ANALYTICS CALCULATION ---
     function renderOverviewAndAnalytics() {
       const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
       let totalViews = 0, totalReach = 0, totalEng = 0, publishedCount = 0;
@@ -934,7 +1143,6 @@
       });
     }
 
-    // --- STANDARD RFC 4180 CSV PARSER ---
     function parseCSV(text) {
       const rows = [];
       let row = [];
@@ -980,7 +1188,7 @@
       const reader = new FileReader();
       reader.onload = async (event) => {
         const parsed = parseCSV(event.target.result);
-        if (parsed.length < 2) return alert('File CSV kosong atau header tidak valid.');
+        if (parsed.length < 2) return alert('File CSV kosong atau format header tidak sesuai.');
 
         const batch = db.batch();
         let count = 0;
@@ -1011,7 +1219,7 @@
         }
 
         await batch.commit();
-        alert(`Berhasil mengimpor ${count} data konten ke brand ini.`);
+        alert(`Berhasil mengimpor ${count} data konten.`);
       };
       reader.readAsText(file);
     }
@@ -1025,7 +1233,7 @@
         i.views || 0, i.reach || 0, i.likes || 0, i.comments || 0, i.shares || 0, i.saves || 0
       ]);
 
-      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
       const link = document.createElement('a');
       link.setAttribute('href', encodeURI(csvContent));
       link.setAttribute('download', `SocialOS_Brand_${activeBrandId}_${new Date().toISOString().split('T')[0]}.csv`);
