@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SocialOS — Pro Social Media & Audit Command Center</title>
+  <title>SocialOS — Real Social Media Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -11,114 +11,111 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Firebase App & Firestore SDKs (Compat) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
-<body class="bg-[#0b0f19] text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
+<body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-[#080c14] border-r border-slate-800/80 flex flex-col shrink-0">
-    <div class="p-4 flex items-center justify-between border-b border-slate-800/60">
+  <aside class="w-64 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col shrink-0">
+    <!-- Header Logo -->
+    <div class="p-4 flex items-center justify-between border-b border-slate-800/80">
       <div class="flex items-center space-x-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md">
           S
         </div>
         <div>
-          <span class="font-bold text-sm tracking-wide text-white">SocialOS Pro</span>
-          <p class="text-[9px] text-indigo-400 font-mono tracking-wider">COMMAND CENTER</p>
+          <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
+          <p class="text-[9px] text-slate-400 font-mono">COMMAND CENTER</p>
         </div>
       </div>
-      <span id="demo-indicator" class="text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-        CLOUD SYNC
+      <span id="ai-conn-badge" class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">
+        AI: NONAKTIF
       </span>
     </div>
 
-    <!-- Brand Profile Context -->
-    <div class="px-3.5 py-3 border-b border-slate-800/60 bg-slate-900/40">
-      <label class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">Brand / Klien</label>
-      <select id="brand-select" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500">
-        <option value="Chocoovora Fashion">Chocoovora Fashion</option>
-        <option value="CyberCoreTech">CyberCoreTech</option>
-        <option value="Personal Portfolio">Personal Portfolio</option>
+    <!-- Dynamic Brand Workspace -->
+    <div class="px-3.5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Ruang Kerja Brand</label>
+        <button onclick="promptAddBrand()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium">+ Tambah</button>
+      </div>
+      <select id="brand-select" onchange="handleBrandChange()" class="w-full bg-[#080c14] border border-slate-800 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+        <option value="Utama">Brand Utama (Default)</option>
       </select>
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- Navigation -->
     <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
       <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
         <span>Executive Dashboard</span>
       </button>
 
-      <button onclick="switchTab('audit')" id="nav-audit" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-        <span>Audit & Deteksi Akun</span>
+      <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
+        <span>AI Content Studio</span>
       </button>
 
-      <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="sparkles" class="w-4 h-4 text-violet-400"></i>
-        <span>AI Content Studio</span>
+      <button onclick="switchTab('research')" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+        <span>Riset Web & Tren Akun</span>
       </button>
 
       <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="calendar" class="w-4 h-4"></i>
-        <span>Kalender & Kanban</span>
-      </button>
-
-      <button onclick="switchTab('tools')" id="nav-tools" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="wrench" class="w-4 h-4 text-amber-400"></i>
-        <span>Creator Pro Tools</span>
+        <span>Kalender Editorial</span>
       </button>
 
       <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
-        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-        <span>Analytics & CSV Import</span>
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-violet-400"></i>
+        <span>Analytics & Data Import</span>
       </button>
     </nav>
 
-    <!-- Cloud Status & Credentials -->
+    <!-- Integrations Status & Credentials -->
     <div class="p-3 border-t border-slate-800/80 bg-slate-950/70 text-[11px] space-y-2">
       <div class="flex items-center justify-between text-slate-400">
         <span>Firestore Cloud:</span>
-        <span id="sidebar-db-status" class="font-medium text-emerald-400">Aktif</span>
+        <span id="sidebar-db-status" class="font-medium text-emerald-400">Menghubungkan...</span>
       </div>
       <div class="flex items-center justify-between text-slate-400">
-        <span>Gemini AI:</span>
-        <span id="sidebar-ai-status" class="font-medium text-slate-400">Demo Mode</span>
+        <span>Provider AI:</span>
+        <span id="sidebar-ai-model" class="font-medium text-slate-400">Belum Terhubung</span>
       </div>
-      <button onclick="openApiModal()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
-        <i data-lucide="key" class="w-3 h-3 text-indigo-400"></i>
-        <span>Setup Gemini API Key</span>
+      <button onclick="openApiModal()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700/80 text-slate-200 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span>Hubungkan Model AI (Multi-API)</span>
       </button>
     </div>
   </aside>
 
-  <!-- MAIN WORKSPACE -->
-  <main class="flex-1 flex flex-col overflow-hidden bg-[#0e1424]">
+  <!-- MAIN VIEWPORT -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#080c14]">
     <!-- Top Header -->
-    <header class="h-14 bg-[#080c14]/90 backdrop-blur-md border-b border-slate-800/80 px-6 flex items-center justify-between shrink-0">
+    <header class="h-14 bg-[#0b0f19]/90 border-b border-slate-800/80 px-6 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-3">
-        <h1 id="page-title" class="font-semibold text-sm text-white">Executive Overview</h1>
+        <h1 id="page-title" class="font-semibold text-sm text-white">Executive Dashboard</h1>
         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
           <i data-lucide="clock" class="w-3 h-3 mr-1"></i> Asia/Jakarta
         </span>
       </div>
 
       <div class="flex items-center space-x-2">
-        <button onclick="exportToCSV()" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition">
+        <button onclick="exportToCSV()" class="text-xs bg-[#111827] hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
           <span>Ekspor CSV</span>
         </button>
-        <button onclick="resetData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition">
-          Reset Data
+        <button onclick="clearAllData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition">
+          Bersihkan Data
         </button>
       </div>
     </header>
@@ -127,315 +124,89 @@
     <div class="flex-1 overflow-y-auto p-6 space-y-6">
 
       <!-- ============================================== -->
-      <!-- TAB 1: EXECUTIVE DASHBOARD                     -->
+      <!-- TAB 1: EXECUTIVE OVERVIEW                      -->
       <!-- ============================================== -->
       <section id="tab-overview" class="space-y-6">
-        <div class="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-950 border border-indigo-500/20 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+        <!-- AI Briefing Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
           <div class="flex items-center space-x-2 text-indigo-400 mb-1.5">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span class="text-[10px] font-bold tracking-wider uppercase">Strategic AI Briefing</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase">Executive AI Summary</span>
           </div>
-          <h2 class="text-base font-semibold text-white mb-1">Status Kinerja Akun Sosial Media Anda</h2>
+          <h2 class="text-base font-semibold text-white mb-1" id="briefing-title">Evaluasi Kinerja Aktual</h2>
           <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
-            Sistem menganalisis data terpusat Anda. Performa format video pendek (Reels/TikTok) memiliki rasio distribusi organik 3.2x lebih baik dari postingan gambar statis. Pastikan bio dan CTA akun sudah teroptimasi dengan tools audit.
+            Belum ada data metrik aktual di database cloud Anda. Mulai dengan membuat draf konten di Studio atau impor laporan CSV riil dari Instagram, TikTok, atau Facebook.
           </p>
         </div>
 
-        <!-- KPI Summary Cards -->
+        <!-- Real KPIs (No Hardcoded Numbers) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-[#111827]/70 border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Konten di Cloud</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Konten di Database</span>
             <div class="text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
             <span class="text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Sudah Tayang</span>
           </div>
 
-          <div class="bg-[#111827]/70 border border-slate-800 p-4 rounded-xl shadow-xs">
+          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
             <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Jangkauan (Reach)</span>
             <div class="text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-reach">0</div>
-            <span class="text-[11px] text-slate-400 mt-1 inline-block">Estimasi akun unik</span>
+            <span class="text-[11px] text-slate-500 mt-1 inline-block">Data riil terverifikasi</span>
           </div>
 
-          <div class="bg-[#111827]/70 border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Interaksi Publik</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Interaksi (Engagement)</span>
             <div class="text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
-            <span class="text-[11px] text-slate-400 mt-1 inline-block">Likes, Comments, Saves, Shares</span>
+            <span class="text-[11px] text-slate-500 mt-1 inline-block">Likes, Comments, Saves, Shares</span>
           </div>
 
-          <div class="bg-[#111827]/70 border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Engagement Rate Rata-rata</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Engagement Rate (by Reach)</span>
             <div class="text-2xl font-bold text-emerald-400 mt-1" id="kpi-er">0.00%</div>
-            <span class="text-[11px] text-slate-400 mt-1 inline-block">Formula: (Interaksi / Reach) × 100</span>
+            <span class="text-[11px] text-slate-500 mt-1 inline-block">Formula: (Interaksi / Reach) × 100</span>
           </div>
         </div>
 
-        <!-- Trend Chart -->
-        <div class="bg-[#111827]/70 border border-slate-800 p-5 rounded-2xl shadow-xs">
+        <!-- Chart Section -->
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten & Performa</h3>
-            <span class="text-[11px] text-slate-400">Firestore Live Synced</span>
+            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten & Performa Aktual</h3>
+            <span class="text-[11px] text-slate-500 font-mono">Sumber: Firestore Realtime</span>
           </div>
-          <div class="h-64">
+          <div class="h-64 relative flex items-center justify-center">
+            <div id="chart-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+              <i data-lucide="bar-chart-2" class="w-8 h-8 mb-2 stroke-1"></i>
+              <p class="text-xs">Grafik akan terisi otomatis setelah Anda memiliki data postingan di database.</p>
+            </div>
             <canvas id="overviewChart"></canvas>
           </div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: AUDIT & DETEKSI AKUN (IG, TT, FB)       -->
-      <!-- ============================================== -->
-      <section id="tab-audit" class="hidden space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          <!-- Audit Input Panel -->
-          <div class="lg:col-span-5 bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
-            <div class="border-b border-slate-800/80 pb-3">
-              <h3 class="font-semibold text-sm text-white flex items-center space-x-2">
-                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-                <span>Detektor & Audit Akun Medsos</span>
-              </h3>
-              <p class="text-xs text-slate-400 mt-0.5">Analisis kesehatan akun Instagram, TikTok, atau Facebook.</p>
-            </div>
-
-            <!-- Platform Selector -->
-            <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1.5">Pilih Platform</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button onclick="setAuditPlatform('INSTAGRAM')" id="btn-plat-IG" class="plat-audit-btn py-2 px-3 rounded-lg border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
-                  <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
-                  <span>Instagram</span>
-                </button>
-                <button onclick="setAuditPlatform('TIKTOK')" id="btn-plat-TT" class="plat-audit-btn py-2 px-3 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
-                  <i data-lucide="video" class="w-3.5 h-3.5"></i>
-                  <span>TikTok</span>
-                </button>
-                <button onclick="setAuditPlatform('FACEBOOK')" id="btn-plat-FB" class="plat-audit-btn py-2 px-3 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
-                  <i data-lucide="facebook" class="w-3.5 h-3.5"></i>
-                  <span>Facebook</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Account Details -->
-            <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Username / Handle / Link Profil</label>
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500 text-xs font-mono">@</span>
-                <input type="text" id="audit-handle" placeholder="username_kamu" class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="text-xs font-medium text-slate-300 block mb-1">Followers (Estimasi)</label>
-                <input type="number" id="audit-followers" placeholder="10000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-              </div>
-              <div>
-                <label class="text-xs font-medium text-slate-300 block mb-1">Rata-rata Views / Post</label>
-                <input type="number" id="audit-views" placeholder="2500" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-              </div>
-            </div>
-
-            <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Teks Bio Akun Saat Ini</label>
-              <textarea id="audit-bio" rows="2" placeholder="Tempelkan bio profil Anda untuk di-audit..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 leading-relaxed"></textarea>
-            </div>
-
-            <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Kelengkapan Profil (Centang jika ada)</label>
-              <div class="space-y-1.5 text-xs text-slate-300">
-                <label class="flex items-center space-x-2">
-                  <input type="checkbox" id="chk-link" class="rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0">
-                  <span>Memiliki Link Bio aktif (Website/Shopee/WhatsApp)</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                  <input type="checkbox" id="chk-contact" class="rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0">
-                  <span>Memiliki tombol Kontak / Email bisnis terpasang</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                  <input type="checkbox" id="chk-highlights" class="rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0">
-                  <span>Highlight / Pinned Video berisikan katalog/edukasi jelas</span>
-                </label>
-              </div>
-            </div>
-
-            <button onclick="runAccountAudit()" id="btn-audit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
-              <i data-lucide="scan" class="w-4 h-4"></i>
-              <span>Jalankan Diagnostik & Audit Lengkap</span>
-            </button>
-          </div>
-
-          <!-- Audit Result Panel -->
-          <div class="lg:col-span-7 bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-                <h3 class="font-semibold text-sm text-white">Laporan Audit Kesehatan Akun</h3>
-                <span id="audit-grade-badge" class="hidden text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Grade: A (Sangat Sehat)
-                </span>
-              </div>
-
-              <!-- Empty State -->
-              <div id="audit-empty-state" class="py-20 text-center text-slate-500">
-                <i data-lucide="shield-alert" class="w-10 h-10 mx-auto mb-2 stroke-1 text-slate-600"></i>
-                <p class="text-xs">Pilih platform, masukkan handle dan data akun di sebelah kiri lalu klik tombol Audit.</p>
-              </div>
-
-              <!-- Output Diagnostic Container -->
-              <div id="audit-result-state" class="hidden space-y-4 text-xs">
-                
-                <!-- Score Breakdown -->
-                <div class="grid grid-cols-3 gap-3 text-center">
-                  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Skor Akun</span>
-                    <div id="res-score-total" class="text-2xl font-black text-indigo-400 mt-1">0/100</div>
-                  </div>
-                  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Rasio Jangkauan</span>
-                    <div id="res-reach-ratio" class="text-2xl font-black text-emerald-400 mt-1">0%</div>
-                  </div>
-                  <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Bio Strength</span>
-                    <div id="res-bio-strength" class="text-2xl font-black text-violet-400 mt-1">Cukup</div>
-                  </div>
-                </div>
-
-                <!-- Analysis Findings -->
-                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                  <span class="font-semibold text-slate-200 block text-xs flex items-center space-x-1.5">
-                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                    <span>Diagnostik Performa Platform</span>
-                  </span>
-                  <p id="res-audit-summary" class="text-slate-300 leading-relaxed"></p>
-                </div>
-
-                <!-- Actionable Checklist -->
-                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                  <span class="font-semibold text-slate-200 block text-xs flex items-center space-x-1.5">
-                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
-                    <span>Prioritas Rekomendasi Perbaikan:</span>
-                  </span>
-                  <ul id="res-audit-actions" class="space-y-1.5 text-slate-300"></ul>
-                </div>
-
-                <!-- Suggested Bio Fix -->
-                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                  <span class="font-semibold text-slate-200 block text-xs">✨ Saran Perbaikan Bio Konversi:</span>
-                  <div id="res-suggested-bio" class="bg-slate-900 p-2.5 rounded-lg border border-slate-800/80 font-mono text-[11px] text-indigo-300"></div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Footer Save -->
-            <div id="audit-footer-action" class="hidden pt-4 border-t border-slate-800/80 flex justify-end">
-              <button onclick="saveAuditToFirestore()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
-                <i data-lucide="cloud-check" class="w-4 h-4"></i>
-                <span>Simpan Hasil Audit ke Cloud Firestore</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 3: CREATOR PRO TOOLS (HOOK, BIO, KALKULATOR)-->
-      <!-- ============================================== -->
-      <section id="tab-tools" class="hidden space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <!-- Tool 1: Viral Hook Vault -->
-          <div class="bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
-            <div class="flex items-center space-x-2 text-indigo-400">
-              <i data-lucide="flame" class="w-5 h-5"></i>
-              <h3 class="font-semibold text-sm text-white">Viral Hook Vault</h3>
-            </div>
-            <p class="text-xs text-slate-400 leading-relaxed">
-              Koleksi formula kalimat pembuka 3 detik pertama dengan retensi tinggi untuk TikTok & Reels.
-            </p>
-            <div class="space-y-2 text-xs">
-              <div onclick="copyToolText(this)" class="p-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-lg cursor-pointer transition flex items-center justify-between group">
-                <span class="text-slate-300">"Jangan lakukan [kesalahan] ini kalau kamu gamau [akibat fatal]..."</span>
-                <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
-              </div>
-              <div onclick="copyToolText(this)" class="p-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-lg cursor-pointer transition flex items-center justify-between group">
-                <span class="text-slate-300">"Ini alasan kenapa brand besar ga pernah pake strategi [X]..."</span>
-                <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
-              </div>
-              <div onclick="copyToolText(this)" class="p-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-lg cursor-pointer transition flex items-center justify-between group">
-                <span class="text-slate-300">"90% orang salah mikir kalau [mitos] itu bener, padahal..."</span>
-                <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
-              </div>
-            </div>
-            <span class="text-[10px] text-slate-500 block text-right">*Klik baris untuk menyalin hook</span>
-          </div>
-
-          <!-- Tool 2: Engagement Tier Calculator -->
-          <div class="bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
-            <div class="flex items-center space-x-2 text-emerald-400">
-              <i data-lucide="calculator" class="w-5 h-5"></i>
-              <h3 class="font-semibold text-sm text-white">Engagement Diagnostic</h3>
-            </div>
-            <p class="text-xs text-slate-400">Hitung posisi engagement rate Anda di standar industri.</p>
-            <div class="space-y-2 text-xs">
-              <input type="number" id="tool-calc-followers" placeholder="Jumlah Followers" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
-              <input type="number" id="tool-calc-eng" placeholder="Total Interaksi / Post" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white outline-none">
-              <button onclick="calculateQuickER()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white py-1.5 rounded-lg font-medium transition">
-                Hitung Status Tier
-              </button>
-            </div>
-            <div id="tool-er-result" class="hidden p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-center text-xs"></div>
-          </div>
-
-          <!-- Tool 3: Best Posting Times Benchmark -->
-          <div class="bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
-            <div class="flex items-center space-x-2 text-amber-400">
-              <i data-lucide="clock" class="w-5 h-5"></i>
-              <h3 class="font-semibold text-sm text-white">Jam Emas Posting (WIB)</h3>
-            </div>
-            <p class="text-xs text-slate-400">Rekomendasi prime-time algoritma Indonesia (Asia/Jakarta):</p>
-            <ul class="text-xs space-y-2 text-slate-300">
-              <li class="flex justify-between border-b border-slate-800/60 pb-1">
-                <span class="font-medium text-indigo-400">Instagram:</span>
-                <span>12.00 - 13.00 & 19.00 - 21.00</span>
-              </li>
-              <li class="flex justify-between border-b border-slate-800/60 pb-1">
-                <span class="font-medium text-violet-400">TikTok:</span>
-                <span>16.30 - 18.00 & 19.30 - 22.00</span>
-              </li>
-              <li class="flex justify-between border-b border-slate-800/60 pb-1">
-                <span class="font-medium text-sky-400">Facebook:</span>
-                <span>08.00 - 10.00 & 13.00 - 15.00</span>
-              </li>
-            </ul>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 4: AI CONTENT STUDIO                       -->
+      <!-- TAB 2: AI CONTENT STUDIO (REAL MULTI-AI)       -->
       <!-- ============================================== -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
-          <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
+        <!-- Input Configuration Panel -->
+        <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+          <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
             <div>
               <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
-              <p class="text-xs text-slate-400">Generator naskah terstruktur per platform.</p>
+              <p class="text-xs text-slate-400">Generator naskah & copy terstruktur via API nyata.</p>
             </div>
-            <span id="studio-api-badge" class="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400">
-              Cek Status...
+            <span id="studio-api-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-amber-400">
+              API Belum Siap
             </span>
           </div>
 
           <div>
-            <label class="text-xs font-medium text-slate-300 block mb-1">Topik atau Masalah Audiens</label>
-            <input type="text" id="studio-topic" placeholder="Misal: Cara memilih outfit kuliah vintage low budget" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <label class="text-xs font-medium text-slate-300 block mb-1">Topik atau Problem Inti Audiens</label>
+            <input type="text" id="studio-topic" placeholder="Misal: Cara memilih warna busana untuk warm undertone" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Platform</label>
-              <select id="studio-platform" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <label class="text-xs font-medium text-slate-300 block mb-1">Platform Utama</label>
+              <select id="studio-platform" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
                 <option value="INSTAGRAM">Instagram</option>
                 <option value="TIKTOK">TikTok</option>
                 <option value="FACEBOOK">Facebook</option>
@@ -443,10 +214,10 @@
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Format Konten</label>
-              <select id="studio-format" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
-                <option value="Reels/Shorts">Video Pendek (Shorts/Reels)</option>
-                <option value="Carousel">Carousel Multi-Slide</option>
-                <option value="Single Post">Single Post / Feed</option>
+              <select id="studio-format" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="Reels/Shorts">Short Video (Reels/TikTok)</option>
+                <option value="Carousel">Carousel Slides (Edukasi)</option>
+                <option value="Single Post">Single Post & Caption Panjang</option>
               </select>
             </div>
           </div>
@@ -454,120 +225,201 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Pilar Konten</label>
-              <select id="studio-pillar" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <select id="studio-pillar" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
                 <option value="Edukasi">Edukasi & Tips</option>
-                <option value="Inspirasi">Inspirasi & Story</option>
-                <option value="Promosi">Promosi Katalog</option>
+                <option value="Inspirasi">Inspirasi & Storytelling</option>
+                <option value="Promosi">Promosi & Katalog</option>
                 <option value="Tutorial">Tutorial Praktis</option>
               </select>
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Target Persona</label>
-              <input type="text" id="studio-persona" value="Mahasiswi & Wanita Muda" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <input type="text" id="studio-persona" value="Mahasiswi & Wanita Muda Urban" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
             </div>
           </div>
 
           <button onclick="executeAIGeneration()" id="btn-generate" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>Generate Naskah Lengkap</span>
+            <span>Generate Naskah Terstruktur via AI</span>
           </button>
         </div>
 
-        <!-- Output Editor -->
-        <div class="lg:col-span-7 bg-[#111827]/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+        <!-- Output Editor Panel -->
+        <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
           <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <h3 class="font-semibold text-sm text-white">Naskah Terkurasi</h3>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h3 class="font-semibold text-sm text-white">Naskah Hasil Analisis AI</h3>
               <div class="flex items-center space-x-2">
-                <button onclick="copyGeneratedText()" id="btn-copy" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-lg flex items-center space-x-1">
+                <button onclick="copyGeneratedText()" id="btn-copy" class="text-xs bg-[#080c14] hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1 rounded-lg flex items-center space-x-1">
                   <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                  <span>Salin</span>
+                  <span>Salin Naskah</span>
                 </button>
                 <span id="output-badge" class="hidden text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  Siap Simpan
+                  Siap Disimpan
                 </span>
               </div>
             </div>
 
+            <!-- Empty State -->
             <div id="studio-empty-state" class="py-16 text-center text-slate-500">
               <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 stroke-1 text-slate-600"></i>
-              <p class="text-xs">Isi parameter di panel kiri lalu klik "Generate Naskah Lengkap".</p>
+              <p class="text-xs">Isi parameter di panel kiri lalu klik tombol Generate.</p>
             </div>
 
+            <!-- Structured Editor Result -->
             <div id="studio-result-state" class="hidden space-y-3.5 text-xs">
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">🎯 3-Second Hook:</label>
-                <input type="text" id="out-hook" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-medium text-white outline-none">
+                <label class="font-semibold text-slate-300 block mb-1">🎯 3-Second Hook (Penahan Scroll):</label>
+                <input type="text" id="out-hook" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-medium text-white outline-none">
               </div>
 
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah Lengkap / Slide Breakdown / Caption:</label>
-                <textarea id="out-body" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
+                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah Lengkap / Breakdown Adegan / Caption:</label>
+                <textarea id="out-body" rows="6" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="font-semibold text-slate-300 block mb-1">⚡ Call to Action (CTA):</label>
-                  <input type="text" id="out-cta" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+                  <input type="text" id="out-cta" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
                 </div>
                 <div>
                   <label class="font-semibold text-slate-300 block mb-1">🏷️ Hashtags & Keywords:</label>
-                  <input type="text" id="out-tags" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-indigo-400 outline-none">
+                  <input type="text" id="out-tags" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-indigo-400 outline-none">
                 </div>
               </div>
             </div>
           </div>
 
-          <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800/80 flex justify-end space-x-2">
-            <button onclick="executeAIGeneration()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-xl transition">
+          <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end space-x-2">
+            <button onclick="executeAIGeneration()" class="bg-[#080c14] hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-xl transition">
               Regenerasi
             </button>
             <button onclick="saveToCalendar()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-              <span>Simpan ke Firestore Cloud</span>
+              <span>Simpan ke Kalender Firestore</span>
             </button>
           </div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 5: KALENDER & KANBAN                       -->
+      <!-- TAB 3: RISET WEB & INTELIJEN TREN NYATA        -->
+      <!-- ============================================== -->
+      <section id="tab-research" class="hidden space-y-6">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h3 class="font-semibold text-sm text-white">Formulir Riset Niche & Discovery Tren Pasar</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Menganalisis tren pasar, perilaku audiens, dan celah konten kompetitor melalui AI terhubung.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Topik atau Niche Riset</label>
+              <input type="text" id="research-query" placeholder="Misal: Tren Korean Fashion Vintage 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Fokus Platform</label>
+              <select id="research-platform" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="Instagram & TikTok">Instagram & TikTok</option>
+                <option value="TikTok Short Video">TikTok Video Pendek</option>
+                <option value="Instagram Carousels & Reels">Instagram Reels & Carousel</option>
+                <option value="Facebook Groups & Fanpage">Facebook Komunitas</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Tujuan Analisis</label>
+              <select id="research-goal" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+                <option value="Temukan Pain Point & Masalah Audiens">Temukan Pain Point Audiens</option>
+                <option value="Analisis Celah Konten Kompetitor">Analisis Celah Konten Kompetitor</option>
+                <option value="Peluang Format Konten Viral">Peluang Format Konten Viral</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="executeWebResearch()" id="btn-research" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg shadow-indigo-600/30">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span>Jalankan Analisis Intelijen Tren</span>
+          </button>
+        </div>
+
+        <!-- Research Result Container (Strict Categorization) -->
+        <div id="research-result-container" class="hidden space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Box 1: Fakta Sumber -->
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
+              <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                <span>Fakta Sumber & Pola Audiens</span>
+              </span>
+              <ul id="res-facts" class="text-xs space-y-1.5 text-slate-300"></ul>
+            </div>
+
+            <!-- Box 2: Interpretasi Celah Pasar -->
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
+              <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                <i data-lucide="brain" class="w-4 h-4 text-indigo-400"></i>
+                <span>Interpretasi & Celah Kompetitor</span>
+              </span>
+              <p id="res-interpretation" class="text-xs text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <!-- Box 3: Hipotesis & Rekomendasi Format -->
+            <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
+                  <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+                  <span>Hipotesis & Rekomendasi Format</span>
+                </span>
+                <p id="res-hypothesis" class="text-xs text-slate-300 leading-relaxed mb-3"></p>
+              </div>
+              <button onclick="sendResearchToStudio()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center space-x-1.5 transition">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Ubah Jadi Draf Naskah di Studio</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: KALENDER EDITORIAL KANBAN               -->
       <!-- ============================================== -->
       <section id="tab-calendar" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <p class="text-xs text-slate-400">Manajemen workflow editorial tersinkronisasi realtime dengan Firestore:</p>
-          <span class="text-xs font-medium text-slate-300" id="total-kanban-items">0 Item</span>
+          <p class="text-xs text-slate-400">Pipa produksi konten tersimpan persisten di cloud Firestore Anda:</p>
+          <span class="text-xs font-medium text-slate-300" id="total-kanban-items">0 Konten</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 flex flex-col">
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
             <div class="flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-bold text-slate-200">💡 Ide Konten</span>
-              <span id="badge-count-IDEA" class="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+              <span id="badge-count-IDEA" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
             <div id="col-IDEA" class="space-y-2 flex-1 min-h-[300px]"></div>
           </div>
 
-          <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 flex flex-col">
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
             <div class="flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-bold text-slate-200">✍️ Naskah & Produksi</span>
-              <span id="badge-count-WRITING" class="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+              <span id="badge-count-WRITING" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
             <div id="col-WRITING" class="space-y-2 flex-1 min-h-[300px]"></div>
           </div>
 
-          <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 flex flex-col">
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
             <div class="flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-bold text-slate-200">🕒 Terjadwal</span>
-              <span id="badge-count-SCHEDULED" class="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+              <span id="badge-count-SCHEDULED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
             <div id="col-SCHEDULED" class="space-y-2 flex-1 min-h-[300px]"></div>
           </div>
 
-          <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 flex flex-col">
+          <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
             <div class="flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-bold text-slate-200">✅ Sudah Tayang</span>
-              <span id="badge-count-PUBLISHED" class="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
+              <span id="badge-count-PUBLISHED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
             <div id="col-PUBLISHED" class="space-y-2 flex-1 min-h-[300px]"></div>
           </div>
@@ -575,13 +427,13 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 6: ANALYTICS & CSV                         -->
+      <!-- TAB 5: ANALYTICS & CSV DATA IMPORT             -->
       <!-- ============================================== -->
       <section id="tab-analytics" class="hidden space-y-6">
-        <div class="bg-[#111827]/80 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 class="font-semibold text-xs text-white">Impor Data Analitik (CSV)</h3>
-            <p class="text-[11px] text-slate-400">Header: title, platform, views, reach, likes, comments, shares, saves.</p>
+            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV)</h3>
+            <p class="text-[11px] text-slate-400">Format kolom: title, platform, views, reach, likes, comments, shares, saves.</p>
           </div>
           <div>
             <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
@@ -592,21 +444,21 @@
           </div>
         </div>
 
-        <div class="bg-[#111827]/80 border border-slate-800 rounded-2xl shadow-lg overflow-hidden">
-          <div class="px-5 py-3 border-b border-slate-800/80">
-            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Matriks Konten & Interaksi</h3>
+        <div class="bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-5 py-3 border-b border-slate-800">
+            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Tabel Metrik Konten & Engagement Rate</h3>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                <tr class="bg-[#080c14] text-slate-400 border-b border-slate-800">
                   <th class="py-2.5 px-4 font-semibold">Judul Konten</th>
                   <th class="py-2.5 px-4 font-semibold">Platform</th>
                   <th class="py-2.5 px-4 font-semibold">Views</th>
                   <th class="py-2.5 px-4 font-semibold">Reach</th>
                   <th class="py-2.5 px-4 font-semibold">Likes</th>
                   <th class="py-2.5 px-4 font-semibold">Saves</th>
-                  <th class="py-2.5 px-4 font-semibold">Interaksi</th>
+                  <th class="py-2.5 px-4 font-semibold">Total Interaksi</th>
                   <th class="py-2.5 px-4 font-semibold">ER (Reach)</th>
                 </tr>
               </thead>
@@ -619,13 +471,13 @@
     </div>
   </main>
 
-  <!-- GEMINI API MODAL -->
+  <!-- MULTI-PROVIDER AI CONFIGURATION MODAL -->
   <div id="api-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-    <div class="bg-[#111827] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
+    <div class="bg-[#0b0f19] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="font-semibold text-sm text-white flex items-center space-x-1.5">
-          <i data-lucide="key" class="w-4 h-4 text-indigo-400"></i>
-          <span>Setup Gemini API Key</span>
+          <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+          <span>Konfigurasi Provider Model AI</span>
         </h3>
         <button onclick="closeApiModal()" class="text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -633,19 +485,28 @@
       </div>
 
       <p class="text-xs text-slate-400 leading-relaxed">
-        Kunci API disimpan secara aman di browser lokal Anda (<code class="bg-slate-900 px-1 py-0.5 rounded text-[11px] text-indigo-300">localStorage</code>) dan tidak pernah diunggah ke repository GitHub.
+        Pilih penyedia model AI dan masukkan API Key Anda. Kunci disimpan secara lokal di browser Anda (<code class="bg-slate-900 px-1 py-0.5 rounded text-[11px] text-indigo-300">localStorage</code>) dan tidak pernah dikirim ke repository GitHub.
       </p>
 
       <div>
-        <label class="text-xs font-medium text-slate-300 block mb-1">Gemini API Key</label>
-        <input type="password" id="input-api-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+        <label class="text-xs font-medium text-slate-300 block mb-1">Penyedia AI</label>
+        <select id="select-ai-provider" onchange="toggleProviderInputs()" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
+          <option value="gemini">Google Gemini API (Disarankan - Free Tier)</option>
+          <option value="openai">OpenAI API (GPT-4o-mini)</option>
+          <option value="openrouter">OpenRouter / Groq (Llama-3 / DeepSeek)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs font-medium text-slate-300 block mb-1" id="lbl-api-key">API Key</label>
+        <input type="password" id="input-api-key" placeholder="Masukkan API Key Anda..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
       </div>
 
       <div id="modal-test-status" class="hidden p-2 rounded-lg text-xs"></div>
 
       <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
         <button onclick="testApiConnection()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition">
-          Uji Koneksi
+          Uji Handshake
         </button>
         <div class="space-x-2">
           <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
@@ -655,9 +516,9 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC DENGAN PRO AUDIT & FIREBASE SYNC -->
+  <!-- JAVASCRIPT APP LOGIC -->
   <script>
-    // Konfigurasi Firebase Aktif
+    // Konfigurasi Firebase Aktif (Projek alisya-live-db)
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -669,42 +530,10 @@
       measurementId: "G-DHVMKXENV4"
     };
 
-    const DEFAULT_DATA = [
-      {
-        id: "demo-1",
-        title: "3 Kesalahan Fatal Menata Feed Instagram Brand",
-        platform: "INSTAGRAM",
-        format: "Carousel",
-        pillar: "Edukasi",
-        status: "PUBLISHED",
-        hook: "Feed brand kamu sepi interaksi? Mungkin kamu sering lakuin 3 kesalahan ini!",
-        bodyCopy: "Banyak brand cuma fokus warna senada tapi lupa hierarki tipografi...",
-        cta: "Simpan postingan ini untuk panduan tim kamu!",
-        tags: "#SocialMediaTips, #Branding",
-        scheduledDate: "2026-10-25",
-        views: 4500, reach: 3800, likes: 310, comments: 45, shares: 80, saves: 210
-      },
-      {
-        id: "demo-2",
-        title: "Tutorial CapCut: Bikin Teks Animasi Hook TikTok 1 Menit",
-        platform: "TIKTOK",
-        format: "Reels/Shorts",
-        pillar: "Tutorial",
-        status: "SCHEDULED",
-        hook: "Jangan biarkan video kamu di-skip di 3 detik pertama!",
-        bodyCopy: "Langkah mudah menambahkan auto-captions dinamis langsung di CapCut.",
-        cta: "Ketik 'PRESET' di komentar untuk dapat link template!",
-        tags: "#TikTokTips, #CapCut",
-        scheduledDate: "2026-10-28",
-        views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0
-      }
-    ];
-
     let contentItems = [];
     let chartInstance = null;
     let db = null;
-    let activeAuditPlatform = 'INSTAGRAM';
-    let latestAuditPayload = null;
+    let activeBrand = "Utama";
 
     // --- INISIALISASI FIRESTORE ---
     function initFirebase() {
@@ -714,21 +543,18 @@
           firebase.initializeApp(firebaseConfig);
         }
         db = firebase.firestore();
-        dbStatusEl.innerText = 'Firestore Aktif';
+        dbStatusEl.innerText = 'Firestore Terhubung';
         dbStatusEl.className = 'font-medium text-emerald-400';
 
+        // Realtime sync dari koleksi Firestore
         db.collection("socialos_contents").onSnapshot((snapshot) => {
           const remoteData = [];
           snapshot.forEach((doc) => remoteData.push({ id: doc.id, ...doc.data() }));
-          if (remoteData.length > 0) {
-            contentItems = remoteData;
-            renderAll();
-          } else {
-            DEFAULT_DATA.forEach(item => db.collection("socialos_contents").doc(item.id).set(item));
-          }
+          contentItems = remoteData;
+          renderAll();
         }, (error) => {
           console.error("Firestore sync error:", error);
-          dbStatusEl.innerText = 'Cek Rules FB';
+          dbStatusEl.innerText = 'Izin Rules Ditolak';
           dbStatusEl.className = 'font-medium text-rose-400';
           loadLocalStorageFallback();
         });
@@ -741,16 +567,12 @@
 
     function loadLocalStorageFallback() {
       const stored = localStorage.getItem('socialos_data');
-      if (stored) {
-        try { contentItems = JSON.parse(stored); } catch (e) { contentItems = DEFAULT_DATA; }
-      } else {
-        contentItems = DEFAULT_DATA;
-        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
-      }
+      contentItems = stored ? JSON.parse(stored) : [];
       renderAll();
     }
 
     async function syncSaveItem(item) {
+      item.brand = activeBrand;
       if (db) {
         try { await db.collection("socialos_contents").doc(item.id).set(item, { merge: true }); } catch (err) {}
       } else {
@@ -772,22 +594,48 @@
       }
     }
 
-    function resetData() {
-      if (confirm('Kembalikan ke data awal?')) {
+    async function clearAllData() {
+      if (confirm('Apakah Anda yakin ingin menghapus seluruh data di database cloud?')) {
         if (db) {
           contentItems.forEach(async (it) => await db.collection("socialos_contents").doc(it.id).delete());
-          DEFAULT_DATA.forEach(async (it) => await db.collection("socialos_contents").doc(it.id).set(it));
         } else {
-          contentItems = JSON.parse(JSON.stringify(DEFAULT_DATA));
-          localStorage.setItem('socialos_data', JSON.stringify(contentItems));
+          contentItems = [];
+          localStorage.removeItem('socialos_data');
           renderAll();
         }
       }
     }
 
-    // --- NAVIGATION ---
+    // --- BRAND WORKSPACE MANAGEMENT ---
+    function loadBrands() {
+      const savedBrands = JSON.parse(localStorage.getItem('socialos_brands') || '["Utama"]');
+      const select = document.getElementById('brand-select');
+      select.innerHTML = savedBrands.map(b => `<option value="${b}">${b}</option>`).join('');
+      select.value = activeBrand;
+    }
+
+    function promptAddBrand() {
+      const name = prompt('Masukkan nama Brand atau Klien baru:');
+      if (name && name.trim()) {
+        const savedBrands = JSON.parse(localStorage.getItem('socialos_brands') || '["Utama"]');
+        if (!savedBrands.includes(name.trim())) {
+          savedBrands.push(name.trim());
+          localStorage.setItem('socialos_brands', JSON.stringify(savedBrands));
+          activeBrand = name.trim();
+          loadBrands();
+          renderAll();
+        }
+      }
+    }
+
+    function handleBrandChange() {
+      activeBrand = document.getElementById('brand-select').value;
+      renderAll();
+    }
+
+    // --- NAVIGATION TABS ---
     function switchTab(tabId) {
-      ['overview', 'audit', 'tools', 'studio', 'calendar', 'analytics'].forEach(t => {
+      ['overview', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
         if (t === tabId) {
@@ -801,209 +649,201 @@
         }
       });
       const titles = {
-        overview: 'Executive Overview',
-        audit: 'Audit & Deteksi Akun (Instagram, TikTok, Facebook)',
-        tools: 'Creator Pro Tools & Template Vault',
+        overview: 'Executive Dashboard',
         studio: 'AI Content Studio & Generator',
-        calendar: 'Editorial Calendar & Production Workflow',
+        research: 'Riset Web & Tren Akun',
+        calendar: 'Kalender Editorial Kanban',
         analytics: 'Cross-Platform Performance Analytics'
       };
       document.getElementById('page-title').innerText = titles[tabId];
       lucide.createIcons();
     }
 
-    // --- AUDIT SYSTEM (IG, TIKTOK, FACEBOOK) ---
-    function setAuditPlatform(plat) {
-      activeAuditPlatform = plat;
-      ['IG', 'TT', 'FB'].forEach(p => {
-        const b = document.getElementById(`btn-plat-${p}`);
-        b.className = 'plat-audit-btn py-2 px-3 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
-      });
-      const activeMap = { INSTAGRAM: 'IG', TIKTOK: 'TT', FACEBOOK: 'FB' };
-      const currentBtn = document.getElementById(`btn-plat-${activeMap[plat]}`);
-      currentBtn.className = 'plat-audit-btn py-2 px-3 rounded-lg border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+    // --- MULTI-PROVIDER AI CONFIGURATION ---
+    function openApiModal() {
+      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
+      document.getElementById('select-ai-provider').value = prov;
+      document.getElementById('input-api-key').value = localStorage.getItem(`socialos_${prov}_key`) || '';
+      document.getElementById('modal-test-status').className = 'hidden';
+      document.getElementById('api-modal').classList.remove('hidden');
     }
 
-    async function runAccountAudit() {
-      const handle = document.getElementById('audit-handle').value.trim();
-      const followers = parseInt(document.getElementById('audit-followers').value) || 0;
-      const views = parseInt(document.getElementById('audit-views').value) || 0;
-      const bio = document.getElementById('audit-bio').value.trim();
-      const hasLink = document.getElementById('chk-link').checked;
-      const hasContact = document.getElementById('chk-contact').checked;
-      const hasHighlights = document.getElementById('chk-highlights').checked;
-      const btn = document.getElementById('btn-audit');
+    function closeApiModal() {
+      document.getElementById('api-modal').classList.add('hidden');
+    }
 
-      if (!handle) return alert('Harap masukkan username / handle akun terlebih dahulu.');
+    function toggleProviderInputs() {
+      const prov = document.getElementById('select-ai-provider').value;
+      document.getElementById('input-api-key').value = localStorage.getItem(`socialos_${prov}_key`) || '';
+    }
 
-      btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Menganalisis Akun...</span>`;
-      lucide.createIcons();
+    async function testApiConnection() {
+      const prov = document.getElementById('select-ai-provider').value;
+      const key = document.getElementById('input-api-key').value.trim();
+      const statusDiv = document.getElementById('modal-test-status');
 
-      // Kalkulasi Algoritmik Kesehatan Akun (Score 0 - 100)
-      let score = 40;
-      const reachRatio = followers > 0 ? ((views / followers) * 100).toFixed(1) : 0;
-      if (hasLink) score += 15;
-      if (hasContact) score += 10;
-      if (hasHighlights) score += 10;
-      if (bio.length > 25) score += 15;
-      if (reachRatio > 20) score += 10;
-      score = Math.min(score, 100);
-
-      let grade = 'C';
-      if (score >= 85) grade = 'A+ (Sangat Sehat)';
-      else if (score >= 70) grade = 'A (Sehat)';
-      else if (score >= 50) grade = 'B (Cukup)';
-
-      // Action Items Rekomendasi
-      const actions = [];
-      if (!hasLink) actions.push('Tambahkan link-in-bio (Linktree, Shopee, atau Katalog WhatsApp) untuk menangkap traffic.');
-      if (!hasContact) actions.push('Pasang tombol kontak atau email profesional di profil untuk peluang kolaborasi brand.');
-      if (bio.length < 25) actions.push('Bio terlalu singkat. Gunakan struktur: [Siapa Anda] + [Masalah yang Anda selesaikan] + [CTA ke link].');
-      if (activeAuditPlatform === 'TIKTOK' && reachRatio < 30) {
-        actions.push('Rasio tayangan video masih di bawah 30% dari followers. Fokus pada peningkatan 3 detik pertama (visual hook).');
-      } else if (activeAuditPlatform === 'INSTAGRAM') {
-        actions.push('Maksimalkan format Carousel 5-7 slide untuk meningkatkan rasio simpanan (saves) dan distribusi Explore.');
-      } else if (activeAuditPlatform === 'FACEBOOK') {
-        actions.push('Gunakan postingan berbasis pertanyaan diskusi publik untuk memicu interaksi komentar dan share grup.');
+      if (!key) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = 'Harap masukkan API Key terlebih dahulu.';
+        return;
       }
 
-      // Saran Bio Konversi Otomatis
-      const suggestedBio = `✨ Solusi gaya & inspirasi harian @${handle}\n💡 Tips outfit & rekomendasi terpercaya untukmu\n👇 Dapatkan katalog & penawaran eksklusif di sini:`;
+      statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
+      statusDiv.innerText = `Menguji handshake ke ${prov.toUpperCase()}...`;
 
-      latestAuditPayload = {
-        handle, platform: activeAuditPlatform, followers, views, score, grade, reachRatio,
-        summary: `Akun @${handle} di platform ${activeAuditPlatform} memiliki skor kesehatan ${score}/100. Rasio jangkauan akun mencapai ${reachRatio}% terhadap basis pengikut.`,
-        actions, suggestedBio, timestamp: new Date().toISOString()
-      };
-
-      // Tampilkan Hasil di Layar
-      document.getElementById('res-score-total').innerText = `${score}/100`;
-      document.getElementById('res-reach-ratio').innerText = `${reachRatio}%`;
-      document.getElementById('res-bio-strength').innerText = bio.length > 30 ? 'Kuat' : 'Perlu Optimasi';
-      document.getElementById('res-audit-summary').innerText = latestAuditPayload.summary;
-      document.getElementById('res-suggested-bio').innerText = suggestedBio;
-      
-      const actList = document.getElementById('res-audit-actions');
-      actList.innerHTML = actions.map(a => `<li class="flex items-start space-x-1.5"><span class="text-amber-400">•</span><span>${a}</span></li>`).join('');
-
-      const gradeBadge = document.getElementById('audit-grade-badge');
-      gradeBadge.innerText = `Grade: ${grade}`;
-      gradeBadge.classList.remove('hidden');
-
-      document.getElementById('audit-empty-state').classList.add('hidden');
-      document.getElementById('audit-result-state').classList.remove('hidden');
-      document.getElementById('audit-footer-action').classList.remove('hidden');
-
-      btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="scan" class="w-4 h-4"></i><span>Jalankan Diagnostik & Audit Lengkap</span>`;
-      lucide.createIcons();
-    }
-
-    async function saveAuditToFirestore() {
-      if (!latestAuditPayload) return;
-      if (db) {
-        try {
-          await db.collection("socialos_audits").doc(`audit-${Date.now()}`).set(latestAuditPayload);
-          alert('Hasil audit berhasil disimpan secara permanen di database Cloud Firestore Anda!');
-        } catch (e) {
-          alert('Gagal menyimpan ke Firestore. Periksa aturan keamanan database.');
+      try {
+        if (prov === 'gemini') {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Tes singkat." }] }] })
+          });
+          if (!res.ok) throw new Error('API Key Gemini tidak valid.');
+        } else if (prov === 'openai') {
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "Tes." }] })
+          });
+          if (!res.ok) throw new Error('API Key OpenAI tidak valid.');
         }
-      } else {
-        alert('Tersimpan di sesi lokal.');
+
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 block';
+        statusDiv.innerText = `Koneksi Berhasil! Model ${prov.toUpperCase()} terhubung sempurna.`;
+      } catch (e) {
+        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
+        statusDiv.innerText = e.message || 'Gagal menghubungi server API.';
       }
     }
 
-    // --- QUICK TOOLS LOGIC ---
-    function copyToolText(el) {
-      const text = el.querySelector('span').innerText;
-      navigator.clipboard.writeText(text);
-      alert('Teks berhasil disalin ke clipboard!');
+    function saveApiKey() {
+      const prov = document.getElementById('select-ai-provider').value;
+      const key = document.getElementById('input-api-key').value.trim();
+      localStorage.setItem('socialos_ai_provider', prov);
+      if (key) localStorage.setItem(`socialos_${prov}_key`, key);
+      closeApiModal();
+      updateAIStatusUI();
     }
 
-    function calculateQuickER() {
-      const fol = parseInt(document.getElementById('tool-calc-followers').value) || 0;
-      const eng = parseInt(document.getElementById('tool-calc-eng').value) || 0;
-      const box = document.getElementById('tool-er-result');
-      if (fol <= 0) return alert('Masukkan jumlah followers.');
-      const rate = ((eng / fol) * 100).toFixed(2);
-      let status = 'Standar';
-      if (rate > 5) status = '🔥 High Viral Tier (Sangat Bagus)';
-      else if (rate >= 2) status = '✅ Healthy Active Tier';
-      else status = '⚠️ Di bawah rata-rata (Perlu perbaiki hook)';
+    function updateAIStatusUI() {
+      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
+      const key = localStorage.getItem(`socialos_${prov}_key`);
+      const badge = document.getElementById('ai-conn-badge');
+      const sideModel = document.getElementById('sidebar-ai-model');
+      const studioBadge = document.getElementById('studio-api-badge');
 
-      box.classList.remove('hidden');
-      box.innerHTML = `<span class="text-white font-bold">${rate}%</span> — <span class="text-indigo-400">${status}</span>`;
+      if (key) {
+        badge.innerText = `AI: ${prov.toUpperCase()} AKTIF`;
+        badge.className = 'text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full';
+        sideModel.innerText = `${prov.toUpperCase()}`;
+        sideModel.className = 'font-medium text-emerald-400';
+        studioBadge.innerText = `${prov.toUpperCase()} Ready`;
+        studioBadge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      } else {
+        badge.innerText = 'AI: NONAKTIF';
+        badge.className = 'text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full';
+        sideModel.innerText = 'Belum Ada Key';
+        sideModel.className = 'font-medium text-slate-500';
+        studioBadge.innerText = 'Key Belum Diisi';
+        studioBadge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      }
     }
 
-    // --- AI CONTENT STUDIO ---
+    // --- PRIORITAS 1: AI CONTENT STUDIO ---
     let currentGeneratedItem = null;
 
     async function executeAIGeneration() {
       const topic = document.getElementById('studio-topic').value.trim();
-      if (!topic) return alert('Harap masukkan topik konten.');
+      if (!topic) return alert('Harap isi topik atau masalah audiens terlebih dahulu.');
+
+      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
+      const key = localStorage.getItem(`socialos_${prov}_key`);
+
+      if (!key) {
+        alert(`API Key untuk ${prov.toUpperCase()} belum dikonfigurasi. Klik 'Hubungkan Model AI' di sidebar kiri bawah.`);
+        return openApiModal();
+      }
+
       const platform = document.getElementById('studio-platform').value;
       const format = document.getElementById('studio-format').value;
       const pillar = document.getElementById('studio-pillar').value;
       const persona = document.getElementById('studio-persona').value;
-      const brand = document.getElementById('brand-select').value;
-      const apiKey = localStorage.getItem('socialos_gemini_key');
       const btn = document.getElementById('btn-generate');
 
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Merumuskan Naskah...</span>`;
+      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>AI Sedang Merumuskan...</span>`;
       lucide.createIcons();
 
-      if (apiKey) {
-        try {
-          const prompt = `Anda adalah content strategist untuk brand "${brand}". Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Target: ${persona}. Bahas topik: "${topic}". Kembalikan JSON murni TANPA markdown: {"title": "Judul", "hook": "Hook 3 detik", "body": "Naskah/Slide lengkap", "cta": "CTA", "tags": "#Tag"}`;
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const systemPrompt = `Anda adalah Social Media Strategist & Copywriter profesional untuk brand "${activeBrand}".
+Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Persona: ${persona}.
+Topik: "${topic}".
+Kembalikan format JSON murni TANPA markdown kutip dengan skema:
+{
+  "title": "Judul Konsep Konten",
+  "hook": "Kalimat pembuka 3 detik pertama",
+  "body": "Naskah lengkap adegan/slide beserta arahan visual",
+  "cta": "Kalimat Call to Action",
+  "tags": "#Tag1 #Tag2 #Tag3"
+}`;
+
+      try {
+        let parsedData = null;
+        if (prov === 'gemini') {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
+              contents: [{ parts: [{ text: systemPrompt }] }],
               generationConfig: { responseMimeType: "application/json" }
             })
           });
-          const data = await res.json();
-          const parsed = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text);
-          currentGeneratedItem = { title: parsed.title, platform, format, pillar, hook: parsed.hook, bodyCopy: parsed.body, cta: parsed.cta, tags: parsed.tags };
-        } catch (e) {
-          fallbackLocalGenerator(topic, platform, format, pillar);
+          const json = await res.json();
+          parsedData = JSON.parse(json.candidates?.[0]?.content?.parts?.[0]?.text);
+        } else if (prov === 'openai') {
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [{ role: "system", content: systemPrompt }],
+              response_format: { type: "json_object" }
+            })
+          });
+          const json = await res.json();
+          parsedData = JSON.parse(json.choices?.[0]?.message?.content);
         }
-      } else {
-        fallbackLocalGenerator(topic, platform, format, pillar);
+
+        currentGeneratedItem = {
+          title: parsedData.title || topic,
+          platform, format, pillar,
+          hook: parsedData.hook,
+          bodyCopy: parsedData.body,
+          cta: parsedData.cta,
+          tags: parsedData.tags
+        };
+
+        document.getElementById('out-hook').value = currentGeneratedItem.hook;
+        document.getElementById('out-body').value = currentGeneratedItem.bodyCopy;
+        document.getElementById('out-cta').value = currentGeneratedItem.cta;
+        document.getElementById('out-tags').value = currentGeneratedItem.tags;
+
+        document.getElementById('studio-empty-state').classList.add('hidden');
+        document.getElementById('studio-result-state').classList.remove('hidden');
+        document.getElementById('studio-action-footer').classList.remove('hidden');
+        document.getElementById('output-badge').classList.remove('hidden');
+      } catch (err) {
+        alert('Gagal menghasilkan naskah: ' + err.message);
       }
 
-      document.getElementById('out-hook').value = currentGeneratedItem.hook;
-      document.getElementById('out-body').value = currentGeneratedItem.bodyCopy;
-      document.getElementById('out-cta').value = currentGeneratedItem.cta;
-      document.getElementById('out-tags').value = currentGeneratedItem.tags;
-      document.getElementById('studio-empty-state').classList.add('hidden');
-      document.getElementById('studio-result-state').classList.remove('hidden');
-      document.getElementById('studio-action-footer').classList.remove('hidden');
-      document.getElementById('output-badge').classList.remove('hidden');
-
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i><span>Generate Naskah Lengkap</span>`;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i><span>Generate Naskah Terstruktur via AI</span>`;
       lucide.createIcons();
     }
 
-    function fallbackLocalGenerator(topic, platform, format, pillar) {
-      currentGeneratedItem = {
-        title: `Strategi ${topic}`,
-        platform, format, pillar,
-        hook: `Jangan sampai salah langkah saat mencoba ${topic}!`,
-        bodyCopy: `Banyak kreator salah fokus ketika menggarap ${topic}.\n\n1. Pahami kebutuhan dasar audiens.\n2. Sajikan solusi dalam 30 detik pertama.\n3. Pertahankan konsistensi pesan.`,
-        cta: `Simpan postingan ini agar tidak lupa!`,
-        tags: `#${topic.replace(/\\s+/g, '')} #SocialOS`
-      };
-    }
-
     function copyGeneratedText() {
-      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[BODY]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
+      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[NASKAH / SLIDE]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
       navigator.clipboard.writeText(full);
-      alert('Naskah berhasil disalin!');
+      alert('Naskah berhasil disalin ke clipboard!');
     }
 
     async function saveToCalendar() {
@@ -1026,6 +866,80 @@
       switchTab('calendar');
     }
 
+    // --- PRIORITAS 2: RISET WEB & INTELIJEN TREN ---
+    async function executeWebResearch() {
+      const q = document.getElementById('research-query').value.trim();
+      const plat = document.getElementById('research-platform').value;
+      const goal = document.getElementById('research-goal').value;
+      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
+      const key = localStorage.getItem(`socialos_${prov}_key`);
+      const btn = document.getElementById('btn-research');
+
+      if (!q) return alert('Harap isi topik riset.');
+      if (!key) {
+        alert('Kunci API belum diisi. Silakan konfigurasi API terlebih dahulu.');
+        return openApiModal();
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Menganalisis Data...</span>`;
+      lucide.createIcons();
+
+      const researchPrompt = `Sebagai Social Media Analyst untuk pasar Indonesia, analisis topik: "${q}".
+Platform fokus: ${plat}. Tujuan: ${goal}.
+Pisahkan jawaban DALAM JSON MURNI tanpa markdown kutip persis:
+{
+  "facts": ["Fakta teramati 1 tentang audiens", "Fakta teramati 2 tentang pola konsumsi konten"],
+  "interpretation": "Interpretasi analitis terkait celah pasar yang belum dipenuhi kompetitor.",
+  "hypothesis": "Hipotesis konten: Rekomendasi format (Reels/Carousel) dan hook yang berpeluang viral."
+}`;
+
+      try {
+        let resData = null;
+        if (prov === 'gemini') {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: researchPrompt }] }],
+              generationConfig: { responseMimeType: "application/json" }
+            })
+          });
+          const json = await res.json();
+          resData = JSON.parse(json.candidates?.[0]?.content?.parts?.[0]?.text);
+        } else if (prov === 'openai') {
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [{ role: "system", content: researchPrompt }],
+              response_format: { type: "json_object" }
+            })
+          });
+          const json = await res.json();
+          resData = JSON.parse(json.choices?.[0]?.message?.content);
+        }
+
+        document.getElementById('res-facts').innerHTML = resData.facts.map(f => `<li>• ${f}</li>`).join('');
+        document.getElementById('res-interpretation').innerText = resData.interpretation;
+        document.getElementById('res-hypothesis').innerText = resData.hypothesis;
+        document.getElementById('research-result-container').classList.remove('hidden');
+      } catch (err) {
+        alert('Gagal mengeksekusi riset: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i><span>Jalankan Analisis Intelijen Tren</span>`;
+      lucide.createIcons();
+    }
+
+    function sendResearchToStudio() {
+      const q = document.getElementById('research-query').value.trim();
+      document.getElementById('studio-topic').value = q;
+      switchTab('studio');
+    }
+
     // --- KANBAN LOGIC ---
     async function updateItemStatus(id, newStatus) {
       const it = contentItems.find(i => i.id === id);
@@ -1042,13 +956,14 @@
     }
 
     function renderKanban() {
+      const filteredItems = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
       ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(st => {
         const col = document.getElementById(`col-${st}`);
-        const filtered = contentItems.filter(i => i.status === st);
-        document.getElementById(`badge-count-${st}`).innerText = filtered.length;
+        const list = filteredItems.filter(i => i.status === st);
+        document.getElementById(`badge-count-${st}`).innerText = list.length;
 
-        col.innerHTML = filtered.map(item => `
-          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 shadow-xs space-y-2">
+        col.innerHTML = list.map(item => `
+          <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800 shadow-xs space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">${item.platform}</span>
               <span class="text-[10px] text-slate-500">${item.format}</span>
@@ -1071,16 +986,17 @@
           </div>
         `).join('');
       });
-      document.getElementById('total-kanban-items').innerText = `${contentItems.length} Konten Total`;
+      document.getElementById('total-kanban-items').innerText = `${filteredItems.length} Konten`;
     }
 
-    // --- OVERVIEW & ANALYTICS ---
+    // --- OVERVIEW & REAL ANALYTICS ---
     function renderOverviewAndAnalytics() {
+      const filtered = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
       let totalViews = 0, totalReach = 0, totalInteractions = 0, publishedCount = 0;
       const tbody = document.getElementById('analytics-table-body');
       tbody.innerHTML = '';
 
-      contentItems.forEach(item => {
+      filtered.forEach(item => {
         const eng = (item.likes || 0) + (item.comments || 0) + (item.shares || 0) + (item.saves || 0);
         totalViews += (item.views || 0);
         totalReach += (item.reach || 0);
@@ -1103,21 +1019,38 @@
         tbody.appendChild(row);
       });
 
-      document.getElementById('kpi-total-posts').innerText = `${contentItems.length} Item`;
+      // Update Real KPIs
+      document.getElementById('kpi-total-posts').innerText = `${filtered.length} Item`;
       document.getElementById('kpi-published-posts').innerText = `${publishedCount} Sudah Tayang`;
       document.getElementById('kpi-total-reach').innerText = totalReach.toLocaleString('id-ID');
       document.getElementById('kpi-total-eng').innerText = totalInteractions.toLocaleString('id-ID');
+
       const avgER = totalReach > 0 ? ((totalInteractions / totalReach) * 100).toFixed(2) : '0.00';
       document.getElementById('kpi-er').innerText = `${avgER}%`;
 
-      updateChart();
+      if (filtered.length > 0) {
+        document.getElementById('briefing-desc').innerText = `Terpantau ${filtered.length} konten di brand "${activeBrand}". Rata-rata rasio interaksi berada di angka ${avgER}%.`;
+      } else {
+        document.getElementById('briefing-desc').innerText = `Belum ada data metrik aktual untuk brand "${activeBrand}".`;
+      }
+
+      updateChart(filtered);
     }
 
-    function updateChart() {
+    function updateChart(filtered) {
       const ctx = document.getElementById('overviewChart').getContext('2d');
-      const labels = contentItems.map(i => i.title.substring(0, 16) + '...');
-      const reachData = contentItems.map(i => i.reach || 0);
-      const engData = contentItems.map(i => (i.likes || 0) + (i.comments || 0) + (i.shares || 0) + (i.saves || 0));
+      const emptyState = document.getElementById('chart-empty-state');
+
+      if (!filtered || filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        if (chartInstance) chartInstance.destroy();
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      const labels = filtered.map(i => i.title.substring(0, 16) + '...');
+      const reachData = filtered.map(i => i.reach || 0);
+      const engData = filtered.map(i => (i.likes || 0) + (i.comments || 0) + (i.shares || 0) + (i.saves || 0));
 
       if (chartInstance) chartInstance.destroy();
       chartInstance = new Chart(ctx, {
@@ -1143,15 +1076,16 @@
 
     // --- CSV IMPORT / EXPORT ---
     function exportToCSV() {
+      const filtered = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
       const headers = ['title', 'platform', 'format', 'status', 'reach', 'likes', 'comments', 'shares', 'saves'];
-      const rows = contentItems.map(i => [
+      const rows = filtered.map(i => [
         `"${i.title.replace(/"/g, '""')}"`, i.platform, i.format, i.status,
         i.reach || 0, i.likes || 0, i.comments || 0, i.shares || 0, i.saves || 0
       ]);
       const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\\n');
       const link = document.createElement('a');
       link.setAttribute('href', encodeURI(csvContent));
-      link.setAttribute('download', `SocialOS_Export_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `SocialOS_${activeBrand}_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1169,6 +1103,7 @@
           if (cols.length >= 4) {
             const newItem = {
               id: 'imp-' + Date.now() + '-' + i,
+              brand: activeBrand,
               title: cols[0].replace(/"/g, '').trim(),
               platform: (cols[1] || 'TIKTOK').trim().toUpperCase(),
               format: 'Single Post',
@@ -1186,75 +1121,9 @@
             await syncSaveItem(newItem);
           }
         }
-        alert('Impor data selesai dan disinkronkan ke cloud!');
+        alert('Impor data CSV selesai dan disinkronkan ke database Firestore!');
       };
       reader.readAsText(file);
-    }
-
-    // --- GEMINI API MODAL ---
-    function openApiModal() {
-      document.getElementById('input-api-key').value = localStorage.getItem('socialos_gemini_key') || '';
-      document.getElementById('modal-test-status').className = 'hidden';
-      document.getElementById('api-modal').classList.remove('hidden');
-    }
-
-    function closeApiModal() {
-      document.getElementById('api-modal').classList.add('hidden');
-    }
-
-    async function testApiConnection() {
-      const key = document.getElementById('input-api-key').value.trim();
-      const statusDiv = document.getElementById('modal-test-status');
-      if (!key) {
-        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
-        statusDiv.innerText = 'Harap isi API Key terlebih dahulu.';
-        return;
-      }
-      statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
-      statusDiv.innerText = 'Menguji koneksi ke Google Gemini API...';
-
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: "Tes koneksi." }] }] })
-        });
-        if (res.ok) {
-          statusDiv.className = 'p-2 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 block';
-          statusDiv.innerText = 'Koneksi Berhasil! Kunci API aktif.';
-        } else {
-          statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
-          statusDiv.innerText = 'Koneksi Gagal. Periksa kembali kunci API Anda.';
-        }
-      } catch (e) {
-        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
-        statusDiv.innerText = 'Gagal menghubungi server API.';
-      }
-    }
-
-    function saveApiKey() {
-      const key = document.getElementById('input-api-key').value.trim();
-      if (key) localStorage.setItem('socialos_gemini_key', key);
-      else localStorage.removeItem('socialos_gemini_key');
-      closeApiModal();
-      updateApiStatusUI();
-    }
-
-    function updateApiStatusUI() {
-      const key = localStorage.getItem('socialos_gemini_key');
-      const studioBadge = document.getElementById('studio-api-badge');
-      const aiStatus = document.getElementById('sidebar-ai-status');
-      if (key) {
-        studioBadge.innerText = 'Gemini API Aktif';
-        studioBadge.className = 'text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20';
-        aiStatus.innerText = 'Gemini Aktif';
-        aiStatus.className = 'font-medium text-emerald-400';
-      } else {
-        studioBadge.innerText = 'Demo Mode';
-        studioBadge.className = 'text-[10px] font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20';
-        aiStatus.innerText = 'Demo Mode';
-        aiStatus.className = 'font-medium text-slate-400';
-      }
     }
 
     function renderAll() {
@@ -1264,8 +1133,9 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadBrands();
       initFirebase();
-      updateApiStatusUI();
+      updateAIStatusUI();
     });
   </script>
 </body>
