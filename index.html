@@ -1358,6 +1358,756 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
           }
         }
       });
+      <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SocialOS v2.4.2 — Realtime Content & Follower Analytics</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #080c14; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex flex-col md:flex-row overflow-hidden">
+
+  <!-- AUTHENTICATION MODAL -->
+  <div id="auth-modal" class="fixed inset-0 bg-[#080c14]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-[#0f172a] border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 mx-auto flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/30">
+          S
+        </div>
+        <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
+        <p class="text-xs text-slate-400">v2.4.2 — Follower & Account Diagnostics</p>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <div>
+          <label class="text-[11px] font-medium text-slate-300 block mb-1">Alamat Email</label>
+          <input type="email" id="auth-email" placeholder="nama@email.com" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="text-[11px] font-medium text-slate-300 block mb-1">Kata Sandi</label>
+          <input type="password" id="auth-password" placeholder="Minimal 6 karakter" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div id="auth-error-msg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg"></div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="handleEmailLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow-md shadow-indigo-600/30">
+            Masuk
+          </button>
+          <button onclick="handleEmailRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs py-2 rounded-lg transition border border-slate-700">
+            Daftar Akun
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR (DESKTOP & MOBILE DRAWER) -->
+  <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col shrink-0 transition-transform duration-300 -translate-x-full md:relative md:translate-x-0">
+    <div class="p-4 flex items-center justify-between border-b border-slate-800/80">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-md">
+          S
+        </div>
+        <div>
+          <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
+          <p class="text-[9px] text-indigo-400 font-mono">v2.4.2-DIAGNOSTIC</p>
+        </div>
+      </div>
+      <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Brand Workspace Selector -->
+    <div class="px-3.5 py-3 border-b border-slate-800/80 bg-slate-950/40">
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Brand Aktif</label>
+        <button onclick="promptCreateBrand()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium">+ Brand Baru</button>
+      </div>
+      <select id="brand-select" onchange="changeActiveBrand()" class="w-full bg-[#080c14] border border-slate-800 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+        <option value="default">Brand Utama (Default)</option>
+      </select>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+      <button onclick="switchTab('diagnostic'); toggleMobileSidebar(false);" id="nav-diagnostic" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
+        <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
+        <span>Kalkulator & Analisis Akun</span>
+      </button>
+
+      <button onclick="switchTab('overview'); toggleMobileSidebar(false);" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Executive Dashboard</span>
+      </button>
+
+      <button onclick="switchTab('studio'); toggleMobileSidebar(false);" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
+        <span>AI Content Studio</span>
+      </button>
+
+      <button onclick="switchTab('research'); toggleMobileSidebar(false);" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="search" class="w-4 h-4 text-violet-400"></i>
+        <span>Riset Tren & Intelligence</span>
+      </button>
+
+      <button onclick="switchTab('calendar'); toggleMobileSidebar(false);" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="calendar" class="w-4 h-4"></i>
+        <span>Editorial Calendar</span>
+      </button>
+
+      <button onclick="switchTab('analytics'); toggleMobileSidebar(false);" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-sky-400"></i>
+        <span>Analytics & CSV Import</span>
+      </button>
+    </nav>
+
+    <!-- Footer Profile & Connection -->
+    <div class="p-3 border-t border-slate-800/80 bg-slate-950/70 text-[11px] space-y-2">
+      <div class="flex items-center justify-between text-slate-400">
+        <span>Pengguna:</span>
+        <span id="current-user-email" class="font-medium text-slate-200 truncate max-w-[120px]">-</span>
+      </div>
+      <div class="flex items-center justify-between text-slate-400">
+        <span>Kunci Gemini AI:</span>
+        <span id="sidebar-api-status" class="font-medium text-amber-400">Belum Ada</span>
+      </div>
+      <button onclick="openApiModal()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700/80 text-slate-200 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
+        <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span>Setup Gemini API Key</span>
+      </button>
+      <button onclick="handleLogout()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-rose-400 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <span>Keluar Akun</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- BACKDROP MOBILE OVERLAY -->
+  <div id="mobile-backdrop" onclick="toggleMobileSidebar(false)" class="hidden fixed inset-0 bg-black/60 z-30 md:hidden"></div>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#080c14] pb-16 md:pb-0">
+    <!-- Top Header -->
+    <header class="h-14 bg-[#0b0f19]/90 border-b border-slate-800/80 px-4 md:px-6 flex items-center justify-between shrink-0">
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleMobileSidebar(true)" class="md:hidden text-slate-300 p-1">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <h1 id="page-title" class="font-semibold text-xs md:text-sm text-white truncate max-w-[170px] md:max-w-none">
+          Kalkulator & Analisis Akun (IG & TikTok)
+        </h1>
+        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+          v2.4.2 Engine
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button onclick="openApiModal()" class="text-xs bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 px-2.5 py-1.5 rounded-lg font-medium flex items-center space-x-1 transition">
+          <i data-lucide="key" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Kunci API</span>
+        </button>
+        <button onclick="exportToCSV()" class="text-xs bg-[#111827] hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-medium flex items-center space-x-1 transition">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Ekspor CSV</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Workspace Content Body -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+
+      <!-- ============================================== -->
+      <!-- TAB KHUSUS: KALKULATOR & ANALISIS AKUN          -->
+      <!-- ============================================== -->
+      <section id="tab-diagnostic" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Input Form Performa Konten -->
+          <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl space-y-4">
+            <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-sm text-white">Input Metrik Performa Konten</h3>
+                <p class="text-xs text-slate-400">Kalkulasi akurat & realtime rasio pertumbuhan akun.</p>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                Realtime Calculator
+              </span>
+            </div>
+
+            <!-- Pilih Platform -->
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Platform Media Sosial</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="setCalcPlatform('INSTAGRAM')" id="btn-calc-ig" class="calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                  <i data-lucide="instagram" class="w-4 h-4"></i>
+                  <span>Instagram</span>
+                </button>
+                <button type="button" onclick="setCalcPlatform('TIKTOK')" id="btn-calc-tt" class="calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                  <i data-lucide="video" class="w-4 h-4"></i>
+                  <span>TikTok</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Detail Postingan -->
+            <div>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Judul / Topik Postingan</label>
+              <input type="text" id="calc-title" placeholder="Misal: Video tutorial outfit kuliah" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <!-- Follower & Reach Metrics Input -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <label class="text-[11px] font-medium text-slate-300 block mb-1">Followers Saat Ini</label>
+                <input type="number" id="calc-followers" oninput="calculateRealtimeMetrics()" placeholder="10000" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-emerald-400 block mb-1">+ Followers Didapat</label>
+                <input type="number" id="calc-gained" oninput="calculateRealtimeMetrics()" placeholder="15" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-emerald-400 font-semibold outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-300 block mb-1">Views / Jangkauan</label>
+                <input type="number" id="calc-views" oninput="calculateRealtimeMetrics()" placeholder="2500" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+            </div>
+
+            <!-- Angka Interaksi -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Likes ❤️</label>
+                <input type="number" id="calc-likes" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Comments 💬</label>
+                <input type="number" id="calc-comments" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Shares ↗️</label>
+                <input type="number" id="calc-shares" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-slate-400 block mb-1">Saves 🔖</label>
+                <input type="number" id="calc-saves" oninput="calculateRealtimeMetrics()" placeholder="0" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+            </div>
+
+            <div id="validation-warning" class="hidden p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-[11px] flex items-center space-x-1.5">
+              <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
+              <span>Peringatan: Jumlah interaksi tidak boleh melebihi jumlah total views.</span>
+            </div>
+
+            <button onclick="saveCalculatedDataToFirestore()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span>Simpan Evaluasi ke Database</span>
+            </button>
+          </div>
+
+          <!-- Hasil Diagnostik & Analisis -->
+          <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <h3 class="font-semibold text-sm text-white">Hasil Analisis & Status Kinerja</h3>
+                <span id="diagnostic-status-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+                  Menunggu Input Angka
+                </span>
+              </div>
+
+              <!-- Skor dan Rasio -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-semibold uppercase block">ER by Views</span>
+                  <div id="res-er-views" class="text-xl md:text-2xl font-black text-indigo-400 mt-1">0.00%</div>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Interaksi / Views</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-semibold uppercase block">ER by Followers</span>
+                  <div id="res-er-followers" class="text-xl md:text-2xl font-black text-violet-400 mt-1">0.00%</div>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Interaksi / Followers</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-emerald-400 font-semibold uppercase block">Follower Conv.</span>
+                  <div id="res-follower-conv" class="text-xl md:text-2xl font-black text-emerald-400 mt-1">0.00%</div>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Followers Baru / Views</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span id="res-special-ratio-label" class="text-[10px] text-slate-400 font-semibold uppercase block">Save Ratio</span>
+                  <div id="res-special-ratio-val" class="text-xl md:text-2xl font-black text-cyan-400 mt-1">0.00%</div>
+                  <span id="res-special-ratio-desc" class="text-[9px] text-slate-500 mt-0.5 block">Saves / Views</span>
+                </div>
+              </div>
+
+              <!-- Narasi Diagnostik Algoritma -->
+              <div class="bg-[#080c14] p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+                <div>
+                  <span class="font-bold text-white flex items-center space-x-1.5 mb-1">
+                    <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Diagnostik Algoritma Nyata:</span>
+                  </span>
+                  <p id="res-diagnostic-explanation" class="text-slate-300 leading-relaxed">
+                    Masukkan jumlah tayangan (views) dan interaksi di sebelah kiri untuk melihat evaluasi matematis secara otomatis.
+                  </p>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800/80">
+                  <span class="font-bold text-white flex items-center space-x-1.5 mb-1">
+                    <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+                    <span>Rekomendasi Tindakan Strategis:</span>
+                  </span>
+                  <p id="res-diagnostic-recommendation" class="text-slate-400 leading-relaxed">
+                    -
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rumus Transparan -->
+            <div class="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl text-[11px] text-slate-500 font-mono">
+              <span class="text-slate-400 font-semibold block mb-0.5">Formula & Algoritma Aktif:</span>
+              <p id="res-formula-text">Pilih platform untuk melihat rincian formula algoritma.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB LAIN TETAP TERSEDIA SECARA LENGKAP -->
+      <section id="tab-overview" class="hidden space-y-6">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
+          <h2 class="text-base font-semibold text-white mb-2">Executive Dashboard</h2>
+          <p class="text-xs text-slate-400">Pantau performa agregat konten yang tersimpan di cloud.</p>
+          <div class="h-64 mt-4 relative flex items-center justify-center">
+            <canvas id="overviewChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-studio" class="hidden space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
+          <h2 class="text-base font-semibold text-white mb-1">AI Content Studio</h2>
+          <p class="text-xs text-slate-400 mb-4">Gunakan AI untuk merumuskan naskah konten berdasarkan data analitik.</p>
+          <input type="text" id="studio-topic" placeholder="Topik konten..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white mb-3">
+          <button onclick="executeAIGeneration()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">Generate Naskah</button>
+        </div>
+      </section>
+
+      <section id="tab-research" class="hidden space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
+          <h2 class="text-base font-semibold text-white mb-1">Riset Tren & Intelligence</h2>
+          <p class="text-xs text-slate-400 mb-4">Riset topik pasar menggunakan Google Gemini AI.</p>
+          <input type="text" id="research-query" placeholder="Kata kunci riset..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white mb-3">
+          <button onclick="executeWebResearch()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl">Jalankan Riset</button>
+        </div>
+      </section>
+
+      <section id="tab-calendar" class="hidden space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
+          <h2 class="text-base font-semibold text-white mb-1">Editorial Calendar</h2>
+          <p class="text-xs text-slate-400 mb-4">Pipa workflow publikasi konten.</p>
+          <div id="col-IDEA" class="space-y-2"></div>
+        </div>
+      </section>
+
+      <section id="tab-analytics" class="hidden space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl">
+          <h2 class="text-base font-semibold text-white mb-1">Analytics Table</h2>
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead><tr class="text-slate-400 border-b border-slate-800"><th class="p-2">Judul</th><th class="p-2">Platform</th><th class="p-2">Views</th><th class="p-2">Likes</th><th class="p-2">ER</th></tr></thead>
+              <tbody id="analytics-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 bg-[#0b0f19] border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around z-30 pb-safe">
+    <button onclick="switchTab('diagnostic')" id="mob-diagnostic" class="flex flex-col items-center justify-center p-1 text-emerald-400">
+      <i data-lucide="calculator" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Analisis</span>
+    </button>
+    <button onclick="switchTab('overview')" id="mob-overview" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Overview</span>
+    </button>
+    <button onclick="switchTab('studio')" id="mob-studio" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="sparkles" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Studio</span>
+    </button>
+    <button onclick="switchTab('calendar')" id="mob-calendar" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="calendar" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Kalender</span>
+    </button>
+  </nav>
+
+  <!-- GEMINI API SETUP MODAL -->
+  <div id="api-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+    <div class="bg-[#0b0f19] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-semibold text-sm text-white flex items-center space-x-1.5">
+          <i data-lucide="key" class="w-4 h-4 text-indigo-400"></i>
+          <span>Setup Gemini API Key</span>
+        </h3>
+        <button onclick="closeApiModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Masukkan Google Gemini API Key Anda. Kunci ini disimpan lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
+      </p>
+
+      <div>
+        <label class="text-xs font-medium text-slate-300 block mb-1">Gemini API Key</label>
+        <input type="password" id="input-api-key" placeholder="AIzaSy..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
+        <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
+        <button onclick="saveApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Simpan Kunci</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.2 -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
+      authDomain: "alisya-live-db.firebaseapp.com",
+      databaseURL: "https://alisya-live-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "alisya-live-db",
+      storageBucket: "alisya-live-db.firebasestorage.app",
+      messagingSenderId: "409499788186",
+      appId: "1:409499788186:web:63500185b22d83a9ded023"
+    };
+
+    let auth = null, db = null, currentUser = null;
+    let activeBrandId = "default";
+    let contentItems = [];
+    let brandsList = [{ id: "default", name: "Brand Utama (Default)" }];
+    let calcActivePlatform = 'INSTAGRAM';
+
+    function initApp() {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      auth = firebase.auth();
+      db = firebase.firestore();
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUser = user;
+          document.getElementById('auth-modal').classList.add('hidden');
+          document.getElementById('current-user-email').innerText = user.email;
+          loadUserBrands();
+          bindFirestoreListeners();
+          updateApiStatusUI();
+          setCalcPlatform('INSTAGRAM');
+        } else {
+          currentUser = null;
+          document.getElementById('auth-modal').classList.remove('hidden');
+          document.getElementById('current-user-email').innerText = '-';
+        }
+      });
+    }
+
+    function toggleMobileSidebar(show) {
+      const drawer = document.getElementById('sidebar-drawer');
+      const backdrop = document.getElementById('mobile-backdrop');
+      if (show) {
+        drawer.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        drawer.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // --- REFINED ALGORITHM & DIAGNOSTIC ENGINE V2.4.2 ---
+    function setCalcPlatform(plat) {
+      calcActivePlatform = plat;
+      const btnIG = document.getElementById('btn-calc-ig');
+      const btnTT = document.getElementById('btn-calc-tt');
+
+      if (plat === 'INSTAGRAM') {
+        btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        
+        document.getElementById('res-special-ratio-label').innerText = 'Save-to-Views Ratio';
+        document.getElementById('res-special-ratio-desc').innerText = 'Saves / Views (Sinyal Explore)';
+        document.getElementById('res-formula-text').innerText = 'Instagram ER = ((Likes + Comments + Saves + Shares) / Views) × 100. Follower Conv = (Gained / Views) × 100.';
+      } else {
+        btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-cyan-500 bg-cyan-600/20 text-cyan-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
+        
+        document.getElementById('res-special-ratio-label').innerText = 'Share / Virality Ratio';
+        document.getElementById('res-special-ratio-desc').innerText = 'Shares / Views (Pemicu FYP)';
+        document.getElementById('res-formula-text').innerText = 'TikTok ER = ((Likes + Comments + Shares) / Views) × 100. Follower Conv = (Gained / Views) × 100.';
+      }
+
+      calculateRealtimeMetrics();
+    }
+
+    function calculateRealtimeMetrics() {
+      const followers = parseInt(document.getElementById('calc-followers').value) || 0;
+      const gained = parseInt(document.getElementById('calc-gained').value) || 0;
+      const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const likes = parseInt(document.getElementById('calc-likes').value) || 0;
+      const comments = parseInt(document.getElementById('calc-comments').value) || 0;
+      const shares = parseInt(document.getElementById('calc-shares').value) || 0;
+      const saves = parseInt(document.getElementById('calc-saves').value) || 0;
+
+      const totalInteractions = likes + comments + shares + saves;
+      const warningBox = document.getElementById('validation-warning');
+
+      // Validasi logika: Jumlah interaksi tidak mungkin lebih besar dari total tayangan
+      if (views > 0 && totalInteractions > views) {
+        warningBox.classList.remove('hidden');
+      } else {
+        warningBox.classList.add('hidden');
+      }
+
+      // 1. ER by Views
+      const erViews = views > 0 ? ((totalInteractions / views) * 100).toFixed(2) : "0.00";
+      // 2. ER by Followers
+      const erFollowers = followers > 0 ? ((totalInteractions / followers) * 100).toFixed(2) : "0.00";
+      // 3. Follower Conversion Rate
+      const followerConv = views > 0 ? ((gained / views) * 100).toFixed(2) : "0.00";
+      // 4. Special Ratio (Saves di IG, Shares di TikTok)
+      let specialRatio = "0.00";
+      if (calcActivePlatform === 'INSTAGRAM') {
+        specialRatio = views > 0 ? ((saves / views) * 100).toFixed(2) : "0.00";
+      } else {
+        specialRatio = views > 0 ? ((shares / views) * 100).toFixed(2) : "0.00";
+      }
+
+      document.getElementById('res-er-views').innerText = `${erViews}%`;
+      document.getElementById('res-er-followers').innerText = `${erFollowers}%`;
+      document.getElementById('res-follower-conv').innerText = `${followerConv}%`;
+      document.getElementById('res-special-ratio-val').innerText = `${specialRatio}%`;
+
+      // 5. Evaluasi Diagnostik Otomatis Berdasarkan Metrik Nyata
+      const badge = document.getElementById('diagnostic-status-badge');
+      const expEl = document.getElementById('res-diagnostic-explanation');
+      const recEl = document.getElementById('res-diagnostic-recommendation');
+
+      if (views === 0) {
+        badge.innerText = 'Menunggu Input Angka';
+        badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400';
+        expEl.innerText = 'Masukkan angka tayangan (views) dan interaksi untuk melihat evaluasi matematis algoritma.';
+        recEl.innerText = '-';
+        return;
+      }
+
+      const numER = parseFloat(erViews);
+      const numSpecial = parseFloat(specialRatio);
+      const numConv = parseFloat(followerConv);
+
+      if (calcActivePlatform === 'INSTAGRAM') {
+        if (numER >= 5.0 && numSpecial >= 1.0) {
+          badge.innerText = '🔥 Viral Tier (Explore Multiplier)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+          expEl.innerText = `Konten mencetak ER ${numER}% dengan rasio simpan ${numSpecial}% dan konversi follower ${numConv}%. Ini indikasi kuat bahwa konten memberikan nilai simpan (value/evergreen) yang sangat tinggi sehingga algoritma Instagram memprioritaskannya ke Explore.`;
+          recEl.innerText = 'Pertahankan format cover dan susunan slide/pacing ini. Jadikan naskah ini sebagai template pilar utama mingguan!';
+        } else if (numER >= 2.0) {
+          badge.innerText = '🟢 Performa Stabil & Sehat';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+          expEl.innerText = `Engagement konten berada di rentang rata-rata industri yang sehat (${numER}%). Penonton menikmati postingan, namun konversi followers baru berada di angka ${numConv}%.`;
+          recEl.innerText = 'Perjelas Call to Action (CTA) di akhir caption atau slide penutup, misalnya: "Follow akun kami untuk tips harian lainnya!".';
+        } else {
+          badge.innerText = '🔴 Di Bawah Standar (Underperforming)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
+          expEl.innerText = `ER konten hanya ${numER}%. Jumlah penonton tinggi tetapi interaksi sangat rendah, menandakan audiens melewati (scroll past) postingan tanpa membaca naskah.`;
+          recEl.innerText = 'Rombak total 3 detik pertama (Hook). Gunakan pertanyaan masalah (problem-oriented) atau judul yang kontras.';
+        }
+      } else {
+        // TIKTOK
+        if (numER >= 7.0 && numSpecial >= 1.5) {
+          badge.innerText = '🔥 FYP Booster (High Virality)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300';
+          expEl.innerText = `Konten memiliki ER ${numER}% dengan rasio share ${numSpecial}%. Share adalah pemicu algoritma terbesar di TikTok untuk melempar video ke grup penonton baru.`;
+          recEl.innerText = 'Segera balas komentar audiens dengan video balasan (reply with video) untuk memicu retensi putaran kedua!';
+        } else if (numER >= 3.5) {
+          badge.innerText = '🟢 Distribusi Konsisten';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+          expEl.innerText = `Performa konten cukup stabil (${numER}% ER) namun rasio share (${numSpecial}%) masih bisa dimaksimalkan agar distribusi FYP lebih luas.`;
+          recEl.innerText = 'Gunakan sound tren yang sedang naik dan buat durasi lebih padat (15-25 detik).';
+        } else {
+          badge.innerText = '🔴 Skip Rate Tinggi (Low Retention)';
+          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
+          expEl.innerText = `Hanya ${numER}% penonton yang merespons. Penonton cenderung meninggalkan video dalam 2-3 detik awal.`;
+          recEl.innerText = 'Hapus intro basa-basi. Langsung masuk ke visual bergerak atau teks inti di detik pertama.';
+        }
+      }
+    }
+
+    async function saveCalculatedDataToFirestore() {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
+      const title = document.getElementById('calc-title').value.trim() || 'Evaluasi Performa Konten';
+      const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const likes = parseInt(document.getElementById('calc-likes').value) || 0;
+      const comments = parseInt(document.getElementById('calc-comments').value) || 0;
+      const shares = parseInt(document.getElementById('calc-shares').value) || 0;
+      const saves = parseInt(document.getElementById('calc-saves').value) || 0;
+      const gained = parseInt(document.getElementById('calc-gained').value) || 0;
+
+      if (views === 0) return alert('Masukkan jumlah views terlebih dahulu sebelum menyimpan.');
+
+      const item = {
+        brandId: activeBrandId,
+        title: title,
+        platform: calcActivePlatform,
+        format: calcActivePlatform === 'TIKTOK' ? 'Reels/Shorts' : 'Carousel',
+        pillar: 'Evaluasi',
+        status: 'PUBLISHED',
+        hook: '', bodyCopy: '', cta: '', tags: '',
+        scheduledDate: new Date().toISOString().split('T')[0],
+        views, reach: views, likes, comments, shares, saves, gainedFollowers: gained,
+        createdAt: new Date().toISOString()
+      };
+
+      await db.collection('users').doc(currentUser.uid).collection('contents').add(item);
+      alert('Data performa konten dan pertumbuhan followers berhasil disimpan ke Firestore!');
+    }
+
+    // --- SUPPORTING CORE HANDLERS ---
+    async function handleEmailLogin() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+      if (!email || !pass) { errBox.textContent = 'Harap isi email dan kata sandi.'; errBox.classList.remove('hidden'); return; }
+      try { await auth.signInWithEmailAndPassword(email, pass); } catch (err) { errBox.textContent = 'Gagal masuk: ' + err.message; errBox.classList.remove('hidden'); }
+    }
+
+    async function handleEmailRegister() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+      if (!email || !pass) { errBox.textContent = 'Harap isi email dan kata sandi.'; errBox.classList.remove('hidden'); return; }
+      try { await auth.createUserWithEmailAndPassword(email, pass); } catch (err) { errBox.textContent = 'Gagal mendaftar: ' + err.message; errBox.classList.remove('hidden'); }
+    }
+
+    function handleLogout() { if (confirm('Keluar dari sesi akun saat ini?')) auth.signOut(); }
+
+    function loadUserBrands() {
+      if (!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('brands').onSnapshot((snap) => {
+        const loaded = [{ id: "default", name: "Brand Utama (Default)" }];
+        snap.forEach(doc => loaded.push({ id: doc.id, ...doc.data() }));
+        brandsList = loaded;
+        const select = document.getElementById('brand-select');
+        select.innerHTML = '';
+        brandsList.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id; opt.textContent = b.name;
+          select.appendChild(opt);
+        });
+        select.value = activeBrandId;
+      });
+    }
+
+    async function promptCreateBrand() {
+      if (!currentUser) return;
+      const name = prompt('Masukkan nama Brand baru:');
+      if (name && name.trim()) {
+        const brandDoc = { name: name.trim(), createdAt: new Date().toISOString() };
+        const ref = await db.collection('users').doc(currentUser.uid).collection('brands').add(brandDoc);
+        activeBrandId = ref.id;
+      }
+    }
+
+    function changeActiveBrand() {
+      activeBrandId = document.getElementById('brand-select').value;
+    }
+
+    function bindFirestoreListeners() {
+      if (!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('contents').onSnapshot((snapshot) => {
+        const loaded = [];
+        snapshot.forEach(doc => loaded.push({ id: doc.id, ...doc.data() }));
+        contentItems = loaded;
+      });
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['diagnostic', 'overview', 'studio', 'research', 'calendar', 'analytics'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`nav-${t}`);
+        const mobBtn = document.getElementById(`mob-${t}`);
+        if (t === tabId) {
+          if (el) el.classList.remove('hidden');
+          if (btn) { btn.classList.add('bg-indigo-600', 'text-white'); btn.classList.remove('text-slate-400', 'hover:bg-slate-900'); }
+          if (mobBtn) { mobBtn.classList.add('text-emerald-400'); mobBtn.classList.remove('text-slate-400'); }
+        } else {
+          if (el) el.classList.add('hidden');
+          if (btn) { btn.classList.remove('bg-indigo-600', 'text-white'); btn.classList.add('text-slate-400', 'hover:bg-slate-900'); }
+          if (mobBtn) { mobBtn.classList.remove('text-emerald-400'); mobBtn.classList.add('text-slate-400'); }
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function openApiModal() { document.getElementById('api-modal').classList.remove('hidden'); }
+    function closeApiModal() { document.getElementById('api-modal').classList.add('hidden'); }
+    function saveApiKey() {
+      const k = document.getElementById('input-api-key').value.trim();
+      if (k) localStorage.setItem('socialos_gemini_key', k);
+      closeApiModal();
+      updateApiStatusUI();
+    }
+
+    function updateApiStatusUI() {
+      const k = localStorage.getItem('socialos_gemini_key');
+      const side = document.getElementById('sidebar-api-status');
+      if (k) { side.innerText = 'Gemini Aktif'; side.className = 'font-medium text-emerald-400'; }
+      else { side.innerText = 'Belum Ada'; side.className = 'font-medium text-amber-400'; }
+    }
+
+    function exportToCSV() {
+      const headers = ['title', 'platform', 'views', 'likes', 'comments', 'shares', 'saves'];
+      const rows = contentItems.map(i => [i.title, i.platform, i.views, i.likes, i.comments, i.shares, i.saves]);
+      const csv = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csv));
+      link.setAttribute('download', 'SocialOS_Analytics.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { initApp(); });
+  </script>
+</body>
+</html>
     }
 
     function handleStandardCSVUpload(e) {
