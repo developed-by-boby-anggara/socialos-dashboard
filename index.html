@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SocialOS v2.4.3 — Rigorous Account & Content Analytics</title>
+  <title>SocialOS v2.4.4 — Time-Velocity Diagnostic Engine</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -34,7 +34,7 @@
           S
         </div>
         <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
-        <p class="text-xs text-slate-400">v2.4.3 — Multi-Factor Diagnostic Engine</p>
+        <p class="text-xs text-slate-400">v2.4.4 — Realtime Social Media Engine</p>
       </div>
 
       <div class="space-y-3 pt-2">
@@ -70,7 +70,7 @@
         </div>
         <div>
           <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
-          <p class="text-[9px] text-indigo-400 font-mono">v2.4.3-ANALYTICS</p>
+          <p class="text-[9px] text-indigo-400 font-mono">v2.4.4-VELOCITY</p>
         </div>
       </div>
       <button onclick="toggleMobileSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
@@ -158,7 +158,7 @@
           Kalkulator & Analisis Akun (IG & TikTok)
         </h1>
         <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-          v2.4.3 Multi-Factor
+          v2.4.4 Multi-Factor & Velocity
         </span>
       </div>
 
@@ -178,7 +178,7 @@
     <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
       <!-- ============================================== -->
-      <!-- TAB 1: KALKULATOR & ANALISIS METRIK REALTIME   -->
+      <!-- TAB 1: KALKULATOR & ANALISIS MULTI-FAKTOR      -->
       <!-- ============================================== -->
       <section id="tab-diagnostic" class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -188,10 +188,10 @@
             <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
               <div>
                 <h3 class="font-semibold text-sm text-white">Input Metrik Performa Konten</h3>
-                <p class="text-xs text-slate-400">Evaluasi algoritma multi-faktor berbasis data riil.</p>
+                <p class="text-xs text-slate-400">Analisis presisi berdasarkan interaksi & usia postingan.</p>
               </div>
               <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
-                Multi-Factor Engine
+                Velocity Analyzer
               </span>
             </div>
 
@@ -216,15 +216,19 @@
               <input type="text" id="calc-title" placeholder="Misal: Video tutorial outfit kuliah" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
             </div>
 
-            <!-- Follower & Reach Metrics Input -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Follower, Views, & Jam Tayang Input -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div>
                 <label class="text-[11px] font-medium text-slate-300 block mb-1">Followers Akun</label>
-                <input type="number" id="calc-followers" oninput="calculateRealtimeMetrics()" placeholder="1000" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
+                <input type="number" id="calc-followers" oninput="calculateRealtimeMetrics()" placeholder="2000" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
               </div>
               <div>
                 <label class="text-[11px] font-medium text-slate-300 block mb-1">Tayangan (Views)</label>
-                <input type="number" id="calc-views" oninput="calculateRealtimeMetrics()" placeholder="500" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
+                <input type="number" id="calc-views" oninput="calculateRealtimeMetrics()" placeholder="200" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none focus:border-indigo-500">
+              </div>
+              <div>
+                <label class="text-[11px] font-medium text-amber-400 block mb-1">Usia Post (Jam)</label>
+                <input type="number" id="calc-hours" oninput="calculateRealtimeMetrics()" placeholder="24" value="24" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-amber-400 font-semibold outline-none focus:border-amber-500">
               </div>
               <div>
                 <label class="text-[11px] font-medium text-emerald-400 block mb-1">+ Follower Baru</label>
@@ -255,7 +259,7 @@
             <!-- Validation Alert -->
             <div id="validation-warning" class="hidden p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-[11px] flex items-center space-x-1.5">
               <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 text-rose-400"></i>
-              <span>Peringatan: Jumlah total interaksi tidak masuk akal melebihi views.</span>
+              <span>Peringatan: Jumlah total interaksi melebihi total views.</span>
             </div>
 
             <button onclick="saveCalculatedDataToFirestore()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-1.5 transition shadow-lg shadow-emerald-600/20">
@@ -274,8 +278,8 @@
                 </span>
               </div>
 
-              <!-- 4 Metrik Inti -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+              <!-- 4 Metrik Kunci -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3">
                 <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
                   <span class="text-[10px] text-slate-400 font-semibold uppercase block">Reach Penetration</span>
                   <div id="res-reach-ratio" class="text-xl md:text-2xl font-black text-amber-400 mt-1">0.00%</div>
@@ -283,25 +287,37 @@
                 </div>
 
                 <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-semibold uppercase block">Like Rate (Murni)</span>
+                  <div id="res-like-rate" class="text-xl md:text-2xl font-black text-rose-400 mt-1">0.00%</div>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Likes / Views</span>
+                </div>
+
+                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
                   <span class="text-[10px] text-slate-400 font-semibold uppercase block">ER by Views</span>
                   <div id="res-er-views" class="text-xl md:text-2xl font-black text-indigo-400 mt-1">0.00%</div>
-                  <span class="text-[9px] text-slate-500 mt-0.5 block">Interaksi / Views</span>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Total Interaksi / Views</span>
                 </div>
 
                 <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
-                  <span class="text-[10px] text-emerald-400 font-semibold uppercase block">Follower Conv.</span>
-                  <div id="res-follower-conv" class="text-xl md:text-2xl font-black text-emerald-400 mt-1">0.00%</div>
-                  <span class="text-[9px] text-slate-500 mt-0.5 block">Follower Baru / Views</span>
-                </div>
-
-                <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800">
-                  <span id="res-special-ratio-label" class="text-[10px] text-slate-400 font-semibold uppercase block">Save Ratio</span>
-                  <div id="res-special-ratio-val" class="text-xl md:text-2xl font-black text-cyan-400 mt-1">0.00%</div>
-                  <span id="res-special-ratio-desc" class="text-[9px] text-slate-500 mt-0.5 block">Saves / Views</span>
+                  <span class="text-[10px] text-cyan-400 font-semibold uppercase block">Velocity (Laju)</span>
+                  <div id="res-velocity-rate" class="text-xl md:text-2xl font-black text-cyan-400 mt-1">0</div>
+                  <span class="text-[9px] text-slate-500 mt-0.5 block">Views / Jam</span>
                 </div>
               </div>
 
-              <!-- Narasi Diagnostik Algoritma Nyata -->
+              <!-- Baris Metrik Tambahan -->
+              <div class="grid grid-cols-2 gap-2.5 mb-4">
+                <div class="bg-[#080c14] p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
+                  <span class="text-[11px] text-slate-400">Follower Conversion Rate:</span>
+                  <span id="res-follower-conv" class="text-xs font-bold text-emerald-400">0.00%</span>
+                </div>
+                <div class="bg-[#080c14] p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
+                  <span id="res-special-ratio-label" class="text-[11px] text-slate-400">Save Ratio:</span>
+                  <span id="res-special-ratio-val" class="text-xs font-bold text-sky-400">0.00%</span>
+                </div>
+              </div>
+
+              <!-- Narasi Diagnostik Algoritma -->
               <div class="bg-[#080c14] p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
                 <div>
                   <span class="font-bold text-white flex items-center space-x-1.5 mb-1">
@@ -309,7 +325,7 @@
                     <span>Diagnostik Algoritma Nyata:</span>
                   </span>
                   <p id="res-diagnostic-explanation" class="text-slate-300 leading-relaxed">
-                    Masukkan jumlah tayangan (views) dan interaksi di sebelah kiri untuk melihat evaluasi matematis secara otomatis.
+                    Masukkan jumlah tayangan (views), usia postingan, dan interaksi untuk melihat evaluasi matematis secara otomatis.
                   </p>
                 </div>
 
@@ -702,7 +718,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.3 -->
+  <!-- JAVASCRIPT LOGIC SOCIALOS V2.4.4 -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
@@ -811,7 +827,7 @@
       }
     }
 
-    // --- ANALISIS REALTIME MULTI-FAKTOR (V2.4.3 RIGOROUS ENGINE) ---
+    // --- ANALISIS REALTIME MULTI-FAKTOR DENGAN TIME VELOCITY (V2.4.4) ---
     function setCalcPlatform(plat) {
       calcActivePlatform = plat;
       const btnIG = document.getElementById('btn-calc-ig');
@@ -820,15 +836,13 @@
       if (plat === 'INSTAGRAM') {
         btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/20 text-indigo-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
         btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
-        document.getElementById('res-special-ratio-label').innerText = 'Save Ratio';
-        document.getElementById('res-special-ratio-desc').innerText = 'Saves / Views (Sinyal Explore)';
-        document.getElementById('res-formula-text').innerText = 'Penetration = (Views / Followers) × 100. Instagram ER = ((Likes + Comments + Saves + Shares) / Views) × 100.';
+        document.getElementById('res-special-ratio-label').innerText = 'Save Ratio:';
+        document.getElementById('res-formula-text').innerText = 'Velocity = Views / Jam Tayang. Like Rate = (Likes / Views) × 100. ER = (Total Interaksi / Views) × 100.';
       } else {
         btnTT.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-cyan-500 bg-cyan-600/20 text-cyan-300 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
         btnIG.className = 'calc-plat-btn py-2 px-3 rounded-xl border border-slate-800 bg-[#080c14] text-slate-400 text-xs font-semibold flex items-center justify-center space-x-1.5 transition';
-        document.getElementById('res-special-ratio-label').innerText = 'Share / Virality Ratio';
-        document.getElementById('res-special-ratio-desc').innerText = 'Shares / Views (Pemicu FYP)';
-        document.getElementById('res-formula-text').innerText = 'Penetration = (Views / Followers) × 100. TikTok ER = ((Likes + Comments + Shares) / Views) × 100.';
+        document.getElementById('res-special-ratio-label').innerText = 'Share Ratio:';
+        document.getElementById('res-formula-text').innerText = 'Velocity = Views / Jam Tayang. Like Rate = (Likes / Views) × 100. TikTok ER = (Total Interaksi / Views) × 100.';
       }
 
       calculateRealtimeMetrics();
@@ -837,6 +851,7 @@
     function calculateRealtimeMetrics() {
       const followers = parseInt(document.getElementById('calc-followers').value) || 0;
       const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const hours = parseFloat(document.getElementById('calc-hours').value) || 1;
       const gained = parseInt(document.getElementById('calc-gained').value) || 0;
       const likes = parseInt(document.getElementById('calc-likes').value) || 0;
       const comments = parseInt(document.getElementById('calc-comments').value) || 0;
@@ -852,13 +867,17 @@
         warningBox.classList.add('hidden');
       }
 
-      // 1. Reach Penetration Rate (Views / Followers)
+      // 1. Reach Penetration (Views / Followers)
       const reachPenetration = followers > 0 ? ((views / followers) * 100).toFixed(2) : "0.00";
-      // 2. ER by Views
+      // 2. Like Rate Murni (Likes / Views)
+      const likeRate = views > 0 ? ((likes / views) * 100).toFixed(2) : "0.00";
+      // 3. ER by Views (Total Interaksi / Views)
       const erViews = views > 0 ? ((totalInteractions / views) * 100).toFixed(2) : "0.00";
-      // 3. Follower Conversion Rate
+      // 4. Velocity (Views / Jam Tayang)
+      const velocity = hours > 0 ? (views / hours).toFixed(1) : views;
+      // 5. Follower Conversion
       const followerConv = views > 0 ? ((gained / views) * 100).toFixed(2) : "0.00";
-      // 4. Special Ratio
+      // 6. Special Ratio (Save di IG, Share di TikTok)
       let specialRatio = "0.00";
       if (calcActivePlatform === 'INSTAGRAM') {
         specialRatio = views > 0 ? ((saves / views) * 100).toFixed(2) : "0.00";
@@ -867,7 +886,9 @@
       }
 
       document.getElementById('res-reach-ratio').innerText = `${reachPenetration}%`;
+      document.getElementById('res-like-rate').innerText = `${likeRate}%`;
       document.getElementById('res-er-views').innerText = `${erViews}%`;
+      document.getElementById('res-velocity-rate').innerText = `${velocity}`;
       document.getElementById('res-follower-conv').innerText = `${followerConv}%`;
       document.getElementById('res-special-ratio-val').innerText = `${specialRatio}%`;
 
@@ -886,72 +907,70 @@
       const numViews = views;
       const numFollowers = followers;
       const numPenetration = parseFloat(reachPenetration);
+      const numLikes = likes;
+      const numLikeRate = parseFloat(likeRate);
       const numER = parseFloat(erViews);
       const numSpecial = parseFloat(specialRatio);
-      const numConv = parseFloat(followerConv);
+      const numVelocity = parseFloat(velocity);
 
-      // --- LOGIKA MULTI-FAKTOR CERDAS ---
-      // KASUS 1: SAMPLE SIZE TERLALU KECIL (Seperti views = 7)
-      if (numViews < 50 && numFollowers >= 500) {
-        badge.innerText = '⚠️ Distribusi Macet (Flop / Sample Terlalu Kecil)';
+      // KASUS 1: SAMPLE KECIL & BARU TAYANG (< 3 Jam)
+      if (numViews < 100 && hours <= 3) {
+        badge.innerText = '⏳ Fase Uji Coba Algoritma (Initial Testing)';
+        badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-sky-500/20 border border-sky-500/40 text-sky-300';
+        expEl.innerText = `Konten baru tayang ${hours} jam dengan laju ${numVelocity} views/jam. Pada fase awal ini, algoritma baru menguji konten ke sebagian kecil audiens batch pertama. Belum cukup data untuk vonis performa akhir.`;
+        recEl.innerText = 'Pantau interaksi dalam 2-4 jam ke depan. Balas setiap komentar yang masuk secepat mungkin untuk menaikkan skor interaksi awal.';
+        return;
+      }
+
+      // KASUS 2: DISTRIBUSI MACET / UNDERPERFORMING NYATA
+      // Contoh kasus user: 2000 followers, 200 views setelah 24 jam, cuma 1 like
+      if (hours >= 12 && numPenetration <= 15.0 && numLikes <= 3) {
+        badge.innerText = '🔴 Distribusi Tertahan / Underperforming (Flop)';
         badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
-        expEl.innerText = `Konten baru menjangkau ${numViews} akun dari basis ${numFollowers.toLocaleString('id-ID')} followers (penetrasi jangkauan cuma ${numPenetration}%). Persentase ER ${numER}% di sini adalah fatamorgana matematis karena jumlah penonton terlalu sedikit. Algoritma belum mendorong konten ini ke feed audiens Anda.`;
-        recEl.innerText = 'Bagikan postingan ini ke Instagram Story atau grup komunitas sekarang untuk memancing 50 views pertama dan menstimulasi algoritma distribusi.';
+        expEl.innerText = `Setelah ${hours} jam tayang, konten hanya menjangkau ${numViews} dari ${numFollowers.toLocaleString('id-ID')} followers (${numPenetration}% penetrasi). Rasio Like sangat rendah (hanya ${numLikeRate}%), menandakan penonton yang melihat tidak tergerak untuk merespons. Konten ini tidak sehat dan distribusinya terhenti oleh algoritma.`;
+        recEl.innerText = 'Ganti gambar sampul (cover) dan 3 detik pertama naskah. Topik ini kurang memicu minat followers Anda atau disajikan dengan sudut pandang yang kurang tajam.';
         return;
       }
 
-      // KASUS 2: DISTRIBUSI MACET MESKIPUN ER TINGGI
-      if (numFollowers >= 1000 && numPenetration < 5.0) {
-        badge.innerText = '🔴 Jangkauan Sangat Rendah (Low Distribution)';
+      // KASUS 3: JANGKAUAN RENDAH TAPI RESPON PENONTON BAGUS (Niche/Hidden Gem)
+      if (hours >= 12 && numPenetration <= 15.0 && numLikeRate >= 6.0) {
+        badge.innerText = '🟡 Distribusi Terbatas (High Engagement, Low Reach)';
         badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300';
-        expEl.innerText = `Konten hanya menjangkau ${numPenetration}% dari total followers Anda. Meskipun yang menonton ada yang berinteraksi (ER: ${numER}%), algoritma menahan distribusi postingan ini. Penyebab umum: jam posting salah atau gambar sampul (cover) kurang memicu klik.`;
-        recEl.innerText = 'Uji jam tayang di prime time (12.00–13.00 atau 19.30–21.00 WIB) dan pastikan judul cover memiliki kontras warna tinggi.';
+        expEl.innerText = `Konten disukai oleh yang menonton (Like Rate: ${numLikeRate}%), namun penetrasi audiens sangat kecil (${numPenetration}%). Masalahnya bukan pada isi konten, melainkan pada kemasan luar (cover / judul) atau waktu posting yang salah.`;
+        recEl.innerText = 'Promosikan postingan ini melalui Story atau gunakan kata kunci pencarian (SEO) yang lebih relevan pada caption.';
         return;
       }
 
-      // KASUS 3: EVALUASI NORMAL JIKA DISTRIBUSI SUDAH BERJALAN
-      if (calcActivePlatform === 'INSTAGRAM') {
-        if (numER >= 6.0 && numSpecial >= 1.5 && numPenetration >= 20.0) {
-          badge.innerText = '🔥 Viral Tier (Explore Multiplier)';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
-          expEl.innerText = `Performa sangat prima! Penetrasi jangkauan mencapai ${numPenetration}% dengan ER ${numER}% dan rasio simpan ${numSpecial}%. Konten ini memberikan nilai tinggi (evergreen) dan berpotensi besar masuk rekomendasi Explore.`;
-          recEl.innerText = 'Pertahankan formula hook dan visual ini. Buat sekuel (Part 2) dari topik yang sama dalam waktu dekat!';
-        } else if (numER >= 2.5 && numPenetration >= 10.0) {
-          badge.innerText = '🟢 Performa Sehat & Stabil';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
-          expEl.innerText = `Engagement konten berada di rentang rata-rata industri yang baik (${numER}%) dengan penetrasi audiens ${numPenetration}%.`;
-          recEl.innerText = 'Optimalkan CTA penutup untuk mendorong konversi followers baru (+ Followers: ${numConv}%).';
-        } else {
-          badge.innerText = '🔴 Performa Rendah (Kurang Menarik)';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
-          expEl.innerText = `ER konten hanya ${numER}%. Penonton melihat konten namun tidak tertarik untuk menyukai, berkomentar, atau menyimpannya.`;
-          recEl.innerText = 'Rombak 3 detik pertama (Hook). Buat kalimat pembuka yang menyentuh masalah langsung audiens.';
-        }
-      } else {
-        // TIKTOK
-        if (numER >= 8.0 && numSpecial >= 2.0 && (numViews >= numFollowers || numViews >= 1000)) {
-          badge.innerText = '🔥 FYP Multiplier (Viral Potential)';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300';
-          expEl.innerText = `Rasio interaksi ${numER}% dengan rasio share ${numSpecial}%. Share adalah sinyal terkuat bagi algoritma TikTok untuk mendorong video ke audience pool baru di FYP.`;
-          recEl.innerText = 'Segera balas komentar audiens dengan video balasan (reply with video) untuk mempertahankan siklus distribusi!';
-        } else if (numER >= 3.5) {
-          badge.innerText = '🟢 Distribusi Normal';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
-          expEl.innerText = `Performa video stabil (${numER}% ER), namun rasio share (${numSpecial}%) masih kurang agresif untuk ledakan FYP.`;
-          recEl.innerText = 'Gunakan sound tren yang relevan dan kurangi durasi video agar completion rate meningkat.';
-        } else {
-          badge.innerText = '🔴 Retensi Rendah (Skip Rate Tinggi)';
-          badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
-          expEl.innerText = `Hanya ${numER}% yang berinteraksi. Penonton cenderung melakukan scroll/skip dalam 2 detik awal.`;
-          recEl.innerText = 'Hilangkan intro panjang. Tampilkan visual bergerak atau teks inti masalah langsung di detik pertama.';
-        }
+      // KASUS 4: PERFORMA VIRAL / SANGAT TINGGI
+      if (numER >= 6.0 && numLikeRate >= 4.0 && (numViews >= numFollowers * 0.3 || numViews >= 1000)) {
+        badge.innerText = '🔥 Viral Tier (High Distribution Momentum)';
+        badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300';
+        expEl.innerText = `Konten memiliki akselerasi sangat kuat (${numVelocity} views/jam) dengan Like Rate ${numLikeRate}% dan ER total ${numER}%. Sinyal interaksi ini mendorong algoritma memperluas sebaran ke luar lingkaran followers Anda.`;
+        recEl.innerText = 'Manfaatkan lonjakan ini! Posting konten lanjutan bertema serupa dalam 24–48 jam untuk menangkap audiens baru yang baru datang.';
+        return;
       }
+
+      // KASUS 5: PERFORMA SEHAT & STABIL
+      if (numLikeRate >= 2.5 && numPenetration >= 15.0) {
+        badge.innerText = '🟢 Performa Sehat & Proporsional';
+        badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300';
+        expEl.innerText = `Postingan berkinerja normal dan sehat sesuai rata-rata akun. Like rate berada di angka ${numLikeRate}% dengan jangkauan stabil ${numPenetration}% dari total followers.`;
+        recEl.innerText = 'Tambahkan pertanyaan ajakan diskusi di kolom komentar untuk melipatgandakan interaksi.';
+        return;
+      }
+
+      // DEFAULT FALLBACK: DI BAWAH RATA-RATA
+      badge.innerText = '🔴 Di Bawah Standar Industri';
+      badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300';
+      expEl.innerText = `Performa konten kurang optimal. Dari ${numViews} tayangan selama ${hours} jam, interaksi yang tercipta tidak cukup kuat untuk memicu dorongan organik algoritma.`;
+      recEl.innerText = 'Evaluasi topik pembahasan dan perbaiki struktur Call To Action di detik-detik akhir.';
     }
 
     async function saveCalculatedDataToFirestore() {
       if (!currentUser) return alert('Silakan login terlebih dahulu.');
       const title = document.getElementById('calc-title').value.trim() || 'Evaluasi Performa Konten';
       const views = parseInt(document.getElementById('calc-views').value) || 0;
+      const hours = parseFloat(document.getElementById('calc-hours').value) || 24;
       const likes = parseInt(document.getElementById('calc-likes').value) || 0;
       const comments = parseInt(document.getElementById('calc-comments').value) || 0;
       const shares = parseInt(document.getElementById('calc-shares').value) || 0;
@@ -969,12 +988,12 @@
         status: 'PUBLISHED',
         hook: '', bodyCopy: '', cta: '', tags: '',
         scheduledDate: new Date().toISOString().split('T')[0],
-        views, reach: views, likes, comments, shares, saves, gainedFollowers: gained,
+        views, reach: views, likes, comments, shares, saves, gainedFollowers: gained, postAgeHours: hours,
         createdAt: new Date().toISOString()
       };
 
       await db.collection('users').doc(currentUser.uid).collection('contents').add(item);
-      alert('Data performa konten dan pertumbuhan followers berhasil disimpan ke Firestore!');
+      alert('Data evaluasi berhasil disimpan ke database Firestore!');
     }
 
     // --- BRAND WORKSPACE MANAGEMENT ---
@@ -1370,7 +1389,7 @@ Pisahkan jawaban DALAM JSON MURNI TANPA markdown kutip persis:
       const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
       const link = document.createElement('a');
       link.setAttribute('href', encodeURI(csvContent));
-      link.setAttribute('download', `SocialOS_v2.4.3_${activeBrandId}.csv`);
+      link.setAttribute('download', `SocialOS_v2.4.4_${activeBrandId}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
