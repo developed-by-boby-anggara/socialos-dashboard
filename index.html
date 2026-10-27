@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SocialOS — Real Social Media Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,13 +17,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: #080c14; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    /* Proteksi safe-area untuk HP */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
   </style>
 </head>
-<body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
+<body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex flex-col md:flex-row overflow-hidden">
 
   <!-- AUTHENTICATION MODAL -->
   <div id="auth-modal" class="fixed inset-0 bg-[#080c14]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
@@ -60,8 +62,8 @@
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col shrink-0">
+  <!-- SIDEBAR (DESKTOP & MOBILE DRAWER) -->
+  <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-40 w-64 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col shrink-0 transition-transform duration-300 -translate-x-full md:relative md:translate-x-0">
     <div class="p-4 flex items-center justify-between border-b border-slate-800/80">
       <div class="flex items-center space-x-2.5">
         <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-md">
@@ -72,9 +74,9 @@
           <p class="text-[9px] text-slate-400 font-mono">ENTERPRISE HUB</p>
         </div>
       </div>
-      <span id="user-status-badge" class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">
-        Belum Login
-      </span>
+      <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
     </div>
 
     <!-- Brand Workspace Selector -->
@@ -90,32 +92,32 @@
 
     <!-- Navigation -->
     <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
-      <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
+      <button onclick="switchTab('overview'); toggleMobileSidebar(false);" id="nav-overview" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">
         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
         <span>Executive Dashboard</span>
       </button>
 
-      <button onclick="switchTab('accounts')" id="nav-accounts" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+      <button onclick="switchTab('accounts'); toggleMobileSidebar(false);" id="nav-accounts" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="link" class="w-4 h-4 text-emerald-400"></i>
         <span>Koneksi Akun Sosial</span>
       </button>
 
-      <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+      <button onclick="switchTab('studio'); toggleMobileSidebar(false);" id="nav-studio" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
         <span>AI Content Studio</span>
       </button>
 
-      <button onclick="switchTab('research')" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+      <button onclick="switchTab('research'); toggleMobileSidebar(false);" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="search" class="w-4 h-4 text-violet-400"></i>
         <span>Riset Tren & Intelligence</span>
       </button>
 
-      <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+      <button onclick="switchTab('calendar'); toggleMobileSidebar(false);" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="calendar" class="w-4 h-4"></i>
         <span>Editorial Calendar</span>
       </button>
 
-      <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
+      <button onclick="switchTab('analytics'); toggleMobileSidebar(false);" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="bar-chart-3" class="w-4 h-4 text-sky-400"></i>
         <span>Analytics & CSV Import</span>
       </button>
@@ -142,81 +144,94 @@
     </div>
   </aside>
 
+  <!-- BACKDROP MOBILE OVERLAY -->
+  <div id="mobile-backdrop" onclick="toggleMobileSidebar(false)" class="hidden fixed inset-0 bg-black/60 z-30 md:hidden"></div>
+
   <!-- MAIN WORKSPACE -->
-  <main class="flex-1 flex flex-col overflow-hidden bg-[#080c14]">
+  <main class="flex-1 flex flex-col overflow-hidden bg-[#080c14] pb-16 md:pb-0">
     <!-- Top Header -->
-    <header class="h-14 bg-[#0b0f19]/90 border-b border-slate-800/80 px-6 flex items-center justify-between shrink-0">
+    <header class="h-14 bg-[#0b0f19]/90 border-b border-slate-800/80 px-4 md:px-6 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-3">
-        <h1 id="page-title" class="font-semibold text-sm text-white">Executive Dashboard</h1>
-        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+        <button onclick="toggleMobileSidebar(true)" class="md:hidden text-slate-300 p-1">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <h1 id="page-title" class="font-semibold text-xs md:text-sm text-white truncate max-w-[150px] md:max-w-none">
+          Executive Dashboard
+        </h1>
+        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
           <i data-lucide="clock" class="w-3 h-3 mr-1"></i> Asia/Jakarta
         </span>
       </div>
 
       <div class="flex items-center space-x-2">
-        <button onclick="exportToCSV()" class="text-xs bg-[#111827] hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Ekspor CSV</span>
+        <button onclick="openApiModal()" class="text-xs bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 px-2.5 py-1.5 rounded-lg font-medium flex items-center space-x-1 transition">
+          <i data-lucide="key" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Kunci API</span>
         </button>
-        <button onclick="clearCurrentBrandData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition">
-          Bersihkan Data Brand Ini
+        <button onclick="exportToCSV()" class="text-xs bg-[#111827] hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg font-medium flex items-center space-x-1 transition">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Ekspor CSV</span>
+        </button>
+        <button onclick="clearCurrentBrandData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-2 py-1.5 rounded-lg font-medium transition">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5 sm:hidden"></i>
+          <span class="hidden sm:inline">Bersihkan Data</span>
         </button>
       </div>
     </header>
 
-    <!-- Workspace Content -->
-    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+    <!-- Workspace Content Body -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
       <!-- ============================================== -->
       <!-- TAB 1: EXECUTIVE OVERVIEW                      -->
       <!-- ============================================== -->
       <section id="tab-overview" class="space-y-6">
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl">
           <div class="flex items-center space-x-2 text-indigo-400 mb-1.5">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
             <span class="text-[10px] font-bold tracking-wider uppercase">Strategic Summary</span>
           </div>
-          <h2 class="text-base font-semibold text-white mb-1" id="briefing-title">Status Kinerja Konten</h2>
+          <h2 class="text-sm md:text-base font-semibold text-white mb-1" id="briefing-title">Status Kinerja Konten</h2>
           <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
             Belum ada data konten tersimpan. Tambahkan konten melalui Studio atau impor data CSV untuk melihat analitik.
           </p>
         </div>
 
         <!-- Real KPIs -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Konten</span>
-            <div class="text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
-            <span class="text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Tayang</span>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Konten</span>
+            <div class="text-xl md:text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
+            <span class="text-[10px] md:text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Tayang</span>
           </div>
 
-          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Views</span>
-            <div class="text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-views">0</div>
-            <span class="text-[11px] text-slate-500 mt-1 inline-block">Akumulasi tayangan</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Views</span>
+            <div class="text-xl md:text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-views">0</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Akumulasi tayangan</span>
           </div>
 
-          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Interaksi</span>
-            <div class="text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
-            <span class="text-[11px] text-slate-500 mt-1 inline-block">Likes, Comments, Saves, Shares</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Total Interaksi</span>
+            <div class="text-xl md:text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">Likes, Saves, Shares</span>
           </div>
 
-          <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Engagement Rate (by Reach)</span>
-            <div class="text-2xl font-bold text-emerald-400 mt-1" id="kpi-er">0.00%</div>
-            <span class="text-[11px] text-slate-500 mt-1 inline-block">Formula: (Interaksi / Reach) × 100</span>
+          <div class="bg-[#0b0f19] border border-slate-800 p-3 md:p-4 rounded-xl shadow-xs">
+            <span class="text-[9px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Engagement Rate</span>
+            <div class="text-xl md:text-2xl font-bold text-emerald-400 mt-1" id="kpi-er">0.00%</div>
+            <span class="text-[10px] md:text-[11px] text-slate-500 mt-1 inline-block">(Interaksi / Reach) × 100</span>
           </div>
         </div>
 
         <!-- Chart Section -->
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-xs">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten & Performa Aktual</h3>
-            <span class="text-[11px] text-slate-500 font-mono">Firestore Subkoleksi Terisolasi</span>
+            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten</h3>
+            <span class="text-[10px] md:text-[11px] text-slate-500 font-mono">Firestore Live</span>
           </div>
-          <div class="h-64 relative flex items-center justify-center">
-            <div id="chart-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+          <div class="h-56 md:h-64 relative flex items-center justify-center">
+            <div id="chart-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 text-center px-4">
               <i data-lucide="bar-chart-2" class="w-8 h-8 mb-2 stroke-1"></i>
               <p class="text-xs">Belum ada data numerik untuk digambarkan.</p>
             </div>
@@ -226,10 +241,10 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: KONEKSI AKUN SOSIAL MEDIA (OFFICIAL HUB)-->
+      <!-- TAB 2: KONEKSI AKUN SOSIAL                     -->
       <!-- ============================================== -->
       <section id="tab-accounts" class="hidden space-y-6">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
             <h3 class="font-semibold text-sm text-white">Integrasi Akun Media Sosial Resmi</h3>
             <p class="text-xs text-slate-400 mt-0.5">
@@ -246,7 +261,7 @@
                     <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
                     <span>Instagram Business</span>
                   </span>
-                  <span id="status-ig" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
                     Belum Terhubung
                   </span>
                 </div>
@@ -267,7 +282,7 @@
                     <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
                     <span>TikTok for Business</span>
                   </span>
-                  <span id="status-tt" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
                     Belum Terhubung
                   </span>
                 </div>
@@ -288,7 +303,7 @@
                     <i data-lucide="facebook" class="w-4 h-4 text-blue-400"></i>
                     <span>Facebook Page</span>
                   </span>
-                  <span id="status-fb" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                  <span class="text-[10px] bg-slate-900 border border-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
                     Belum Terhubung
                   </span>
                 </div>
@@ -308,7 +323,7 @@
       <!-- TAB 3: AI CONTENT STUDIO                       -->
       <!-- ============================================== -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+        <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
             <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
             <p class="text-xs text-slate-400">Generator naskah terstruktur per platform.</p>
@@ -316,7 +331,7 @@
 
           <div>
             <label class="text-xs font-medium text-slate-300 block mb-1">Topik Utama atau Masalah Audiens</label>
-            <input type="text" id="studio-topic" placeholder="Misal: Kesalahan padu padan warna pakaian kerja" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <input type="text" id="studio-topic" placeholder="Misal: Konten kucing lucu & tips rawat bulu" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -350,7 +365,7 @@
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Target Persona</label>
-              <input type="text" id="studio-persona" value="Wanita Muda / Profesional" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <input type="text" id="studio-persona" value="Pecinta Hewan / Umum" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
             </div>
           </div>
 
@@ -361,7 +376,7 @@
         </div>
 
         <!-- Output Editor -->
-        <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+        <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 class="font-semibold text-sm text-white">Naskah Hasil Analisis AI</h3>
@@ -376,7 +391,7 @@
               </div>
             </div>
 
-            <div id="studio-empty-state" class="py-16 text-center text-slate-500">
+            <div id="studio-empty-state" class="py-12 md:py-16 text-center text-slate-500">
               <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 stroke-1 text-slate-600"></i>
               <p class="text-xs">Isi parameter di panel kiri lalu klik Generate.</p>
             </div>
@@ -392,7 +407,7 @@
                 <textarea id="out-body" rows="6" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
               </div>
 
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label class="font-semibold text-slate-300 block mb-1">⚡ Call to Action (CTA):</label>
                   <input type="text" id="out-cta" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
@@ -411,7 +426,7 @@
           </div>
 
           <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end space-x-2">
-            <button onclick="saveToEditorialCalendar()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
+            <button onclick="saveToEditorialCalendar()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
               <span>Simpan ke Kalender Firestore</span>
             </button>
@@ -420,10 +435,10 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 4: RISET TREN & WEB INTELLIGENCE           -->
+      <!-- TAB 4: RISET TREN & INTELLIGENCE               -->
       <!-- ============================================== -->
       <section id="tab-research" class="hidden space-y-6">
-        <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
             <h3 class="font-semibold text-sm text-white">Riset Niche & Tren Pasar Riil</h3>
             <p class="text-xs text-slate-400 mt-0.5">Analisis pola konsumsi audiens dan perumusan angle konten menggunakan Google Gemini.</p>
@@ -432,7 +447,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Kata Kunci / Topik Riset</label>
-              <input type="text" id="research-query" placeholder="Misal: Ide Jualan Makanan Kekinian 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+              <input type="text" id="research-query" placeholder="Misal: Tren Konten Kucing Viral 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Lokasi Target</label>
@@ -440,7 +455,7 @@
             </div>
           </div>
 
-          <button onclick="executeWebResearch()" id="btn-research" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg shadow-indigo-600/30">
+          <button onclick="executeWebResearch()" id="btn-research" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="search" class="w-4 h-4"></i>
             <span>Jalankan Riset Tren Terverifikasi</span>
           </button>
@@ -496,7 +511,7 @@
               <span class="text-xs font-bold text-slate-200">💡 Ide Konten</span>
               <span id="badge-count-IDEA" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
-            <div id="col-IDEA" class="space-y-2 flex-1 min-h-[300px]"></div>
+            <div id="col-IDEA" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
           </div>
 
           <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
@@ -504,7 +519,7 @@
               <span class="text-xs font-bold text-slate-200">✍️ Naskah & Produksi</span>
               <span id="badge-count-WRITING" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
-            <div id="col-WRITING" class="space-y-2 flex-1 min-h-[300px]"></div>
+            <div id="col-WRITING" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
           </div>
 
           <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
@@ -512,7 +527,7 @@
               <span class="text-xs font-bold text-slate-200">🕒 Terjadwal</span>
               <span id="badge-count-SCHEDULED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
-            <div id="col-SCHEDULED" class="space-y-2 flex-1 min-h-[300px]"></div>
+            <div id="col-SCHEDULED" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
           </div>
 
           <div class="bg-[#0b0f19] p-3 rounded-2xl border border-slate-800 flex flex-col">
@@ -520,7 +535,7 @@
               <span class="text-xs font-bold text-slate-200">✅ Sudah Tayang</span>
               <span id="badge-count-PUBLISHED" class="text-[10px] bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-full">0</span>
             </div>
-            <div id="col-PUBLISHED" class="space-y-2 flex-1 min-h-[300px]"></div>
+            <div id="col-PUBLISHED" class="space-y-2 flex-1 min-h-[150px] md:min-h-[300px]"></div>
           </div>
         </div>
       </section>
@@ -529,14 +544,14 @@
       <!-- TAB 6: ANALYTICS & CSV DATA IMPORT             -->
       <!-- ============================================== -->
       <section id="tab-analytics" class="hidden space-y-6">
-        <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-[#0b0f19] border border-slate-800 p-4 md:p-5 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV)</h3>
             <p class="text-[11px] text-slate-400">Header: title, platform, views, reach, likes, comments, shares, saves.</p>
           </div>
           <div>
             <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleStandardCSVUpload(event)">
-            <button onclick="document.getElementById('csv-file-input').click()" class="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
+            <button onclick="document.getElementById('csv-file-input').click()" class="w-full sm:w-auto bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-center space-x-1.5 transition">
               <i data-lucide="upload" class="w-3.5 h-3.5"></i>
               <span>Pilih File CSV</span>
             </button>
@@ -544,11 +559,11 @@
         </div>
 
         <div class="bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-lg overflow-hidden">
-          <div class="px-5 py-3 border-b border-slate-800">
+          <div class="px-4 md:px-5 py-3 border-b border-slate-800">
             <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Tabel Metrik Konten</h3>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
               <thead>
                 <tr class="bg-[#080c14] text-slate-400 border-b border-slate-800">
                   <th class="py-2.5 px-4 font-semibold">Judul Konten</th>
@@ -570,6 +585,30 @@
     </div>
   </main>
 
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 bg-[#0b0f19] border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around z-30 pb-safe">
+    <button onclick="switchTab('overview')" id="mob-overview" class="flex flex-col items-center justify-center p-1 text-indigo-400">
+      <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Overview</span>
+    </button>
+    <button onclick="switchTab('studio')" id="mob-studio" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="sparkles" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Studio</span>
+    </button>
+    <button onclick="switchTab('research')" id="mob-research" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="search" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Riset</span>
+    </button>
+    <button onclick="switchTab('calendar')" id="mob-calendar" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="calendar" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Kalender</span>
+    </button>
+    <button onclick="switchTab('analytics')" id="mob-analytics" class="flex flex-col items-center justify-center p-1 text-slate-400">
+      <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+      <span class="text-[9px] mt-0.5">Analitik</span>
+    </button>
+  </nav>
+
   <!-- GEMINI API SETUP MODAL -->
   <div id="api-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
     <div class="bg-[#0b0f19] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
@@ -584,7 +623,7 @@
       </div>
 
       <p class="text-xs text-slate-400 leading-relaxed">
-        Masukkan Google Gemini API Key Anda. Kunci disimpan lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
+        Masukkan Google Gemini API Key Anda. Kunci ini disimpan lokal di browser Anda untuk menjalankan fitur studio naskah dan riset tren secara langsung.
       </p>
 
       <div>
@@ -606,7 +645,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC CLIENT DIRECT ENGINE -->
+  <!-- JAVASCRIPT LOGIC CLIENT DIRECT ENGINE (RESPONSIVE) -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
@@ -637,8 +676,6 @@
         if (user) {
           currentUser = user;
           document.getElementById('auth-modal').classList.add('hidden');
-          document.getElementById('user-status-badge').innerText = 'Autentikasi Aktif';
-          document.getElementById('user-status-badge').className = 'text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full';
           document.getElementById('current-user-email').innerText = user.email;
           
           loadUserBrands();
@@ -647,13 +684,23 @@
         } else {
           currentUser = null;
           document.getElementById('auth-modal').classList.remove('hidden');
-          document.getElementById('user-status-badge').innerText = 'Belum Login';
-          document.getElementById('user-status-badge').className = 'text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full';
           document.getElementById('current-user-email').innerText = '-';
           contentItems = [];
           renderAll();
         }
       });
+    }
+
+    function toggleMobileSidebar(show) {
+      const drawer = document.getElementById('sidebar-drawer');
+      const backdrop = document.getElementById('mobile-backdrop');
+      if (show) {
+        drawer.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        drawer.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
     }
 
     async function handleEmailLogin() {
@@ -761,17 +808,32 @@
     }
 
     function switchTab(tabId) {
-      ['overview', 'accounts', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
+      const tabs = ['overview', 'accounts', 'studio', 'research', 'calendar', 'analytics'];
+      tabs.forEach(t => {
         const el = document.getElementById(`tab-${t}`);
         const btn = document.getElementById(`nav-${t}`);
+        const mobBtn = document.getElementById(`mob-${t}`);
+
         if (t === tabId) {
-          el.classList.remove('hidden');
-          btn.classList.add('bg-indigo-600', 'text-white');
-          btn.classList.remove('text-slate-400', 'hover:bg-slate-900');
+          if (el) el.classList.remove('hidden');
+          if (btn) {
+            btn.classList.add('bg-indigo-600', 'text-white');
+            btn.classList.remove('text-slate-400', 'hover:bg-slate-900');
+          }
+          if (mobBtn) {
+            mobBtn.classList.add('text-indigo-400');
+            mobBtn.classList.remove('text-slate-400');
+          }
         } else {
-          el.classList.add('hidden');
-          btn.classList.remove('bg-indigo-600', 'text-white');
-          btn.classList.add('text-slate-400', 'hover:bg-slate-900');
+          if (el) el.classList.add('hidden');
+          if (btn) {
+            btn.classList.remove('bg-indigo-600', 'text-white');
+            btn.classList.add('text-slate-400', 'hover:bg-slate-900');
+          }
+          if (mobBtn) {
+            mobBtn.classList.remove('text-indigo-400');
+            mobBtn.classList.add('text-slate-400');
+          }
         }
       });
       lucide.createIcons();
@@ -852,8 +914,8 @@
 
       const key = localStorage.getItem('socialos_gemini_key');
       if (!key) {
-        alert('Kunci Gemini API belum diatur. Silakan klik tombol "Setup Gemini API Key" di sidebar kiri bawah.');
-        return openApiModal();
+        openApiModal();
+        return;
       }
 
       const platform = document.getElementById('studio-platform').value;
@@ -947,8 +1009,8 @@ Kembalikan format JSON murni TANPA tanda kutip markdown persis:
 
       if (!q) return alert('Topik riset tidak boleh kosong.');
       if (!key) {
-        alert('Kunci Gemini API belum diatur. Klik "Setup Gemini API Key" di sidebar kiri bawah.');
-        return openApiModal();
+        openApiModal();
+        return;
       }
 
       btn.disabled = true;
