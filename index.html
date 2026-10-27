@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SocialOS — Real Social Media Command Center</title>
+  <title>SocialOS — AI Social Media Command Center</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -11,45 +11,80 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
     ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-track { background: #080c14; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
 <body class="bg-[#080c14] text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
 
+  <!-- AUTHENTICATION OVERLAY MODAL -->
+  <div id="auth-modal" class="fixed inset-0 bg-[#080c14]/95 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-[#0f172a] border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+      <div class="text-center space-y-1">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 mx-auto flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/30">
+          S
+        </div>
+        <h2 class="text-base font-bold text-white pt-2">Masuk ke SocialOS</h2>
+        <p class="text-xs text-slate-400">Pusat Manajemen Brand & Konten Terisolasi</p>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <div>
+          <label class="text-[11px] font-medium text-slate-300 block mb-1">Alamat Email</label>
+          <input type="email" id="auth-email" placeholder="nama@email.com" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="text-[11px] font-medium text-slate-300 block mb-1">Kata Sandi</label>
+          <input type="password" id="auth-password" placeholder="Minimal 6 karakter" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div id="auth-error-msg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg"></div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="handleEmailLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs py-2 rounded-lg transition shadow-md shadow-indigo-600/30">
+            Masuk
+          </button>
+          <button onclick="handleEmailRegister()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs py-2 rounded-lg transition border border-slate-700">
+            Daftar Akun
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SIDEBAR -->
   <aside class="w-64 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col shrink-0">
-    <!-- Header Logo -->
     <div class="p-4 flex items-center justify-between border-b border-slate-800/80">
       <div class="flex items-center space-x-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-md">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-md">
           S
         </div>
         <div>
           <span class="font-bold text-sm tracking-wide text-white">SocialOS</span>
-          <p class="text-[9px] text-slate-400 font-mono">COMMAND CENTER</p>
+          <p class="text-[9px] text-slate-400 font-mono">ENTERPRISE</p>
         </div>
       </div>
-      <span id="ai-conn-badge" class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">
-        AI: NONAKTIF
+      <span id="user-status-badge" class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full">
+        Belum Login
       </span>
     </div>
 
-    <!-- Dynamic Brand Workspace -->
+    <!-- Brand Workspace Selector -->
     <div class="px-3.5 py-3 border-b border-slate-800/80 bg-slate-950/40">
       <div class="flex items-center justify-between mb-1.5">
-        <label class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Ruang Kerja Brand</label>
-        <button onclick="promptAddBrand()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium">+ Tambah</button>
+        <label class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Brand Aktif</label>
+        <button onclick="promptCreateBrand()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium">+ Brand Baru</button>
       </div>
-      <select id="brand-select" onchange="handleBrandChange()" class="w-full bg-[#080c14] border border-slate-800 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500">
-        <option value="Utama">Brand Utama (Default)</option>
+      <select id="brand-select" onchange="changeActiveBrand()" class="w-full bg-[#080c14] border border-slate-800 text-xs rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+        <option value="default">Brand Utama (Default)</option>
       </select>
     </div>
 
@@ -67,38 +102,38 @@
 
       <button onclick="switchTab('research')" id="nav-research" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
-        <span>Riset Web & Tren Akun</span>
+        <span>Riset Web Terverifikasi</span>
       </button>
 
       <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="calendar" class="w-4 h-4"></i>
-        <span>Kalender Editorial</span>
+        <span>Editorial Calendar</span>
       </button>
 
       <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition">
         <i data-lucide="bar-chart-3" class="w-4 h-4 text-violet-400"></i>
-        <span>Analytics & Data Import</span>
+        <span>Analytics & CSV Import</span>
       </button>
     </nav>
 
-    <!-- Integrations Status & Credentials -->
+    <!-- Footer Profile & Connection -->
     <div class="p-3 border-t border-slate-800/80 bg-slate-950/70 text-[11px] space-y-2">
       <div class="flex items-center justify-between text-slate-400">
-        <span>Firestore Cloud:</span>
-        <span id="sidebar-db-status" class="font-medium text-emerald-400">Menghubungkan...</span>
+        <span>Pengguna:</span>
+        <span id="current-user-email" class="font-medium text-slate-200 truncate max-w-[120px]">-</span>
       </div>
       <div class="flex items-center justify-between text-slate-400">
-        <span>Provider AI:</span>
-        <span id="sidebar-ai-model" class="font-medium text-slate-400">Belum Terhubung</span>
+        <span>Backend API:</span>
+        <span id="sidebar-api-status" class="font-medium text-emerald-400">Terkonfigurasi</span>
       </div>
-      <button onclick="openApiModal()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700/80 text-slate-200 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
-        <i data-lucide="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
-        <span>Hubungkan Model AI (Multi-API)</span>
+      <button onclick="handleLogout()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-rose-400 py-1.5 px-2 rounded-lg text-[10px] font-medium flex items-center justify-center space-x-1.5 transition">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <span>Keluar Akun</span>
       </button>
     </div>
   </aside>
 
-  <!-- MAIN VIEWPORT -->
+  <!-- MAIN WORKSPACE -->
   <main class="flex-1 flex flex-col overflow-hidden bg-[#080c14]">
     <!-- Top Header -->
     <header class="h-14 bg-[#0b0f19]/90 border-b border-slate-800/80 px-6 flex items-center justify-between shrink-0">
@@ -114,47 +149,46 @@
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
           <span>Ekspor CSV</span>
         </button>
-        <button onclick="clearAllData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition">
-          Bersihkan Data
+        <button onclick="clearCurrentBrandData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg font-medium transition">
+          Bersihkan Data Brand Ini
         </button>
       </div>
     </header>
 
-    <!-- Scrollable Workspace Body -->
+    <!-- Workspace Content -->
     <div class="flex-1 overflow-y-auto p-6 space-y-6">
 
       <!-- ============================================== -->
       <!-- TAB 1: EXECUTIVE OVERVIEW                      -->
       <!-- ============================================== -->
       <section id="tab-overview" class="space-y-6">
-        <!-- AI Briefing Banner -->
         <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-slate-800 p-5 rounded-2xl shadow-xl">
           <div class="flex items-center space-x-2 text-indigo-400 mb-1.5">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span class="text-[10px] font-bold tracking-wider uppercase">Executive AI Summary</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase">Strategic Summary</span>
           </div>
-          <h2 class="text-base font-semibold text-white mb-1" id="briefing-title">Evaluasi Kinerja Aktual</h2>
+          <h2 class="text-base font-semibold text-white mb-1" id="briefing-title">Status Kinerja Konten</h2>
           <p class="text-xs text-slate-300 leading-relaxed max-w-4xl" id="briefing-desc">
-            Belum ada data metrik aktual di database cloud Anda. Mulai dengan membuat draf konten di Studio atau impor laporan CSV riil dari Instagram, TikTok, atau Facebook.
+            Belum ada data konten tersimpan. Tambahkan konten melalui Studio atau impor data CSV untuk melihat analitik.
           </p>
         </div>
 
-        <!-- Real KPIs (No Hardcoded Numbers) -->
+        <!-- Real KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Konten di Database</span>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Konten</span>
             <div class="text-2xl font-bold text-white mt-1" id="kpi-total-posts">0</div>
-            <span class="text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Sudah Tayang</span>
+            <span class="text-[11px] text-emerald-400 font-medium mt-1 inline-block" id="kpi-published-posts">0 Tayang</span>
           </div>
 
           <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Jangkauan (Reach)</span>
-            <div class="text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-reach">0</div>
-            <span class="text-[11px] text-slate-500 mt-1 inline-block">Data riil terverifikasi</span>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Views</span>
+            <div class="text-2xl font-bold text-indigo-400 mt-1" id="kpi-total-views">0</div>
+            <span class="text-[11px] text-slate-500 mt-1 inline-block">Akumulasi tayangan</span>
           </div>
 
           <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-xl shadow-xs">
-            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Interaksi (Engagement)</span>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Interaksi</span>
             <div class="text-2xl font-bold text-violet-400 mt-1" id="kpi-total-eng">0</div>
             <span class="text-[11px] text-slate-500 mt-1 inline-block">Likes, Comments, Saves, Shares</span>
           </div>
@@ -170,12 +204,12 @@
         <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-xs">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Grafik Distribusi Konten & Performa Aktual</h3>
-            <span class="text-[11px] text-slate-500 font-mono">Sumber: Firestore Realtime</span>
+            <span class="text-[11px] text-slate-500 font-mono">Firestore Subkoleksi Terisolasi</span>
           </div>
           <div class="h-64 relative flex items-center justify-center">
             <div id="chart-empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
               <i data-lucide="bar-chart-2" class="w-8 h-8 mb-2 stroke-1"></i>
-              <p class="text-xs">Grafik akan terisi otomatis setelah Anda memiliki data postingan di database.</p>
+              <p class="text-xs">Belum ada data numerik untuk digambarkan.</p>
             </div>
             <canvas id="overviewChart"></canvas>
           </div>
@@ -183,29 +217,29 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 2: AI CONTENT STUDIO (REAL MULTI-AI)       -->
+      <!-- TAB 2: AI CONTENT STUDIO                       -->
       <!-- ============================================== -->
       <section id="tab-studio" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Input Configuration Panel -->
         <div class="lg:col-span-5 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
             <div>
               <h3 class="font-semibold text-sm text-white">AI Content Studio</h3>
-              <p class="text-xs text-slate-400">Generator naskah & copy terstruktur via API nyata.</p>
+              <p class="text-xs text-slate-400">Generator naskah terstruktur via Backend Proxy.</p>
             </div>
-            <span id="studio-api-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-amber-400">
-              API Belum Siap
-            </span>
+            <select id="studio-provider-select" class="text-[10px] font-semibold bg-[#080c14] border border-slate-800 text-slate-300 rounded px-2 py-1 outline-none">
+              <option value="gemini">Gemini 1.5 Flash</option>
+              <option value="openai">OpenAI GPT-4o-mini</option>
+            </select>
           </div>
 
           <div>
-            <label class="text-xs font-medium text-slate-300 block mb-1">Topik atau Problem Inti Audiens</label>
-            <input type="text" id="studio-topic" placeholder="Misal: Cara memilih warna busana untuk warm undertone" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <label class="text-xs font-medium text-slate-300 block mb-1">Topik Utama atau Masalah Audiens</label>
+            <input type="text" id="studio-topic" placeholder="Misal: Kesalahan padu padan warna pakaian kerja" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Platform Utama</label>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Platform</label>
               <select id="studio-platform" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
                 <option value="INSTAGRAM">Instagram</option>
                 <option value="TIKTOK">TikTok</option>
@@ -215,9 +249,9 @@
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Format Konten</label>
               <select id="studio-format" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
-                <option value="Reels/Shorts">Short Video (Reels/TikTok)</option>
-                <option value="Carousel">Carousel Slides (Edukasi)</option>
-                <option value="Single Post">Single Post & Caption Panjang</option>
+                <option value="Reels/Shorts">Video Pendek (Shorts/Reels)</option>
+                <option value="Carousel">Carousel Multi-Slide</option>
+                <option value="Single Post">Single Post / Feed</option>
               </select>
             </div>
           </div>
@@ -227,24 +261,24 @@
               <label class="text-xs font-medium text-slate-300 block mb-1">Pilar Konten</label>
               <select id="studio-pillar" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
                 <option value="Edukasi">Edukasi & Tips</option>
-                <option value="Inspirasi">Inspirasi & Storytelling</option>
-                <option value="Promosi">Promosi & Katalog</option>
+                <option value="Inspirasi">Inspirasi & Story</option>
+                <option value="Promosi">Promosi Katalog</option>
                 <option value="Tutorial">Tutorial Praktis</option>
               </select>
             </div>
             <div>
               <label class="text-xs font-medium text-slate-300 block mb-1">Target Persona</label>
-              <input type="text" id="studio-persona" value="Mahasiswi & Wanita Muda Urban" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
+              <input type="text" id="studio-persona" value="Wanita Muda / Profesional" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
             </div>
           </div>
 
           <button onclick="executeAIGeneration()" id="btn-generate" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>Generate Naskah Terstruktur via AI</span>
+            <span>Generate Naskah Lengkap</span>
           </button>
         </div>
 
-        <!-- Output Editor Panel -->
+        <!-- Output Editor -->
         <div class="lg:col-span-7 bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
           <div class="space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -260,21 +294,19 @@
               </div>
             </div>
 
-            <!-- Empty State -->
             <div id="studio-empty-state" class="py-16 text-center text-slate-500">
               <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 stroke-1 text-slate-600"></i>
-              <p class="text-xs">Isi parameter di panel kiri lalu klik tombol Generate.</p>
+              <p class="text-xs">Isi parameter di panel kiri lalu klik Generate.</p>
             </div>
 
-            <!-- Structured Editor Result -->
             <div id="studio-result-state" class="hidden space-y-3.5 text-xs">
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">🎯 3-Second Hook (Penahan Scroll):</label>
+                <label class="font-semibold text-slate-300 block mb-1">🎯 3-Second Hook:</label>
                 <input type="text" id="out-hook" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-medium text-white outline-none">
               </div>
 
               <div>
-                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah Lengkap / Breakdown Adegan / Caption:</label>
+                <label class="font-semibold text-slate-300 block mb-1">📝 Naskah Lengkap / Slide Breakdown / Caption:</label>
                 <textarea id="out-body" rows="6" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs font-mono text-white outline-none leading-relaxed"></textarea>
               </div>
 
@@ -284,18 +316,20 @@
                   <input type="text" id="out-cta" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
                 </div>
                 <div>
-                  <label class="font-semibold text-slate-300 block mb-1">🏷️ Hashtags & Keywords:</label>
+                  <label class="font-semibold text-slate-300 block mb-1">🏷️ Hashtags:</label>
                   <input type="text" id="out-tags" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-indigo-400 outline-none">
                 </div>
+              </div>
+
+              <div>
+                <label class="font-semibold text-slate-300 block mb-1">📅 Jadwal Tayang yang Diinginkan</label>
+                <input type="date" id="out-date" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
               </div>
             </div>
           </div>
 
           <div id="studio-action-footer" class="hidden pt-4 border-t border-slate-800 flex justify-end space-x-2">
-            <button onclick="executeAIGeneration()" class="bg-[#080c14] hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-xl transition">
-              Regenerasi
-            </button>
-            <button onclick="saveToCalendar()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
+            <button onclick="saveToEditorialCalendar()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
               <i data-lucide="cloud-upload" class="w-4 h-4"></i>
               <span>Simpan ke Kalender Firestore</span>
             </button>
@@ -304,78 +338,61 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 3: RISET WEB & INTELIJEN TREN NYATA        -->
+      <!-- TAB 3: RISET WEB TERVERIFIKASI                 -->
       <!-- ============================================== -->
       <section id="tab-research" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
           <div class="border-b border-slate-800 pb-3">
-            <h3 class="font-semibold text-sm text-white">Formulir Riset Niche & Discovery Tren Pasar</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Menganalisis tren pasar, perilaku audiens, dan celah konten kompetitor melalui AI terhubung.</p>
+            <h3 class="font-semibold text-sm text-white">Riset Niche & Web Intelligence Riil</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Menganalisis pencarian web nyata dengan pemisahan fakta terverifikasi dan hipotesis.</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Topik atau Niche Riset</label>
-              <input type="text" id="research-query" placeholder="Misal: Tren Korean Fashion Vintage 2026" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+              <label class="text-xs font-medium text-slate-300 block mb-1">Kata Kunci / Topik Riset</label>
+              <input type="text" id="research-query" placeholder="Misal: Tren Korean Fashion 2026 Indonesia" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
             </div>
             <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Fokus Platform</label>
-              <select id="research-platform" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
-                <option value="Instagram & TikTok">Instagram & TikTok</option>
-                <option value="TikTok Short Video">TikTok Video Pendek</option>
-                <option value="Instagram Carousels & Reels">Instagram Reels & Carousel</option>
-                <option value="Facebook Groups & Fanpage">Facebook Komunitas</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs font-medium text-slate-300 block mb-1">Tujuan Analisis</label>
-              <select id="research-goal" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-white outline-none">
-                <option value="Temukan Pain Point & Masalah Audiens">Temukan Pain Point Audiens</option>
-                <option value="Analisis Celah Konten Kompetitor">Analisis Celah Konten Kompetitor</option>
-                <option value="Peluang Format Konten Viral">Peluang Format Konten Viral</option>
-              </select>
+              <label class="text-xs font-medium text-slate-300 block mb-1">Lokasi Target</label>
+              <input type="text" id="research-location" value="Indonesia" class="w-full bg-[#080c14] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
             </div>
           </div>
 
           <button onclick="executeWebResearch()" id="btn-research" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg shadow-indigo-600/30">
             <i data-lucide="search" class="w-4 h-4"></i>
-            <span>Jalankan Analisis Intelijen Tren</span>
+            <span>Jalankan Riset Web Terverifikasi</span>
           </button>
         </div>
 
-        <!-- Research Result Container (Strict Categorization) -->
         <div id="research-result-container" class="hidden space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Box 1: Fakta Sumber -->
             <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
               <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-                <span>Fakta Sumber & Pola Audiens</span>
+                <span>Fakta Sumber Terverifikasi</span>
               </span>
-              <ul id="res-facts" class="text-xs space-y-1.5 text-slate-300"></ul>
+              <ul id="res-facts-list" class="text-xs space-y-1.5 text-slate-300"></ul>
             </div>
 
-            <!-- Box 2: Interpretasi Celah Pasar -->
             <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs">
               <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
                 <i data-lucide="brain" class="w-4 h-4 text-indigo-400"></i>
-                <span>Interpretasi & Celah Kompetitor</span>
+                <span>Interpretasi & Celah Pasar</span>
               </span>
-              <p id="res-interpretation" class="text-xs text-slate-300 leading-relaxed"></p>
+              <p id="res-interpretation-text" class="text-xs text-slate-300 leading-relaxed"></p>
             </div>
 
-            <!-- Box 3: Hipotesis & Rekomendasi Format -->
             <div class="bg-[#0b0f19] p-4 rounded-xl border border-slate-800 shadow-xs flex flex-col justify-between">
               <div>
                 <span class="text-xs font-bold text-white flex items-center space-x-1.5 mb-2">
                   <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
                   <span>Hipotesis & Rekomendasi Format</span>
                 </span>
-                <p id="res-hypothesis" class="text-xs text-slate-300 leading-relaxed mb-3"></p>
+                <p id="res-hypothesis-text" class="text-xs text-slate-300 leading-relaxed mb-3"></p>
               </div>
-              <button onclick="sendResearchToStudio()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center space-x-1.5 transition">
+              <button onclick="transferResearchToStudio()" class="w-full bg-[#111827] hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center space-x-1.5 transition">
                 <i data-lucide="send" class="w-3.5 h-3.5"></i>
-                <span>Ubah Jadi Draf Naskah di Studio</span>
+                <span>Gunakan Topik di Studio</span>
               </button>
             </div>
           </div>
@@ -383,11 +400,11 @@
       </section>
 
       <!-- ============================================== -->
-      <!-- TAB 4: KALENDER EDITORIAL KANBAN               -->
+      <!-- TAB 4: EDITORIAL CALENDAR KANBAN               -->
       <!-- ============================================== -->
       <section id="tab-calendar" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <p class="text-xs text-slate-400">Pipa produksi konten tersimpan persisten di cloud Firestore Anda:</p>
+          <p class="text-xs text-slate-400">Pipa produksi konten tersimpan persisten di Firestore:</p>
           <span class="text-xs font-medium text-slate-300" id="total-kanban-items">0 Konten</span>
         </div>
 
@@ -432,11 +449,11 @@
       <section id="tab-analytics" class="hidden space-y-6">
         <div class="bg-[#0b0f19] border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV)</h3>
-            <p class="text-[11px] text-slate-400">Format kolom: title, platform, views, reach, likes, comments, shares, saves.</p>
+            <h3 class="font-semibold text-xs text-white">Impor Data Analitik Riil (CSV RFC 4180)</h3>
+            <p class="text-[11px] text-slate-400">Header: title, platform, views, reach, likes, comments, shares, saves.</p>
           </div>
           <div>
-            <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+            <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleStandardCSVUpload(event)">
             <button onclick="document.getElementById('csv-file-input').click()" class="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5 transition">
               <i data-lucide="upload" class="w-3.5 h-3.5"></i>
               <span>Pilih File CSV</span>
@@ -446,7 +463,7 @@
 
         <div class="bg-[#0b0f19] border border-slate-800 rounded-2xl shadow-lg overflow-hidden">
           <div class="px-5 py-3 border-b border-slate-800">
-            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Tabel Metrik Konten & Engagement Rate</h3>
+            <h3 class="font-semibold text-xs text-white uppercase tracking-wider">Tabel Metrik Konten</h3>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
@@ -471,54 +488,9 @@
     </div>
   </main>
 
-  <!-- MULTI-PROVIDER AI CONFIGURATION MODAL -->
-  <div id="api-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-    <div class="bg-[#0b0f19] rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-800 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-semibold text-sm text-white flex items-center space-x-1.5">
-          <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
-          <span>Konfigurasi Provider Model AI</span>
-        </h3>
-        <button onclick="closeApiModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-400 leading-relaxed">
-        Pilih penyedia model AI dan masukkan API Key Anda. Kunci disimpan secara lokal di browser Anda (<code class="bg-slate-900 px-1 py-0.5 rounded text-[11px] text-indigo-300">localStorage</code>) dan tidak pernah dikirim ke repository GitHub.
-      </p>
-
-      <div>
-        <label class="text-xs font-medium text-slate-300 block mb-1">Penyedia AI</label>
-        <select id="select-ai-provider" onchange="toggleProviderInputs()" class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none">
-          <option value="gemini">Google Gemini API (Disarankan - Free Tier)</option>
-          <option value="openai">OpenAI API (GPT-4o-mini)</option>
-          <option value="openrouter">OpenRouter / Groq (Llama-3 / DeepSeek)</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="text-xs font-medium text-slate-300 block mb-1" id="lbl-api-key">API Key</label>
-        <input type="password" id="input-api-key" placeholder="Masukkan API Key Anda..." class="w-full bg-[#080c14] border border-slate-800 rounded-lg p-2 text-xs text-white outline-none focus:border-indigo-500">
-      </div>
-
-      <div id="modal-test-status" class="hidden p-2 rounded-lg text-xs"></div>
-
-      <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-        <button onclick="testApiConnection()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-3 py-2 rounded-lg transition">
-          Uji Handshake
-        </button>
-        <div class="space-x-2">
-          <button onclick="closeApiModal()" class="text-xs text-slate-400 hover:text-slate-200 px-3 py-2">Batal</button>
-          <button onclick="saveApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Simpan Kunci</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT APP LOGIC -->
+  <!-- JAVASCRIPT LOGIC DENGAN KEAMANAN PRODUKSI -->
   <script>
-    // Konfigurasi Firebase Aktif (Projek alisya-live-db)
+    // Konfigurasi Client Firebase (Gunakan konfigurasi proyek Anda)
     const firebaseConfig = {
       apiKey: "AIzaSyAFiQ_IfBDRKU66J6zZLiORhpuODD71kg4",
       authDomain: "alisya-live-db.firebaseapp.com",
@@ -526,114 +498,148 @@
       projectId: "alisya-live-db",
       storageBucket: "alisya-live-db.firebasestorage.app",
       messagingSenderId: "409499788186",
-      appId: "1:409499788186:web:63500185b22d83a9ded023",
-      measurementId: "G-DHVMKXENV4"
+      appId: "1:409499788186:web:63500185b22d83a9ded023"
     };
 
-    let contentItems = [];
-    let chartInstance = null;
+    // Alamat Serverless Backend Gateway (Ganti dengan URL deployment backend Vercel/Render Anda)
+    const BACKEND_BASE_URL = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000/api' 
+      : 'https://socialos-api.vercel.app/api';
+
+    let auth = null;
     let db = null;
-    let activeBrand = "Utama";
+    let currentUser = null;
+    let activeBrandId = "default";
+    let contentItems = [];
+    let brandsList = [{ id: "default", name: "Brand Utama (Default)" }];
+    let chartInstance = null;
 
-    // --- INISIALISASI FIRESTORE ---
-    function initFirebase() {
-      const dbStatusEl = document.getElementById('sidebar-db-status');
-      try {
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
+    // --- INISIALISASI FIREBASE & AUTHENTICATION ---
+    function initApp() {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      auth = firebase.auth();
+      db = firebase.firestore();
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUser = user;
+          document.getElementById('auth-modal').classList.add('hidden');
+          document.getElementById('user-status-badge').innerText = 'Autentikasi Aktif';
+          document.getElementById('user-status-badge').className = 'text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full';
+          document.getElementById('current-user-email').innerText = user.email;
+          
+          loadUserBrands();
+          bindFirestoreListeners();
+        } else {
+          currentUser = null;
+          document.getElementById('auth-modal').classList.remove('hidden');
+          document.getElementById('user-status-badge').innerText = 'Belum Login';
+          document.getElementById('user-status-badge').className = 'text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full';
+          document.getElementById('current-user-email').innerText = '-';
+          contentItems = [];
+          renderAll();
         }
-        db = firebase.firestore();
-        dbStatusEl.innerText = 'Firestore Terhubung';
-        dbStatusEl.className = 'font-medium text-emerald-400';
+      });
+    }
 
-        // Realtime sync dari koleksi Firestore
-        db.collection("socialos_contents").onSnapshot((snapshot) => {
-          const remoteData = [];
-          snapshot.forEach((doc) => remoteData.push({ id: doc.id, ...doc.data() }));
-          contentItems = remoteData;
+    async function handleEmailLogin() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (err) {
+        errBox.textContent = 'Gagal masuk: ' + err.message;
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    async function handleEmailRegister() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.classList.add('hidden');
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+      } catch (err) {
+        errBox.textContent = 'Gagal mendaftar: ' + err.message;
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      if (confirm('Keluar dari sesi akun saat ini?')) {
+        auth.signOut();
+      }
+    }
+
+    // --- BRAND WORKSPACE SUBCOLLECTION ---
+    function loadUserBrands() {
+      if (!currentUser) return;
+      db.collection('users').doc(currentUser.uid).collection('brands').onSnapshot((snap) => {
+        const loaded = [{ id: "default", name: "Brand Utama (Default)" }];
+        snap.forEach(doc => loaded.push({ id: doc.id, ...doc.data() }));
+        brandsList = loaded;
+
+        const select = document.getElementById('brand-select');
+        select.innerHTML = '';
+        brandsList.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.id;
+          opt.textContent = b.name;
+          select.appendChild(opt);
+        });
+        select.value = activeBrandId;
+      });
+    }
+
+    async function promptCreateBrand() {
+      if (!currentUser) return;
+      const name = prompt('Masukkan nama Brand baru:');
+      if (name && name.trim()) {
+        const brandDoc = {
+          name: name.trim(),
+          createdAt: new Date().toISOString()
+        };
+        const ref = await db.collection('users').doc(currentUser.uid).collection('brands').add(brandDoc);
+        activeBrandId = ref.id;
+        renderAll();
+      }
+    }
+
+    function changeActiveBrand() {
+      activeBrandId = document.getElementById('brand-select').value;
+      renderAll();
+    }
+
+    // --- REALTIME FIRESTORE LISTENER (ISOLATED PATH) ---
+    function bindFirestoreListeners() {
+      if (!currentUser) return;
+
+      db.collection('users').doc(currentUser.uid).collection('contents')
+        .onSnapshot((snapshot) => {
+          const loaded = [];
+          snapshot.forEach(doc => loaded.push({ id: doc.id, ...doc.data() }));
+          contentItems = loaded;
           renderAll();
         }, (error) => {
-          console.error("Firestore sync error:", error);
-          dbStatusEl.innerText = 'Izin Rules Ditolak';
-          dbStatusEl.className = 'font-medium text-rose-400';
-          loadLocalStorageFallback();
+          console.error("Firestore access error:", error);
         });
-      } catch (e) {
-        dbStatusEl.innerText = 'LocalStorage';
-        dbStatusEl.className = 'font-medium text-amber-400';
-        loadLocalStorageFallback();
-      }
     }
 
-    function loadLocalStorageFallback() {
-      const stored = localStorage.getItem('socialos_data');
-      contentItems = stored ? JSON.parse(stored) : [];
-      renderAll();
+    // --- DOM SAFE RENDERING & SANITIZATION ---
+    function createSafeElement(tag, className, textContent = '') {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (textContent) el.textContent = textContent;
+      return el;
     }
 
-    async function syncSaveItem(item) {
-      item.brand = activeBrand;
-      if (db) {
-        try { await db.collection("socialos_contents").doc(item.id).set(item, { merge: true }); } catch (err) {}
-      } else {
-        const idx = contentItems.findIndex(i => i.id === item.id);
-        if (idx >= 0) contentItems[idx] = item;
-        else contentItems.unshift(item);
-        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
-        renderAll();
-      }
-    }
-
-    async function syncDeleteItem(id) {
-      if (db) {
-        try { await db.collection("socialos_contents").doc(id).delete(); } catch (err) {}
-      } else {
-        contentItems = contentItems.filter(i => i.id !== id);
-        localStorage.setItem('socialos_data', JSON.stringify(contentItems));
-        renderAll();
-      }
-    }
-
-    async function clearAllData() {
-      if (confirm('Apakah Anda yakin ingin menghapus seluruh data di database cloud?')) {
-        if (db) {
-          contentItems.forEach(async (it) => await db.collection("socialos_contents").doc(it.id).delete());
-        } else {
-          contentItems = [];
-          localStorage.removeItem('socialos_data');
-          renderAll();
-        }
-      }
-    }
-
-    // --- BRAND WORKSPACE MANAGEMENT ---
-    function loadBrands() {
-      const savedBrands = JSON.parse(localStorage.getItem('socialos_brands') || '["Utama"]');
-      const select = document.getElementById('brand-select');
-      select.innerHTML = savedBrands.map(b => `<option value="${b}">${b}</option>`).join('');
-      select.value = activeBrand;
-    }
-
-    function promptAddBrand() {
-      const name = prompt('Masukkan nama Brand atau Klien baru:');
-      if (name && name.trim()) {
-        const savedBrands = JSON.parse(localStorage.getItem('socialos_brands') || '["Utama"]');
-        if (!savedBrands.includes(name.trim())) {
-          savedBrands.push(name.trim());
-          localStorage.setItem('socialos_brands', JSON.stringify(savedBrands));
-          activeBrand = name.trim();
-          loadBrands();
-          renderAll();
-        }
-      }
-    }
-
-    function handleBrandChange() {
-      activeBrand = document.getElementById('brand-select').value;
-      renderAll();
-    }
-
-    // --- NAVIGATION TABS ---
     function switchTab(tabId) {
       ['overview', 'studio', 'research', 'calendar', 'analytics'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
@@ -648,409 +654,263 @@
           btn.classList.add('text-slate-400', 'hover:bg-slate-900');
         }
       });
-      const titles = {
-        overview: 'Executive Dashboard',
-        studio: 'AI Content Studio & Generator',
-        research: 'Riset Web & Tren Akun',
-        calendar: 'Kalender Editorial Kanban',
-        analytics: 'Cross-Platform Performance Analytics'
-      };
-      document.getElementById('page-title').innerText = titles[tabId];
       lucide.createIcons();
     }
 
-    // --- MULTI-PROVIDER AI CONFIGURATION ---
-    function openApiModal() {
-      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
-      document.getElementById('select-ai-provider').value = prov;
-      document.getElementById('input-api-key').value = localStorage.getItem(`socialos_${prov}_key`) || '';
-      document.getElementById('modal-test-status').className = 'hidden';
-      document.getElementById('api-modal').classList.remove('hidden');
-    }
-
-    function closeApiModal() {
-      document.getElementById('api-modal').classList.add('hidden');
-    }
-
-    function toggleProviderInputs() {
-      const prov = document.getElementById('select-ai-provider').value;
-      document.getElementById('input-api-key').value = localStorage.getItem(`socialos_${prov}_key`) || '';
-    }
-
-    async function testApiConnection() {
-      const prov = document.getElementById('select-ai-provider').value;
-      const key = document.getElementById('input-api-key').value.trim();
-      const statusDiv = document.getElementById('modal-test-status');
-
-      if (!key) {
-        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
-        statusDiv.innerText = 'Harap masukkan API Key terlebih dahulu.';
-        return;
-      }
-
-      statusDiv.className = 'p-2 rounded-lg text-xs bg-slate-900 text-slate-300 border border-slate-800 block';
-      statusDiv.innerText = `Menguji handshake ke ${prov.toUpperCase()}...`;
-
-      try {
-        if (prov === 'gemini') {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Tes singkat." }] }] })
-          });
-          if (!res.ok) throw new Error('API Key Gemini tidak valid.');
-        } else if (prov === 'openai') {
-          const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "Tes." }] })
-          });
-          if (!res.ok) throw new Error('API Key OpenAI tidak valid.');
-        }
-
-        statusDiv.className = 'p-2 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 block';
-        statusDiv.innerText = `Koneksi Berhasil! Model ${prov.toUpperCase()} terhubung sempurna.`;
-      } catch (e) {
-        statusDiv.className = 'p-2 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 block';
-        statusDiv.innerText = e.message || 'Gagal menghubungi server API.';
-      }
-    }
-
-    function saveApiKey() {
-      const prov = document.getElementById('select-ai-provider').value;
-      const key = document.getElementById('input-api-key').value.trim();
-      localStorage.setItem('socialos_ai_provider', prov);
-      if (key) localStorage.setItem(`socialos_${prov}_key`, key);
-      closeApiModal();
-      updateAIStatusUI();
-    }
-
-    function updateAIStatusUI() {
-      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
-      const key = localStorage.getItem(`socialos_${prov}_key`);
-      const badge = document.getElementById('ai-conn-badge');
-      const sideModel = document.getElementById('sidebar-ai-model');
-      const studioBadge = document.getElementById('studio-api-badge');
-
-      if (key) {
-        badge.innerText = `AI: ${prov.toUpperCase()} AKTIF`;
-        badge.className = 'text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full';
-        sideModel.innerText = `${prov.toUpperCase()}`;
-        sideModel.className = 'font-medium text-emerald-400';
-        studioBadge.innerText = `${prov.toUpperCase()} Ready`;
-        studioBadge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-      } else {
-        badge.innerText = 'AI: NONAKTIF';
-        badge.className = 'text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full';
-        sideModel.innerText = 'Belum Ada Key';
-        sideModel.className = 'font-medium text-slate-500';
-        studioBadge.innerText = 'Key Belum Diisi';
-        studioBadge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      }
-    }
-
-    // --- PRIORITAS 1: AI CONTENT STUDIO ---
-    let currentGeneratedItem = null;
+    // --- AI CONTENT STUDIO (BACKEND ROUTED) ---
+    let latestGeneratedObj = null;
 
     async function executeAIGeneration() {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
       const topic = document.getElementById('studio-topic').value.trim();
-      if (!topic) return alert('Harap isi topik atau masalah audiens terlebih dahulu.');
-
-      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
-      const key = localStorage.getItem(`socialos_${prov}_key`);
-
-      if (!key) {
-        alert(`API Key untuk ${prov.toUpperCase()} belum dikonfigurasi. Klik 'Hubungkan Model AI' di sidebar kiri bawah.`);
-        return openApiModal();
-      }
+      if (!topic) return alert('Topik tidak boleh kosong.');
 
       const platform = document.getElementById('studio-platform').value;
       const format = document.getElementById('studio-format').value;
       const pillar = document.getElementById('studio-pillar').value;
       const persona = document.getElementById('studio-persona').value;
+      const provider = document.getElementById('studio-provider-select').value;
       const btn = document.getElementById('btn-generate');
 
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>AI Sedang Merumuskan...</span>`;
-      lucide.createIcons();
-
-      const systemPrompt = `Anda adalah Social Media Strategist & Copywriter profesional untuk brand "${activeBrand}".
-Platform: ${platform}, Format: ${format}, Pilar: ${pillar}, Persona: ${persona}.
-Topik: "${topic}".
-Kembalikan format JSON murni TANPA markdown kutip dengan skema:
-{
-  "title": "Judul Konsep Konten",
-  "hook": "Kalimat pembuka 3 detik pertama",
-  "body": "Naskah lengkap adegan/slide beserta arahan visual",
-  "cta": "Kalimat Call to Action",
-  "tags": "#Tag1 #Tag2 #Tag3"
-}`;
+      btn.textContent = 'Meminta respons AI...';
 
       try {
-        let parsedData = null;
-        if (prov === 'gemini') {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: systemPrompt }] }],
-              generationConfig: { responseMimeType: "application/json" }
-            })
-          });
-          const json = await res.json();
-          parsedData = JSON.parse(json.candidates?.[0]?.content?.parts?.[0]?.text);
-        } else if (prov === 'openai') {
-          const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: [{ role: "system", content: systemPrompt }],
-              response_format: { type: "json_object" }
-            })
-          });
-          const json = await res.json();
-          parsedData = JSON.parse(json.choices?.[0]?.message?.content);
+        const idToken = await currentUser.getIdToken();
+        const res = await fetch(`${BACKEND_BASE_URL}/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            provider,
+            brandName: brandsList.find(b => b.id === activeBrandId)?.name || 'Brand',
+            topic, platform, format, pillar, targetAudience: persona
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Gagal menghubungi backend proxy AI.');
         }
 
-        currentGeneratedItem = {
-          title: parsedData.title || topic,
-          platform, format, pillar,
-          hook: parsedData.hook,
-          bodyCopy: parsedData.body,
-          cta: parsedData.cta,
-          tags: parsedData.tags
-        };
+        const payload = await res.json();
+        latestGeneratedObj = payload.data;
 
-        document.getElementById('out-hook').value = currentGeneratedItem.hook;
-        document.getElementById('out-body').value = currentGeneratedItem.bodyCopy;
-        document.getElementById('out-cta').value = currentGeneratedItem.cta;
-        document.getElementById('out-tags').value = currentGeneratedItem.tags;
+        document.getElementById('out-hook').value = latestGeneratedObj.hook || '';
+        document.getElementById('out-body').value = latestGeneratedObj.body || '';
+        document.getElementById('out-cta').value = latestGeneratedObj.cta || '';
+        document.getElementById('out-tags').value = latestGeneratedObj.tags || '';
+        document.getElementById('out-date').value = new Date().toISOString().split('T')[0];
 
         document.getElementById('studio-empty-state').classList.add('hidden');
         document.getElementById('studio-result-state').classList.remove('hidden');
         document.getElementById('studio-action-footer').classList.remove('hidden');
-        document.getElementById('output-badge').classList.remove('hidden');
       } catch (err) {
-        alert('Gagal menghasilkan naskah: ' + err.message);
+        alert(err.message + '\nPastikan backend proxy serverless Anda sudah berjalan.');
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4"></i><span>Generate Naskah Terstruktur via AI</span>`;
+      btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 mr-2"></i><span>Generate Naskah Lengkap</span>`;
       lucide.createIcons();
     }
 
-    function copyGeneratedText() {
-      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[NASKAH / SLIDE]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
-      navigator.clipboard.writeText(full);
-      alert('Naskah berhasil disalin ke clipboard!');
+    async function copyGeneratedText() {
+      const full = `[HOOK]\n${document.getElementById('out-hook').value}\n\n[NASKAH]\n${document.getElementById('out-body').value}\n\n[CTA]\n${document.getElementById('out-cta').value}\n\n[TAGS]\n${document.getElementById('out-tags').value}`;
+      await navigator.clipboard.writeText(full);
+      alert('Naskah tersalin aman ke clipboard.');
     }
 
-    async function saveToCalendar() {
-      if (!currentGeneratedItem) return;
+    async function saveToEditorialCalendar() {
+      if (!currentUser || !latestGeneratedObj) return;
+
+      const plannedDate = document.getElementById('out-date').value || new Date().toISOString().split('T')[0];
       const newItem = {
-        id: 'item-' + Date.now(),
-        title: currentGeneratedItem.title,
-        platform: currentGeneratedItem.platform,
-        format: currentGeneratedItem.format,
-        pillar: currentGeneratedItem.pillar,
+        brandId: activeBrandId,
+        title: latestGeneratedObj.title || document.getElementById('studio-topic').value,
+        platform: document.getElementById('studio-platform').value,
+        format: document.getElementById('studio-format').value,
+        pillar: document.getElementById('studio-pillar').value,
         status: 'IDEA',
         hook: document.getElementById('out-hook').value,
         bodyCopy: document.getElementById('out-body').value,
         cta: document.getElementById('out-cta').value,
         tags: document.getElementById('out-tags').value,
-        scheduledDate: new Date().toISOString().split('T')[0],
-        views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0
+        scheduledDate: plannedDate,
+        views: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0,
+        createdAt: new Date().toISOString()
       };
-      await syncSaveItem(newItem);
+
+      await db.collection('users').doc(currentUser.uid).collection('contents').add(newItem);
       switchTab('calendar');
     }
 
-    // --- PRIORITAS 2: RISET WEB & INTELIJEN TREN ---
+    // --- WEB RESEARCH RIIL ---
     async function executeWebResearch() {
       const q = document.getElementById('research-query').value.trim();
-      const plat = document.getElementById('research-platform').value;
-      const goal = document.getElementById('research-goal').value;
-      const prov = localStorage.getItem('socialos_ai_provider') || 'gemini';
-      const key = localStorage.getItem(`socialos_${prov}_key`);
+      const loc = document.getElementById('research-location').value.trim();
       const btn = document.getElementById('btn-research');
-
-      if (!q) return alert('Harap isi topik riset.');
-      if (!key) {
-        alert('Kunci API belum diisi. Silakan konfigurasi API terlebih dahulu.');
-        return openApiModal();
-      }
+      if (!q) return alert('Topik riset tidak boleh kosong.');
 
       btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i><span>Menganalisis Data...</span>`;
-      lucide.createIcons();
-
-      const researchPrompt = `Sebagai Social Media Analyst untuk pasar Indonesia, analisis topik: "${q}".
-Platform fokus: ${plat}. Tujuan: ${goal}.
-Pisahkan jawaban DALAM JSON MURNI tanpa markdown kutip persis:
-{
-  "facts": ["Fakta teramati 1 tentang audiens", "Fakta teramati 2 tentang pola konsumsi konten"],
-  "interpretation": "Interpretasi analitis terkait celah pasar yang belum dipenuhi kompetitor.",
-  "hypothesis": "Hipotesis konten: Rekomendasi format (Reels/Carousel) dan hook yang berpeluang viral."
-}`;
+      btn.textContent = 'Menjalankan riset web...';
 
       try {
-        let resData = null;
-        if (prov === 'gemini') {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: researchPrompt }] }],
-              generationConfig: { responseMimeType: "application/json" }
-            })
-          });
-          const json = await res.json();
-          resData = JSON.parse(json.candidates?.[0]?.content?.parts?.[0]?.text);
-        } else if (prov === 'openai') {
-          const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: [{ role: "system", content: researchPrompt }],
-              response_format: { type: "json_object" }
-            })
-          });
-          const json = await res.json();
-          resData = JSON.parse(json.choices?.[0]?.message?.content);
-        }
+        const res = await fetch(`${BACKEND_BASE_URL}/research`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q, location: loc })
+        });
 
-        document.getElementById('res-facts').innerHTML = resData.facts.map(f => `<li>• ${f}</li>`).join('');
-        document.getElementById('res-interpretation').innerText = resData.interpretation;
-        document.getElementById('res-hypothesis').innerText = resData.hypothesis;
+        const json = await res.json();
+        const data = json.data;
+
+        const factsList = document.getElementById('res-facts-list');
+        factsList.innerHTML = '';
+        (data.facts || []).forEach(f => {
+          const li = createSafeElement('li', 'text-slate-300', `• ${f}`);
+          factsList.appendChild(li);
+        });
+
+        document.getElementById('res-interpretation-text').textContent = data.interpretation || '-';
+        document.getElementById('res-hypothesis-text').textContent = data.hypothesis || '-';
         document.getElementById('research-result-container').classList.remove('hidden');
       } catch (err) {
-        alert('Gagal mengeksekusi riset: ' + err.message);
+        alert('Riset gagal dijalankan: ' + err.message);
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4"></i><span>Jalankan Analisis Intelijen Tren</span>`;
+      btn.innerHTML = `<i data-lucide="search" class="w-4 h-4 mr-2"></i><span>Jalankan Riset Web Terverifikasi</span>`;
       lucide.createIcons();
     }
 
-    function sendResearchToStudio() {
-      const q = document.getElementById('research-query').value.trim();
-      document.getElementById('studio-topic').value = q;
+    function transferResearchToStudio() {
+      document.getElementById('studio-topic').value = document.getElementById('research-query').value;
       switchTab('studio');
     }
 
-    // --- KANBAN LOGIC ---
-    async function updateItemStatus(id, newStatus) {
-      const it = contentItems.find(i => i.id === id);
-      if (it) {
-        it.status = newStatus;
-        await syncSaveItem(it);
-      }
+    // --- KANBAN LOGIC & DOM SAFE RENDERING ---
+    async function updateItemStatus(docId, newStatus) {
+      if (!currentUser) return;
+      await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).update({
+        status: newStatus
+      });
     }
 
-    async function deleteItem(id) {
-      if (confirm('Hapus konten ini dari cloud?')) {
-        await syncDeleteItem(id);
+    async function deleteItem(docId) {
+      if (!currentUser) return;
+      if (confirm('Hapus konten ini secara permanen dari database?')) {
+        await db.collection('users').doc(currentUser.uid).collection('contents').doc(docId).delete();
       }
     }
 
     function renderKanban() {
-      const filteredItems = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
       ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(st => {
         const col = document.getElementById(`col-${st}`);
-        const list = filteredItems.filter(i => i.status === st);
-        document.getElementById(`badge-count-${st}`).innerText = list.length;
+        col.innerHTML = '';
+        const list = filtered.filter(i => i.status === st);
+        document.getElementById(`badge-count-${st}`).textContent = list.length;
 
-        col.innerHTML = list.map(item => `
-          <div class="bg-[#080c14] p-3 rounded-xl border border-slate-800 shadow-xs space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">${item.platform}</span>
-              <span class="text-[10px] text-slate-500">${item.format}</span>
-            </div>
-            <h4 class="font-medium text-xs text-white leading-snug">${item.title}</h4>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-400">
-              <span>${item.scheduledDate}</span>
-              <div class="flex items-center space-x-1">
-                <select onchange="updateItemStatus('${item.id}', this.value)" class="border border-slate-700 rounded text-[10px] bg-slate-950 text-slate-200 px-1 py-0.5">
-                  <option value="IDEA" ${item.status === 'IDEA' ? 'selected' : ''}>Ide</option>
-                  <option value="WRITING" ${item.status === 'WRITING' ? 'selected' : ''}>Naskah</option>
-                  <option value="SCHEDULED" ${item.status === 'SCHEDULED' ? 'selected' : ''}>Jadwal</option>
-                  <option value="PUBLISHED" ${item.status === 'PUBLISHED' ? 'selected' : ''}>Tayang</option>
-                </select>
-                <button onclick="deleteItem('${item.id}')" class="text-rose-400 hover:text-rose-300 p-0.5">
-                  <i data-lucide="trash-2" class="w-3 h-3"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `).join('');
+        list.forEach(item => {
+          const card = createSafeElement('div', 'bg-[#080c14] p-3 rounded-xl border border-slate-800 shadow-xs space-y-2');
+          
+          const topRow = createSafeElement('div', 'flex items-center justify-between');
+          const badge = createSafeElement('span', 'text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20', item.platform);
+          const fmt = createSafeElement('span', 'text-[10px] text-slate-500', item.format);
+          topRow.appendChild(badge);
+          topRow.appendChild(fmt);
+
+          const title = createSafeElement('h4', 'font-medium text-xs text-white leading-snug', item.title);
+
+          const bottomRow = createSafeElement('div', 'flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-slate-400');
+          const dateSpan = createSafeElement('span', '', item.scheduledDate || '-');
+
+          const actionDiv = createSafeElement('div', 'flex items-center space-x-1');
+          const select = createSafeElement('select', 'border border-slate-700 rounded text-[10px] bg-slate-950 text-slate-200 px-1 py-0.5');
+          ['IDEA', 'WRITING', 'SCHEDULED', 'PUBLISHED'].forEach(sOpt => {
+            const opt = document.createElement('option');
+            opt.value = sOpt;
+            opt.textContent = sOpt;
+            if (item.status === sOpt) opt.selected = true;
+            select.appendChild(opt);
+          });
+          select.onchange = (e) => updateItemStatus(item.id, e.target.value);
+
+          const delBtn = createSafeElement('button', 'text-rose-400 hover:text-rose-300 p-0.5', '✕');
+          delBtn.onclick = () => deleteItem(item.id);
+
+          actionDiv.appendChild(select);
+          actionDiv.appendChild(delBtn);
+
+          bottomRow.appendChild(dateSpan);
+          bottomRow.appendChild(actionDiv);
+
+          card.appendChild(topRow);
+          card.appendChild(title);
+          card.appendChild(bottomRow);
+          col.appendChild(card);
+        });
       });
-      document.getElementById('total-kanban-items').innerText = `${filteredItems.length} Konten`;
+      document.getElementById('total-kanban-items').textContent = `${filtered.length} Konten`;
     }
 
-    // --- OVERVIEW & REAL ANALYTICS ---
+    // --- OVERVIEW & ANALYTICS CALCULATION ---
     function renderOverviewAndAnalytics() {
-      const filtered = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
-      let totalViews = 0, totalReach = 0, totalInteractions = 0, publishedCount = 0;
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+      let totalViews = 0, totalReach = 0, totalEng = 0, publishedCount = 0;
       const tbody = document.getElementById('analytics-table-body');
       tbody.innerHTML = '';
 
       filtered.forEach(item => {
-        const eng = (item.likes || 0) + (item.comments || 0) + (item.shares || 0) + (item.saves || 0);
-        totalViews += (item.views || 0);
-        totalReach += (item.reach || 0);
-        totalInteractions += eng;
+        const eng = (Number(item.likes) || 0) + (Number(item.comments) || 0) + (Number(item.shares) || 0) + (Number(item.saves) || 0);
+        totalViews += (Number(item.views) || 0);
+        totalReach += (Number(item.reach) || 0);
+        totalEng += eng;
         if (item.status === 'PUBLISHED') publishedCount++;
 
         const er = item.reach > 0 ? ((eng / item.reach) * 100).toFixed(2) + '%' : '-';
+
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-900/50';
-        row.innerHTML = `
-          <td class="py-2.5 px-4 font-medium text-white">${item.title}</td>
-          <td class="py-2.5 px-4 text-slate-400">${item.platform}</td>
-          <td class="py-2.5 px-4 text-slate-400">${(item.views || 0).toLocaleString('id-ID')}</td>
-          <td class="py-2.5 px-4 text-slate-400">${(item.reach || 0).toLocaleString('id-ID')}</td>
-          <td class="py-2.5 px-4 text-slate-400">${(item.likes || 0).toLocaleString('id-ID')}</td>
-          <td class="py-2.5 px-4 text-slate-400">${(item.saves || 0).toLocaleString('id-ID')}</td>
-          <td class="py-2.5 px-4 font-semibold text-white">${eng.toLocaleString('id-ID')}</td>
-          <td class="py-2.5 px-4 font-bold text-emerald-400">${er}</td>
-        `;
+
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-medium text-white', item.title));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', item.platform));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.views) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.reach) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.likes) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 text-slate-400', (Number(item.saves) || 0).toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-semibold text-white', eng.toLocaleString('id-ID')));
+        row.appendChild(createSafeElement('td', 'py-2.5 px-4 font-bold text-emerald-400', er));
+
         tbody.appendChild(row);
       });
 
-      // Update Real KPIs
-      document.getElementById('kpi-total-posts').innerText = `${filtered.length} Item`;
-      document.getElementById('kpi-published-posts').innerText = `${publishedCount} Sudah Tayang`;
-      document.getElementById('kpi-total-reach').innerText = totalReach.toLocaleString('id-ID');
-      document.getElementById('kpi-total-eng').innerText = totalInteractions.toLocaleString('id-ID');
+      document.getElementById('kpi-total-posts').textContent = filtered.length;
+      document.getElementById('kpi-published-posts').textContent = `${publishedCount} Sudah Tayang`;
+      document.getElementById('kpi-total-views').textContent = totalViews.toLocaleString('id-ID');
+      document.getElementById('kpi-total-eng').textContent = totalEng.toLocaleString('id-ID');
 
-      const avgER = totalReach > 0 ? ((totalInteractions / totalReach) * 100).toFixed(2) : '0.00';
-      document.getElementById('kpi-er').innerText = `${avgER}%`;
-
-      if (filtered.length > 0) {
-        document.getElementById('briefing-desc').innerText = `Terpantau ${filtered.length} konten di brand "${activeBrand}". Rata-rata rasio interaksi berada di angka ${avgER}%.`;
-      } else {
-        document.getElementById('briefing-desc').innerText = `Belum ada data metrik aktual untuk brand "${activeBrand}".`;
-      }
+      const erOverall = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
+      document.getElementById('kpi-er').textContent = `${erOverall}%`;
 
       updateChart(filtered);
     }
 
     function updateChart(filtered) {
       const ctx = document.getElementById('overviewChart').getContext('2d');
-      const emptyState = document.getElementById('chart-empty-state');
+      const emptyBox = document.getElementById('chart-empty-state');
 
       if (!filtered || filtered.length === 0) {
-        emptyState.classList.remove('hidden');
+        emptyBox.classList.remove('hidden');
         if (chartInstance) chartInstance.destroy();
         return;
       }
 
-      emptyState.classList.add('hidden');
+      emptyBox.classList.add('hidden');
       const labels = filtered.map(i => i.title.substring(0, 16) + '...');
-      const reachData = filtered.map(i => i.reach || 0);
-      const engData = filtered.map(i => (i.likes || 0) + (i.comments || 0) + (i.shares || 0) + (i.saves || 0));
+      const reachData = filtered.map(i => Number(i.reach) || 0);
+      const engData = filtered.map(i => (Number(i.likes) || 0) + (Number(i.comments) || 0) + (Number(i.shares) || 0) + (Number(i.saves) || 0));
 
       if (chartInstance) chartInstance.destroy();
       chartInstance = new Chart(ctx, {
@@ -1059,53 +919,80 @@ Pisahkan jawaban DALAM JSON MURNI tanpa markdown kutip persis:
           labels: labels,
           datasets: [
             { label: 'Jangkauan (Reach)', data: reachData, backgroundColor: '#6366f1', borderRadius: 4 },
-            { label: 'Interaksi Publik', data: engData, backgroundColor: '#10b981', borderRadius: 4 }
+            { label: 'Total Interaksi', data: engData, backgroundColor: '#10b981', borderRadius: 4 }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'top', labels: { boxWidth: 12, color: '#94a3b8', font: { size: 11 } } } },
+          plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
           scales: {
-            y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
           }
         }
       });
     }
 
-    // --- CSV IMPORT / EXPORT ---
-    function exportToCSV() {
-      const filtered = contentItems.filter(i => (i.brand || "Utama") === activeBrand);
-      const headers = ['title', 'platform', 'format', 'status', 'reach', 'likes', 'comments', 'shares', 'saves'];
-      const rows = filtered.map(i => [
-        `"${i.title.replace(/"/g, '""')}"`, i.platform, i.format, i.status,
-        i.reach || 0, i.likes || 0, i.comments || 0, i.shares || 0, i.saves || 0
-      ]);
-      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\\n');
-      const link = document.createElement('a');
-      link.setAttribute('href', encodeURI(csvContent));
-      link.setAttribute('download', `SocialOS_${activeBrand}_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // --- STANDARD RFC 4180 CSV PARSER ---
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let entry = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        const next = text[i + 1];
+
+        if (c === '"') {
+          if (inQuotes && next === '"') {
+            entry += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === ',' && !inQuotes) {
+          row.push(entry.trim());
+          entry = '';
+        } else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (c === '\r' && next === '\n') i++;
+          row.push(entry.trim());
+          if (row.some(cell => cell !== '')) rows.push(row);
+          row = [];
+          entry = '';
+        } else {
+          entry += c;
+        }
+      }
+      if (entry !== '' || row.length > 0) {
+        row.push(entry.trim());
+        if (row.some(cell => cell !== '')) rows.push(row);
+      }
+      return rows;
     }
 
-    function handleCSVUpload(event) {
-      const file = event.target.files[0];
+    function handleStandardCSVUpload(e) {
+      if (!currentUser) return alert('Silakan login terlebih dahulu.');
+      const file = e.target.files[0];
       if (!file) return;
+
       const reader = new FileReader();
-      reader.onload = async function(e) {
-        const lines = e.target.result.split(/\\r?\\n/).filter(l => l.trim() !== '');
-        if (lines.length < 2) return;
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split(',');
+      reader.onload = async (event) => {
+        const parsed = parseCSV(event.target.result);
+        if (parsed.length < 2) return alert('File CSV kosong atau header tidak valid.');
+
+        const batch = db.batch();
+        let count = 0;
+
+        for (let i = 1; i < parsed.length; i++) {
+          const cols = parsed[i];
           if (cols.length >= 4) {
-            const newItem = {
-              id: 'imp-' + Date.now() + '-' + i,
-              brand: activeBrand,
-              title: cols[0].replace(/"/g, '').trim(),
-              platform: (cols[1] || 'TIKTOK').trim().toUpperCase(),
+            const docRef = db.collection('users').doc(currentUser.uid).collection('contents').doc();
+            batch.set(docRef, {
+              brandId: activeBrandId,
+              title: cols[0] || 'Untitled Content',
+              platform: (cols[1] || 'TIKTOK').toUpperCase(),
               format: 'Single Post',
               pillar: 'Edukasi',
               status: 'PUBLISHED',
@@ -1116,14 +1003,48 @@ Pisahkan jawaban DALAM JSON MURNI tanpa markdown kutip persis:
               likes: parseInt(cols[4]) || 0,
               comments: parseInt(cols[5]) || 0,
               shares: parseInt(cols[6]) || 0,
-              saves: parseInt(cols[7]) || 0
-            };
-            await syncSaveItem(newItem);
+              saves: parseInt(cols[7]) || 0,
+              createdAt: new Date().toISOString()
+            });
+            count++;
           }
         }
-        alert('Impor data CSV selesai dan disinkronkan ke database Firestore!');
+
+        await batch.commit();
+        alert(`Berhasil mengimpor ${count} data konten ke brand ini.`);
       };
       reader.readAsText(file);
+    }
+
+    function exportToCSV() {
+      const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+      const headers = ['title', 'platform', 'format', 'status', 'views', 'reach', 'likes', 'comments', 'shares', 'saves'];
+      const rows = filtered.map(i => [
+        `"${(i.title || '').replace(/"/g, '""')}"`,
+        i.platform, i.format, i.status,
+        i.views || 0, i.reach || 0, i.likes || 0, i.comments || 0, i.shares || 0, i.saves || 0
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `SocialOS_Brand_${activeBrandId}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function clearCurrentBrandData() {
+      if (!currentUser) return;
+      if (confirm('Hapus seluruh konten untuk brand aktif saat ini?')) {
+        const filtered = contentItems.filter(i => (i.brandId || "default") === activeBrandId);
+        const batch = db.batch();
+        filtered.forEach(it => {
+          const ref = db.collection('users').doc(currentUser.uid).collection('contents').doc(it.id);
+          batch.delete(ref);
+        });
+        await batch.commit();
+      }
     }
 
     function renderAll() {
@@ -1133,9 +1054,7 @@ Pisahkan jawaban DALAM JSON MURNI tanpa markdown kutip persis:
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      loadBrands();
-      initFirebase();
-      updateAIStatusUI();
+      initApp();
     });
   </script>
 </body>
